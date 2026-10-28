@@ -6,7 +6,7 @@ export const profile = {
   github: 'https://github.com/ArthurMoury',
 };
 export const contexts = {
-  pessoa: { label: 'Sobre mim', verb: 'Conhecer' },
+  pessoa: { label: 'Quem sou', verb: 'Conhecer' },
   faculdade: { label: 'Na faculdade', verb: 'Aprender' },
   trabalho: { label: 'No trabalho', verb: 'Construir' },
   iniciativa: { label: 'Por conta própria', verb: 'Explorar' },

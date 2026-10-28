@@ -1,24 +1,21 @@
 # Direção visual · Arthur Moury
 
-## Conceito
-Uma pessoa em primeiro plano; ao redor, uma geometria que muda com o percurso. A assinatura é um conjunto de órbitas SVG que envolve o retrato somente na abertura. Referência de linguagem: movimento espacial e transições de portfólios de estúdio como Refokus, com os princípios de hierarquia e coreografia consultados no Personal Vault.
+## Revisão de 28/10/2026
+Referência explícita: Refokus, incluindo a imagem enviada pelo titular. A página é uma apresentação de Arthur para pessoas interessadas em seus projetos, experiência e uma conversa. A identidade deve ser escura em todo o percurso, com conteúdo real e movimento espacial.
 
-## Paleta
-Azul noturno, cobalto, prata, azul gelo e ardósia. Valores de referência: #111824, #304ce0, #e3e6ec, #b7caff e #26374d. Implementação em OKLCH em `src/global.css`; imagens dos projetos preservam suas próprias marcas. As superfícies claras são prata, não branco dominante. Os azuis saturados aparecem nas faixas de projetos e na demonstração, com texto de alto contraste.
-
-## Tipografia
-Sora para títulos e Hanken Grotesk para texto, preservando as famílias locais existentes. Títulos no máximo 6rem, espaçamento entre letras não inferior a -0.04em. Hierarquia por escala e espaço, sem etiquetas decorativas repetidas ou monograma na abertura.
+## Sistema
+Paleta: carvão #101112, superfície #191b1c, painel #232527, linhas #45484b, prata #c9cccf e texto #f1f1ef. Tokens em OKLCH, cor reservada às imagens reais dos projetos e certificados. Manter Sora nos títulos e Hanken Grotesk no corpo. Títulos até 6rem; tracking mínimo -0.04em. Sem etiquetas decorativas repetidas.
 
 ## Composição
-Abertura de uma tela → sobre mim e contatos → três momentos de carreira → seis projetos expansíveis → demonstração de processo → currículo → contato e rodapé. O acervo e as perguntas foram consolidados na seleção pedida, evitando duplicação de projetos.
+Abertura de uma tela → informações pessoais e contato → “Cada ideia, um mundo para explorar” e seis projetos → trajetória em três capítulos → carrossel de certificados → processo → currículo → contato.
 
-## Movimento
-Entrada coordenada do texto, do retrato e das órbitas em GSAP; órbitas continuam respondendo à rolagem nativa. Indicador inferior sem texto, com dois ciclos curtos. Barra persistente após a abertura, com forma, verbo e contexto que mudam automaticamente conforme os marcos da página. Imagens da carreira sincronizadas com ScrollTrigger, sticky a partir de 900px. Nos tamanhos menores, as imagens pertencem aos próprios capítulos.
+## Assinatura
+Uma fita metálica tridimensional, modelada em Three.js, se desdobra na entrada. O retrato do GitHub aparece numa janela retangular, com máscara animada e leve profundidade, depois desaparece. A escultura ocupa o mesmo espaço quando a foto sai. Texto visível por padrão, sem tela de carregamento que bloqueie a página. Indicador de rolagem com planos em cascata conduz para baixo; sem desenho de mouse.
 
-Projetos abrem por mouse, clique ou teclado, com opção de fixar a expansão por clique. Escape recolhe e mantém foco. Galeria horizontal em mobile/tablet, com parte do próximo item à vista. Demonstração de aproximadamente cinco segundos com pausa, repetição e suspensão por visibilidade. Movimento reduzido usa estados completos e sem deslocamentos.
+## Movimento e interação
+Three.js para a entrada espacial, Motion para escala e gestos dos certificados, GSAP/ScrollTrigger para texto, fotografia e capítulos. Sem capturar a rolagem. Interromper renderização fora da tela e em aba oculta. Preferência por movimento reduzido mostra uma composição estática completa. Foto aparece somente na abertura.
 
-## Fontes visuais
-Retrato público do perfil ArthurMoury no GitHub, escolhido pelo titular em 28/10/2026, usado em sua cor original. Capturas das páginas públicas de Cortech, FreeSB, Roomi Reservas e Sollie; capturas existentes de Betterway e Roomi Builder. Diagramas de formação e automação identificados como representações. Nenhuma imagem de conta autenticada ou dado de paciente é utilizada. Ícone GitHub do Simple Icons, CC0; fontes locais sob OFL.
+Carrossel contínuo: o mouse não pausa o trilho, mas expande o certificado com transform; clique amplia em diálogo. Botão explícito para pausar, foco por teclado estável, arraste horizontal no toque e alternativa estática com movimento reduzido. Usar os 29 documentos reais da pasta fornecida. CPF omitido das cópias visuais que o contêm, originais preservados no Drive.
 
-## Contraste
-Pares de texto principais calculados: texto/prata 13,20:1; secundário/prata 6,50:1; secundário/azul gelo 5,13:1; texto claro/cobalto 6,54:1; secundário/cobalto 5,15:1; placeholder/campo 7,92:1.
+## Conteúdo
+Somente Cortech, FreeSB, Betterway, Roomi Reservas, Roomi Builder e Sollie. Botões GitHub e Acessar separados. Nenhuma alteração de acesso a repositórios. Email mourygodoy@gmail.com; sem idade nem endereço residencial.

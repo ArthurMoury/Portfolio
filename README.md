@@ -1,44 +1,43 @@
 # Portfólio · Arthur Moury
 
-Portfólio pessoal em React, CSS Modules e GSAP. Apresentação, formação, experiência e seis projetos selecionados: Cortech, FreeSB, Betterway, Roomi Reservas, Roomi Builder e Sollie.
+Apresentação pessoal, projetos, trajetória e certificados. React, CSS Modules, Three.js, Motion e GSAP/ScrollTrigger.
 
-## Executar
+## Experiência
+
+- Tema escuro em todo o site, com entrada tridimensional e retrato temporário por máscara animada.
+- Informações pessoais e contato antes dos seis projetos: Cortech, FreeSB, Betterway, Roomi Reservas, Roomi Builder e Sollie.
+- Projetos em faixas expansíveis, cada um com captura, contexto e botões independentes para GitHub e deploy.
+- Trajetória em CESAR School, Boop e Roomi, com imagens sincronizadas à rolagem.
+- Carrossel com os 29 documentos da pasta fornecida pelo titular: movimento contínuo mesmo sob hover, expansão por Motion e ampliação em diálogo.
+- Navegação por teclado, arraste, controles de pausa e movimento reduzido.
+- Currículo e contato em mourygodoy@gmail.com.
+
+## Executar e validar
 
 ```bash
 npm install
 npm run dev
-```
-
-```bash
 npm run check
 npm run build
 npm run preview
 ```
 
-## Experiência
+A publicação na Vercel usa `vercel.json`, com saída estática em `dist/`. A configuração existente do Sites é preservada em `.openai/hosting.json`. Não publicar `.env*`, `.research/`, `.qa/` ou arquivos locais de autenticação.
 
-- Abertura com animação abstrata e retrato, sem crachá. A foto aparece somente aqui.
-- Sobre mim com formação, atuação, e-mail, LinkedIn, GitHub e currículo.
-- Navegação persistente e contexto que muda automaticamente durante a rolagem.
-- Trajetória simplificada em CESAR School, Boop Mídia e Roomi, com imagens sincronizadas.
-- Seis faixas expansíveis com captura, contexto e recursos de cada projeto. Nome expande; botão GitHub abre o repositório; botão Acessar abre o deploy.
-- Demonstração automática de processo com pausa e repetição.
-- Currículo e contato para qualquer assunto em mourygodoy@gmail.com.
+## Conteúdo
 
-## Conteúdo e acesso
+Os dados estão em `src/data/portfolio.js` e `src/data/certificates.js`. As imagens são locais, com miniaturas menores no carrossel e versões maiores no diálogo. Dois documentos continham CPF; ele foi omitido nas cópias do portfólio. Os originais no Drive foram preservados. O registro do Santander é identificado como seleção para o programa, sem alegar conclusão.
 
-Dados em `src/data/portfolio.js`. A seleção corresponde à lista explícita fornecida pelo titular em 27/10/2026. Cortech, FreeSB, Roomi Reservas e Sollie têm repositórios privados, identificados nos botões; visitantes sem autorização do GitHub não acessam esse código. As permissões não foram alteradas. Todos os projetos têm deploys próprios vinculados.
+Cortech, FreeSB, Roomi Reservas e Sollie têm repositórios privados, identificados nos botões. Permissões não foram alteradas. Os seis projetos têm links próprios de acesso.
 
-Formação e experiência vêm do currículo do titular. A idade não é exibida. O retrato é a foto do perfil [ArthurMoury no GitHub](https://github.com/ArthurMoury), escolhida pelo titular em 28/10/2026. O PDF original do currículo é mantido sem edição.
+Formação e experiência vêm do currículo do titular. Sem idade ou endereço residencial na página. Foto escolhida do perfil [ArthurMoury no GitHub](https://github.com/ArthurMoury). O PDF original do currículo é mantido sem edição.
 
-Rolagem nativa, teclado, foco visível, diálogo com Escape e movimento reduzido fazem parte da implementação. Use `?motion=reduce` para conferir a alternativa estática, também acionada pela preferência do sistema. A demonstração pausa fora da tela e quando a aba fica oculta.
+O formulário valida os campos e prepara um e-mail; o visitante revisa e envia no próprio aplicativo. Não há armazenamento de mensagens nem alegação de envio automático.
 
-O formulário valida e prepara um `mailto:`; o visitante revisa e envia no próprio aplicativo. Não existe coleta de mensagens em servidor nem alegação de envio automático.
+## Movimento e acessibilidade
 
-## Design e imagens
+Rolagem nativa. Three.js carregado separadamente, sem bloquear o conteúdo; a renderização cessa depois da entrada até nova interação e é suspensa fora da tela ou em aba oculta. A foto surge e desaparece em aproximadamente cinco segundos; “Rever entrada” repete a sequência. Sem WebGL, uma composição SVG mantém a abertura completa.
 
-Direção documentada em `DESIGN.md`: azul noturno, cobalto, prata e azul gelo; Sora e Hanken Grotesk. Princípios de profundidade, coreografia e alternativas estáticas do Personal Vault. Referências: [GSAP ScrollTrigger](https://gsap.com/docs/v3/Plugins/ScrollTrigger/) e [Refokus](https://www.refokus.com/).
+O carrossel continua sob o mouse e pausa explicitamente pelo controle, por foco de teclado, com diálogo aberto, fora da tela ou em aba oculta. Use `?motion=reduce` para conferir o layout estático, também ativado pela preferência do sistema. Diálogos contêm o foco, aceitam Escape e devolvem o foco ao elemento que os abriu.
 
-Capturas reais das páginas públicas e telas de entrada dos projetos; os dois diagramas da trajetória são identificados como representações. Foto pessoal autorizada pelo titular. Ícone GitHub do [Simple Icons](https://simpleicons.org/), CC0. Fontes Sora e Hanken Grotesk sob SIL Open Font License; licenças em `public/fonts/`.
-
-Verificações em `docs/QA.md`.
+Direção visual em `DESIGN.md`; verificações em `docs/QA.md`. Referências: [Refokus](https://www.refokus.com/), [Motion](https://motion.dev/docs/react-animation), [Three.js](https://threejs.org/docs/) e [GSAP](https://gsap.com/docs/v3/Plugins/ScrollTrigger/). Fontes Sora e Hanken Grotesk locais sob OFL; ícone GitHub do Simple Icons, CC0.

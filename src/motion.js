@@ -34,11 +34,12 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext) 
       const q=gsap.utils.selector(root);
       q('[data-chapter]').forEach((chapter,i)=>ScrollTrigger.create({trigger:chapter,start:'top 55%',end:'bottom 55%',onEnter:()=>setChapter(i),onEnterBack:()=>setChapter(i)}));
       if(reduced)return;
-      gsap.timeline({defaults:{ease:'power3.out'}})
-        .from(q('[data-hero-copy]'),{y:25,opacity:.75,stagger:.1,duration:1,clearProps:'all'},.1)
-        .from(q('[data-portrait]'),{y:45,rotate:-5,scale:.94,opacity:.75,duration:1.25,clearProps:'all'},.25)
-        .from(q('[data-orbit]'),{rotate:-32,scale:.8,transformOrigin:'50% 50%',opacity:.2,duration:2.2,clearProps:'all'},0);
-      gsap.to(q('[data-orbit]'),{rotate:35,y:90,transformOrigin:'50% 50%',ease:'none',scrollTrigger:{trigger:hero,start:'top top',end:'bottom top',scrub:1}});
+      q('#sobre h2, #projetos h2, #trajetoria h2, #certificados h2').forEach(title => {
+        gsap.from(title, { y: 38, clipPath: 'inset(0 0 18% 0)', duration: 1.1, ease: 'power4.out', clearProps: 'all', scrollTrigger: { trigger: title, start: 'top 92%', once: true } });
+      });
+      q('[data-project]').forEach(band => {
+        gsap.from(band.querySelector('h3'), { x: -30, duration: .85, ease: 'power3.out', clearProps: 'all', scrollTrigger: { trigger: band, start: 'top 90%', once: true } });
+      });
       media.add('(min-width:900px)',()=>{
         q('[data-chapter-visual]').forEach((visual,i)=>{
           const show=direction=>gsap.fromTo(visual,{y:direction*18,scale:.97},{y:0,scale:1,duration:.65,ease:'power3.out',overwrite:true});

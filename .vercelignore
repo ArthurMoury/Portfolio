@@ -1,0 +1,10 @@
+.git
+.research
+.qa
+.openai
+node_modules
+dist
+docs
+scripts
+*.tar.gz
+.env*

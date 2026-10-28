@@ -6,26 +6,17 @@ import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
 import { projects, chapters, contexts, profile } from './data/portfolio';
 import { usePageMotion, useReducedMotion } from './motion';
 import s from './App.module.css';
+import KineticHero from './KineticHero';
+import Certificates from './Certificates';
 
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
 const external = { target: '_blank', rel: 'noreferrer noopener' };
 
 function Github({size=18}) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>; }
-function Linkedin({size=18}) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><rect x="2" y="2" width="20" height="20" rx="2"/><path fill="var(--light)" d="M6 10h3v9H6zm1.5-5a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2M11 10h3v1.3c.6-1 1.4-1.5 2.7-1.5 2.2 0 3.3 1.4 3.3 4V19h-3v-4.7c0-1.4-.5-2-1.5-2S14 13 14 14.3V19h-3z"/></svg>; }
+function Linkedin({size=18}) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><rect x="2" y="2" width="20" height="20" rx="2"/><path fill="var(--deepest)" d="M6 10h3v9H6zm1.5-5a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2M11 10h3v1.3c.6-1 1.4-1.5 2.7-1.5 2.2 0 3.3 1.4 3.3 4V19h-3v-4.7c0-1.4-.5-2-1.5-2S14 13 14 14.3V19h-3z"/></svg>; }
 
 function LinkButton({ href, children, secondary = false, ...props }) {
   return <a href={href} className={`${s.button} ${secondary ? s.buttonSecondary : ''}`} {...props}>{children}<ArrowUpRight size={18} aria-hidden="true" /></a>;
-}
-
-function Hero() {
-  return <section id="inicio" className={s.hero} aria-labelledby="hero-title" data-context="pessoa">
-    <div className={s.heroArt} aria-hidden="true"><svg viewBox="0 0 1000 1000" fill="none"><defs><linearGradient id="orbit-light" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#a7c4ff" /><stop offset=".46" stopColor="#5677ff" /><stop offset="1" stopColor="#142444" /></linearGradient></defs><g data-orbit>{Array.from({length:21},(_,i)=><ellipse key={i} cx="500" cy="500" rx={330-i*8} ry={140+i*9} transform={`rotate(${i*3-30} 500 500)`} stroke="url(#orbit-light)" strokeWidth="1.1" />)}</g></svg></div>
-    <div className={`${s.container} ${s.heroContent}`}>
-      <div className={s.heroText}><h1 id="hero-title"><span data-hero-copy>Olá, sou</span><span data-hero-copy>Arthur<br /><em>Moury.</em></span></h1><p className={s.heroDescription} data-hero-copy>Entendo problemas.<br /> Construo possibilidades.</p><a href="#sobre" className={s.heroAbout} data-hero-copy>Um pouco sobre mim <ArrowUpRight size={19} /></a></div>
-      <figure className={s.portrait} data-portrait><div className={s.portraitFrame}><img src="/images/arthur-moury.jpg" width="460" height="460" alt="Arthur Moury, foto do perfil no GitHub" fetchPriority="high" /></div><span className={s.portraitContour} aria-hidden="true" /><span className={s.portraitDot} aria-hidden="true" /></figure>
-    </div>
-    <a className={s.scrollCue} href="#sobre" aria-label="Rolar para saber mais sobre Arthur"><span aria-hidden="true"><i /></span></a>
-  </section>;
 }
 
 function Navigation({ visible, context }) {
@@ -36,7 +27,7 @@ function Navigation({ visible, context }) {
   return <header className={`${s.navigation} ${visible?s.navigationVisible:''}`} inert={!visible?true:undefined} onKeyDown={e=>{if(e.key==='Escape'){close();menu.current?.focus();}}}>
     <div className={`${s.container} ${s.navInner}`}>
       <a className={s.navHome} href="#inicio" aria-label="Voltar ao início">Arthur Moury</a>
-      <nav id="site-menu" className={`${s.navLinks} ${open?s.navOpen:''}`} aria-label="Navegação principal"><a href="#sobre" onClick={close}>Sobre mim</a><a href="#trajetoria" onClick={close}>Trajetória</a><a href="#projetos" onClick={close}>Projetos</a></nav>
+      <nav id="site-menu" className={`${s.navLinks} ${open?s.navOpen:''}`} aria-label="Navegação principal"><a href="#sobre" onClick={close}>Quem sou</a><a href="#projetos" onClick={close}>Projetos</a><a href="#trajetoria" onClick={close}>Trajetória</a><a href="#certificados" onClick={close}>Certificados</a></nav>
       <div className={s.navActions}><a href="#contato" onClick={close} className={s.navContact}>Vamos conversar<ArrowUpRight size={16} /></a><button ref={menu} className={s.menuButton} aria-label={open?'Fechar menu':'Abrir menu'} aria-expanded={open} aria-controls="site-menu" onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button></div>
     </div>
     <div className={s.contextTrack} data-context-current={context}><div className={s.container}><span className={s.contextShape} aria-hidden="true"/><span key={context} className={s.contextText}>{contexts[context].verb}<span>{contexts[context].label}</span></span><div className={s.readingTrack} aria-hidden="true"><i data-reading-progress /></div></div></div>
@@ -45,7 +36,7 @@ function Navigation({ visible, context }) {
 
 function About() {
   return <section id="sobre" className={s.about} aria-labelledby="about-title" data-context="pessoa"><div className={`${s.container} ${s.aboutGrid}`}>
-    <div><span className={s.sectionKicker}>Sobre mim</span><h2 id="about-title">Antes dos projetos,<br />a pessoa.</h2><p className={s.aboutLead}>Sou Arthur, estudante de Ciência da Computação na CESAR School e estagiário em IA Ops na Roomi.</p><p className={s.aboutText}>Gosto de entender como as coisas funcionam e de transformar esse entendimento em algo que as pessoas possam usar. Entre desenvolvimento, dados e automação, vou encontrando novas formas de construir.</p><div className={s.aboutLinks}><a href={`mailto:${profile.email}`}><Mail size={18}/>{profile.email}</a><a href={profile.linkedin} {...external}><Linkedin size={17}/>LinkedIn</a><a href={profile.github} {...external}><Github size={17}/>GitHub</a></div></div>
+    <div><h2 id="about-title">Antes dos projetos,<br />a pessoa.</h2><p className={s.aboutLead}>Sou Arthur, estudante de Ciência da Computação na CESAR School e estagiário em IA Ops na Roomi.</p><p className={s.aboutText}>Gosto de entender como as coisas funcionam e de transformar esse entendimento em algo que as pessoas possam usar. Entre desenvolvimento, dados e automação, vou encontrando novas formas de construir.</p><div className={s.aboutLinks}><a href={`mailto:${profile.email}`}><Mail size={18}/>{profile.email}</a><a href={profile.linkedin} {...external}><Linkedin size={17}/>LinkedIn</a><a href={profile.github} {...external}><Github size={17}/>GitHub</a></div></div>
     <div className={s.aboutDetails}><dl><div data-context="faculdade"><dt><GraduationCap size={20}/>Formação</dt><dd>Ciência da Computação<span>CESAR School · 4º período</span></dd></div><div data-context="trabalho"><dt><BriefcaseBusiness size={19}/>Hoje</dt><dd>IA Ops na Roomi<span>Desenvolvimento, automação e qualidade</span></dd></div><div data-context="pessoa"><dt><MapPin size={19}/>De onde eu venho</dt><dd>Recife, Pernambuco<span>Inglês fluente</span></dd></div></dl><a className={s.cvLink} href="/Arthur-Moury-CV.pdf" {...external}><FileDown size={21}/><span>Meu currículo<small>Formação e experiência em um PDF</small></span><ArrowUpRight size={19}/></a></div>
   </div></section>;
 }
@@ -56,7 +47,7 @@ function ProjectImage({ project, onOpen, className='' }) {
 
 function Career({ onOpen, activeChapter, setActiveChapter }) {
   return <section id="trajetoria" className={s.career} aria-labelledby="career-title"><div className={s.container}>
-    <div className={s.careerIntro}><span className={s.sectionKicker}>Formação & experiência</span><h2 id="career-title">O que me trouxe<br />até aqui.</h2><p>Aprendizados que se conectam,<br/>dentro e fora da sala de aula.</p></div>
+    <div className={s.careerIntro}><h2 id="career-title">O que me trouxe<br />até aqui.</h2></div>
     <div className={s.careerGrid}><div className={s.chapterList}>{chapters.map((c,i)=><article id={`capitulo-${c.id}`} key={c.id} className={`${s.chapter} ${i===activeChapter?s.chapterActive:''}`} data-chapter={i} data-context={c.context}>
       <span className={s.chapterMarker}>{c.marker}</span><p className={s.organization}>{c.organization}</p><h3>{c.title}</h3><p className={s.chapterRole}>{c.role}</p><p className={s.chapterText}>{c.text}</p><a className={s.textLink} href={c.link} {...(c.link.startsWith('#')?{}:external)}>{c.linkText}<ArrowUpRight size={17}/></a>
       <div className={s.chapterMobile}><button onClick={()=>onOpen({image:c.image,title:c.organization,caption:`${c.imageType} · ${c.caption}`})} aria-label={`Ampliar imagem de ${c.organization}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/><ScanLine size={20}/></button><span>{c.imageType}</span></div>
@@ -82,7 +73,7 @@ function ProjectGallery({ onOpen }) {
     return()=>{resize.disconnect();cancelAnimationFrame(frame);};
   },[]);
   return <section id="projetos" ref={section} className={s.projects} aria-labelledby="projects-title">
-    <div className={`${s.container} ${s.projectsIntro}`} data-context="iniciativa"><div><span className={s.sectionKicker}>Projetos selecionados</span><h2 id="projects-title">Cada ideia,<br />um mundo para explorar.</h2></div><p>Seis projetos, de perto.<br/>Abra uma faixa para conhecer o contexto,<br className={s.desktopBreak}/> ver a interface e experimentar.</p></div>
+    <div className={`${s.container} ${s.projectsIntro}`} data-context="iniciativa"><div><h2 id="projects-title">Cada ideia,<br />um mundo para explorar.</h2></div></div>
     {projects.map((p,i)=><article id={`projeto-${p.id}`} key={p.id} className={`${s.projectBand} ${s[p.color]}`} data-project={p.id} data-context={p.context} data-expanded={open===i} onPointerEnter={e=>{if(canHover(e)&&pinned===null)setHovered(i);}} onPointerLeave={e=>{if(canHover(e)&&!e.currentTarget.contains(document.activeElement))setHovered(null);}} onKeyDown={e=>{if(e.key==='Escape'){setPinned(null);setHovered(null);document.getElementById(`project-toggle-${p.id}`)?.focus();}}}>
       <div className={s.container}><div className={s.projectBandTop}><div className={s.projectIdentity}><span className={s.projectTopic}>{p.topic}</span><h3><button id={`project-toggle-${p.id}`} aria-expanded={open===i} aria-controls={`project-gallery-${p.id}`} onClick={()=>{if(pinned===i){setPinned(null);setHovered(null);}else{setPinned(i);setHovered(null);}}}>{p.name}</button></h3><span className={s.galleryHint}>{open===i?'Recolher projeto':'Explorar projeto'}</span></div><div className={s.projectSummary}><p>{p.summary}</p><div className={s.projectActions}><a href={`https://github.com/${p.repo}`} {...external} aria-label={`GitHub de ${p.name}${p.private?' (repositório privado)':''}`}><Github size={18}/><span>GitHub{p.private&&<small>privado</small>}</span></a><a href={p.live} {...external} aria-label={`Acessar ${p.name}`}>Acessar<ArrowUpRight size={19}/></a></div></div></div>
       <div id={`project-gallery-${p.id}`} className={`${s.projectGallery} ${open===i?s.projectGalleryOpen:''}`} inert={open!==i?true:undefined} aria-hidden={open!==i}><div className={s.galleryClip}><p className={s.projectDetail}>{p.detail}</p><div className={s.galleryTrack}><figure className={s.galleryScreenshot}><ProjectImage project={p} onOpen={onOpen}/><figcaption>{p.imageType}</figcaption></figure><div className={s.galleryStatement}><ProjectMotif type={p.motif}/><strong>{p.statement}</strong></div><div className={s.galleryFeatures}><span>Por dentro do projeto</span><ul>{p.features.map(f=><li key={f}>{f}</li>)}</ul><div className={s.techTags}>{p.tech.map(t=><span key={t}>{t}</span>)}</div></div></div></div></div>
@@ -174,7 +165,7 @@ function Contact({ reduced }) {
       <button className={s.button} type="submit">Preparar e-mail<ArrowUpRight size={19} /></button>
       <div className={s.formStatus} aria-live="polite">{Object.values(errors).some(Boolean) && <p>Confira os campos indicados para continuar.</p>}{draft && <div className={s.draft}><strong><Check size={17} /> Mensagem pronta para revisar.</strong><p>Abra seu aplicativo e envie quando estiver tudo certo.</p><div><a href={`mailto:${profile.email}?subject=${encodeURIComponent(`[Portfólio] ${draft.subject}`)}&body=${encodeURIComponent(draft.body)}`} className={s.textLink}>Abrir meu e-mail<ArrowUpRight size={16} /></a><button type="button" onClick={copy}><Copy size={15} /> Copiar mensagem</button></div></div>}{copyStatus && <p>{copyStatus}</p>}</div>
     </form></div>
-    <footer className={`${s.container} ${s.footer}`}><div className={s.footerTop}><a href="#inicio" className={s.footerName}>Arthur Moury</a><nav aria-label="Navegação do rodapé"><a href="#sobre">Sobre mim</a><a href="#trajetoria">Trajetória</a><a href="#projetos">Projetos</a><a href={reduced?'/?motion=full':'/?motion=reduce'}>{reduced?'Versão com animações':'Reduzir animações'}</a></nav></div><div className={s.footerBottom}><span>© 2026 Arthur Moury</span><a href="#inicio">Voltar ao início <ArrowUpRight size={14}/></a></div></footer>
+    <footer className={`${s.container} ${s.footer}`}><div className={s.footerTop}><a href="#inicio" className={s.footerName}>Arthur Moury</a><nav aria-label="Navegação do rodapé"><a href="#sobre">Quem sou</a><a href="#trajetoria">Trajetória</a><a href="#projetos">Projetos</a><a href={reduced?'/?motion=full':'/?motion=reduce'}>{reduced?'Versão com animações':'Reduzir animações'}</a></nav></div><div className={s.footerBottom}><span>© 2026 Arthur Moury</span><a href="#inicio">Voltar ao início <ArrowUpRight size={14}/></a></div></footer>
   </section>;
 }
 
@@ -197,7 +188,7 @@ function ImageDialog({ value, onClose }) {
     document.body.style.overflow = 'hidden';
     return () => { d.close(); document.body.style.overflow = oldOverflow; previous?.focus(); };
   }, [value]);
-  return <dialog ref={dialog} className={s.dialog} aria-labelledby="image-dialog-title" onKeyDown={containFocus} onCancel={e => { e.preventDefault(); onClose(); }} onClick={e => { if(e.target === e.currentTarget) onClose(); }}>{value && <div className={s.dialogContent}><div className={s.dialogHeader}><h2 id="image-dialog-title">{value.title}</h2><button autoFocus onClick={onClose} aria-label="Fechar ampliação"><X size={24} /></button></div><img src={value.image} alt={value.caption} /><p>{value.caption}</p></div>}</dialog>;
+  return <dialog ref={dialog} className={s.dialog} aria-labelledby="image-dialog-title" onKeyDown={containFocus} onCancel={e => { e.preventDefault(); onClose(); }} onClick={e => { if(e.target === e.currentTarget) onClose(); }}>{value && <div className={s.dialogContent}><div className={s.dialogHeader}><h2 id="image-dialog-title">{value.title}</h2><button autoFocus onClick={onClose} aria-label="Fechar ampliação"><X size={24} /></button></div><img src={value.image} alt={value.caption} /><p>{value.caption}</p>{value.url && <a className={s.textLink} href={value.url} {...external}>Ver original no Drive<ArrowUpRight size={16}/></a>}</div>}</dialog>;
 }
 
 
@@ -209,5 +200,5 @@ export default function App() {
   const [context,setContext]=useState('pessoa');
   const [image,setImage]=useState(null);
   usePageMotion(root,reduced,setNavigationVisible,setActiveChapter,setContext);
-  return <div ref={root} className={s.app} data-reduced-motion={reduced}><a className={s.skipLink} href="#sobre">Pular para sobre mim</a><Navigation visible={navigationVisible} context={context}/><main><Hero/><About/><Career onOpen={setImage} activeChapter={activeChapter} setActiveChapter={setActiveChapter}/><ProjectGallery onOpen={setImage}/><ProcessDemo reduced={reduced}/><Curriculum/><Contact reduced={reduced}/></main><ImageDialog value={image} onClose={()=>setImage(null)}/></div>;
+  return <div ref={root} className={s.app} data-reduced-motion={reduced}><a className={s.skipLink} href="#sobre">Pular para informações pessoais</a><Navigation visible={navigationVisible} context={context}/><main><KineticHero reduced={reduced}/><About/><ProjectGallery onOpen={setImage}/><Career onOpen={setImage} activeChapter={activeChapter} setActiveChapter={setActiveChapter}/><Certificates reduced={reduced} onOpen={setImage} modalOpen={!!image}/><ProcessDemo reduced={reduced}/><Curriculum/><Contact reduced={reduced}/></main><ImageDialog value={image} onClose={()=>setImage(null)}/></div>;
 }

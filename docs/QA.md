@@ -33,3 +33,22 @@ Os seis deploys retornaram HTTP 200 em 27/10/2026. As páginas públicas de Cort
 ## Limitações concretas
 
 A foto foi substituída pela imagem do perfil ArthurMoury no GitHub, conforme pedido em 28/10/2026; mantém uma única ocorrência na abertura. O currículo é o PDF original. Repositórios privados exigem acesso concedido pelo próprio GitHub. O contato é um preparador de e-mail, não um serviço de envio. Não houve medição de FPS em dispositivo físico.
+
+## Revisão dark e certificados · 28/10/2026
+
+- `npm run check`: seleção exata dos seis projetos, ordem informações → projetos → trajetória, 29 certificados distintos, arquivos presentes, contato correto, retrato único e ausência dos textos removidos.
+- Build Vite concluído. Three.js em chunk separado carregado após o conteúdo inicial. Aviso de tamanho de chunk para bibliotecas de animação/3D; sem falha de compilação.
+- Desktop 1280×720, tablet 768×1024 e mobile 390×844: ausência de overflow horizontal. Ajustes de câmera para proporções estreitas, título do carrossel e enquadramento do retrato.
+- Canvas Three.js carregou; a foto foi observada com opacidade 1 durante a entrada e opacidade 0 no encerramento. Hero mobile medido com 844px, igual à altura da janela.
+- Hover em certificado: escala 1,09 e deslocamento vertical de -12px, enquanto o trilho continuou de -5052,47px para -5277,09px. Não pausa ao passar o mouse.
+- Pausa explícita manteve o deslocamento em -5544,73px entre observações. Menu mobile abre, navega para certificados e fecha.
+- Clique abre certificado legível. Shift+Tab permanece no diálogo, Escape fecha e devolve o foco ao certificado.
+- `?motion=reduce`: 29 botões únicos, sem clone, sem canvas Three.js, sem botão de autoplay, galeria com rolagem horizontal nativa e sem overflow da página.
+- Todos os PDFs renderizados; folha de contato revisada. Pré-incubação e PyLab tiveram CPF removido nas cópias de apresentação, com leitura e inspeção visual posteriores. Originais do Drive intactos.
+- Arraste usa Pointer Events para mouse/toque; teste automatizado não emula hardware de toque real. Suspensão por visibilidade revisada no código.
+
+## Publicação Vercel
+
+Projeto `arthur-moury-portfolio` criado no escopo existente `amfgs-5506s-projects`. Integração GitHub → Vercel recusou conexão ao repositório por falta de acesso da integração; publicação feita via CLI autenticada. Não houve concessão de permissões adicionais ao GitHub.
+
+Contraste da revisão dark: texto/carvão 16,66:1; texto secundário/painel 6,94:1; placeholder/campo 6,64:1. Pacote Vercel inspecionado antes do envio: `.env.local`, `.research`, `.qa`, `.git`, `.openai` e `.vercel` excluídos.

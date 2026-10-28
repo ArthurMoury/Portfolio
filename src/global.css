@@ -1,13 +1,14 @@
 @font-face{font-family:Sora;src:url('/fonts/sora-latin.woff2') format('woff2');font-style:normal;font-weight:100 800;font-display:swap}
 @font-face{font-family:Hanken;src:url('/fonts/hanken-latin.woff2') format('woff2');font-style:normal;font-weight:100 900;font-display:swap}
 :root{
-  --deepest:oklch(.205 .028 260);--deep:oklch(.265 .04 260);--slate:oklch(.33 .05 260);
-  --cobalt:oklch(.49 .23 266);--accent:oklch(.79 .105 263);--secondary:oklch(.85 .065 260);
-  --light:oklch(.925 .008 260);--ink:oklch(.24 .035 260);--muted:oklch(.43 .03 260);
-  --muted-light:oklch(.79 .025 260);--line:oklch(.76 .02 260);
+  color-scheme:dark;
+  --deepest:oklch(.176 .003 250);--deep:oklch(.21 .003 250);--slate:oklch(.24 .003 250);--surface:oklch(.25 .003 250);
+  --cobalt:oklch(.23 .003 250);--accent:oklch(.84 .004 250);--secondary:oklch(.23 .003 250);
+  --light:oklch(.956 .002 100);--ink:oklch(.176 .003 250);--muted:oklch(.74 .003 250);
+  --muted-light:oklch(.74 .003 250);--line:oklch(.36 .003 250);
   --page-width:min(1280px,calc(100% - 112px));--section-space:clamp(5rem,9vw,8rem);--section-small:clamp(3rem,5vw,4.5rem);
   --ease:cubic-bezier(.2,.8,.2,1);--z-nav:20;--z-menu:25;--z-dialog:40;
-  color:var(--ink);background:var(--deepest);font-family:Hanken,Arial,sans-serif;font-synthesis:none;font-size:16px;
+  color:var(--light);background:var(--deepest);font-family:Hanken,Arial,sans-serif;font-synthesis:none;font-size:16px;
 }
 *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:128px}body{margin:0}button,input,select,textarea{font:inherit}button,a{-webkit-tap-highlight-color:transparent}button{cursor:pointer}a{color:inherit;text-decoration:none}img,svg{display:block;max-width:100%}button{color:inherit}h1,h2,h3,h4,p,figure{margin:0}h1,h2,h3,h4{font-family:Sora,Arial,sans-serif;text-wrap:balance}p{text-wrap:pretty;line-height:1.65;max-width:70ch}button{border:0}a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid currentColor;outline-offset:5px}::selection{background:var(--accent);color:var(--deepest)}button:disabled{cursor:default}noscript{display:block;background:white;color:var(--ink);padding:2rem}noscript a{text-decoration:underline}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}

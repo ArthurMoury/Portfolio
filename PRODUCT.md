@@ -26,3 +26,8 @@ Curiosa, inventiva e direta. Movimento com propósito, leitura tranquila e conte
 
 ## Accessibility & Inclusion
 Rolagem nativa, teclado, foco visível, diálogos com foco contido e Escape, contraste e movimento reduzido. Conteúdo principal visível sem animação. A demonstração pausa fora da tela e com aba oculta. O contato prepara um e-mail, sem afirmar envio.
+
+## Revisão adicional de 28/10/2026
+Modo dark em todas as seções, com referência visual fornecida do Refokus. Entrada com Three.js e retrato que aparece e desaparece por máscara. Remover as etiquetas “Sobre mim”, “Formação & experiência”, “Projetos selecionados” e os dois parágrafos auxiliares indicados. Projetos imediatamente depois das informações pessoais, antes da trajetória.
+
+Adicionar todos os 29 documentos da pasta do Drive indicada, em carrossel contínuo. Mouse não pausa o trilho; hover expande a peça, clique abre diálogo. Pausa explícita, teclado, toque e movimento reduzido. CPF omitido nas duas cópias que o contêm; não modificar originais. Usar uma nova indicação de rolagem abstrata, sem ícone de mouse.
