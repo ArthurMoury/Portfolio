@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.research/
+.qa/
+.env*
+!.env.example
+.DS_Store
+*.tar.gz
+.openai/local*
