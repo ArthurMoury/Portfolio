@@ -1,29 +1,24 @@
-# Arthur Moury · Direção visual
+# Direção visual · Arthur Moury
 
 ## Conceito
+Uma pessoa em primeiro plano; ao redor, uma geometria que muda com o percurso. A assinatura é um conjunto de órbitas SVG que envolve o retrato somente na abertura. Referência de linguagem: movimento espacial e transições de portfólios de estúdio como Refokus, com os princípios de hierarquia e coreografia consultados no Personal Vault.
 
-Um encontro com Arthur em Recife: fotografia da cidade em tela cheia, luz de entardecer, um crachá físico em primeiro plano e um traço que conecta pessoa, projetos e trajetória. O crachá é a assinatura; o resto da página usa espaço, tipografia e evidências dos projetos para manter a leitura clara.
-
-## Paleta configurável
-
-Quatro papéis principais, em `src/global.css`: cor profunda `--deep: oklch(.285 .038 185)`, destaque coral `--accent: oklch(.79 .147 38)`, superfície clara `--light: oklch(1 0 0)` e secundária azul `--secondary: oklch(.87 .071 232)`. Verde suave aparece apenas em estados e galerias. A cor coral deriva da semente de marca e do repertório de materiais estudado no Personal Vault. Não reproduz a marca Roomi.
+## Paleta
+Azul noturno, cobalto, prata, azul gelo e ardósia. Valores de referência: #111824, #304ce0, #e3e6ec, #b7caff e #26374d. Implementação em OKLCH em `src/global.css`; imagens dos projetos preservam suas próprias marcas. As superfícies claras são prata, não branco dominante. Os azuis saturados aparecem nas faixas de projetos e na demonstração, com texto de alto contraste.
 
 ## Tipografia
+Sora para títulos e Hanken Grotesk para texto, preservando as famílias locais existentes. Títulos no máximo 6rem, espaçamento entre letras não inferior a -0.04em. Hierarquia por escala e espaço, sem etiquetas decorativas repetidas ou monograma na abertura.
 
-Sora nos títulos e Hanken Grotesk na leitura e interface; arquivos WOFF2 locais. Títulos fluidos, até 92 px no desktop e sem comprimir abaixo de -0.04em. Corpo entre 13 e 17 px, com contraste e entrelinha generosa.
-
-## Estrutura e ritmo
-
-As dez partes do briefing são preservadas: abertura; navegação persistente; percurso; quatro capítulos; demonstração; como começar; faixa secundária; encerramento com dispositivo; perguntas com galerias; contato e rodapé. A seção de percurso incorpora o acervo completo, com filtros por contexto. A página alterna fotografia, superfície clara, fundo profundo e faixas de cor; evita uma sequência de cartões idênticos.
+## Composição
+Abertura de uma tela → sobre mim e contatos → três momentos de carreira → seis projetos expansíveis → demonstração de processo → currículo → contato e rodapé. O acervo e as perguntas foram consolidados na seleção pedida, evitando duplicação de projetos.
 
 ## Movimento
+Entrada coordenada do texto, do retrato e das órbitas em GSAP; órbitas continuam respondendo à rolagem nativa. Indicador inferior sem texto, com dois ciclos curtos. Barra persistente após a abertura, com forma, verbo e contexto que mudam automaticamente conforme os marcos da página. Imagens da carreira sincronizadas com ScrollTrigger, sticky a partir de 900px. Nos tamanhos menores, as imagens pertencem aos próprios capítulos.
 
-GSAP com ScrollTrigger e MotionPathPlugin. Entrada com fotografia, texto, desenho SVG e crachá em tempos diferentes. Onda morfada por rolagem. Linha curva progressiva. Capítulos com painel sticky apenas no desktop, transição por escala e profundidade. Demonstração em timeline de cerca de cinco segundos, pausada fora da tela e com aba oculta. Parallax discreto no dispositivo. Galerias com mouse, toque e teclado. Sem captura da rolagem nativa.
+Projetos abrem por mouse, clique ou teclado, com opção de fixar a expansão por clique. Escape recolhe e mantém foco. Galeria horizontal em mobile/tablet, com parte do próximo item à vista. Demonstração de aproximadamente cinco segundos com pausa, repetição e suspensão por visibilidade. Movimento reduzido usa estados completos e sem deslocamentos.
 
-## Materialidade e acessibilidade
+## Fontes visuais
+Retrato local do titular, provisório. Capturas das páginas públicas de Cortech, FreeSB, Roomi Reservas e Sollie; capturas existentes de Betterway e Roomi Builder. Diagramas de formação e automação identificados como representações. Nenhuma imagem de conta autenticada ou dado de paciente é utilizada. Ícone GitHub do Simple Icons, CC0; fontes locais sob OFL.
 
-O crachá usa materialidade pontual, conforme as notas de Skeuomorphism e Spatial UI do Personal Vault. Conteúdo principal permanece no DOM, visível sem animações. Movimento reduzido usa resultado estático e elimina deslocamentos. Diálogos nativos contêm foco e fecham com Escape. Links de âncora consideram a barra fixa. Os controles e campos têm foco visível e rótulos. O formulário prepara um e-mail e não informa envio sem comprovação.
-
-## Imagens e autoria
-
-Foto pessoal fornecida localmente. Fotografia de Recife de Mia Silva, via Unsplash, com crédito no rodapé. Capturas reais do Roomi Maker e da Better Way. Projetos sem interface gráfica recebem diagramas explicitamente identificados como representações. Forks são identificados e creditados às fontes originais.
+## Contraste
+Pares de texto principais calculados: texto/prata 13,20:1; secundário/prata 6,50:1; secundário/azul gelo 5,13:1; texto claro/cobalto 6,54:1; secundário/cobalto 5,15:1; placeholder/campo 7,92:1.

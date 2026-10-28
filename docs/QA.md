@@ -1,38 +1,35 @@
-# Verificação de entrega
+# Validação da revisão · 27/10/2026
 
-Data de referência: 27/10/2026.
+## Mudanças verificadas
 
-## Correspondência com o briefing
+- Abertura sem cidade, monograma, localização no topo, crachá, código de barras ou texto de continuação. Retrato em uma única ocorrência na página.
+- Sobre mim anterior aos projetos, com informações visíveis, contatos e currículo.
+- Indicador de contexto acompanha automaticamente os marcos da página e transforma sua pequena forma geométrica. Categorias e filtros manuais removidos.
+- Trajetória em três capítulos; imagens trocam com a rolagem em desktop e ficam junto de cada texto nas telas menores.
+- Lista exata: Cortech, FreeSB, Betterway, Roomi Reservas, Roomi Builder, Sollie. Faixas expansíveis substituem perguntas/acervo duplicado.
+- Cada faixa tem dois links distintos: GitHub e deploy. Os quatro repositórios privados são identificados. Nenhuma permissão foi modificada.
+- E-mail de contato e destino do formulário: mourygodoy@gmail.com. Assunto “Outro motivo” disponível.
 
-| Parte | Implementação |
-| --- | --- |
-| 1. Abertura | Fotografia de Recife em tela cheia; composição específica para mobile; logo, apresentação, uma ação principal, desenho SVG, entrada do crachá, onda que muda com a rolagem. |
-| 2. Navegação | Barra fixa de borda a borda, ativada ao sair da abertura; menu acessível no mobile, CTA persistente e âncoras com compensação de altura. |
-| 3. Percurso | Três pontos sobre curva progressiva, controles de tabulação com setas, painel de detalhes e links. Acervo com 11 projetos públicos e filtros por contexto. |
-| 4. Capítulos | Quatro capítulos verticais; painel sticky no desktop, transições de escala e profundidade, navegação entre capítulos e ampliação em diálogo nativo. Em tablet e mobile, cada capítulo tem seu visual após o texto. |
-| 5. Demonstração | Timeline de 4,4 s + 0,6 s de intervalo, cápsula sobre curva, confirmação e nova linha de resultado, três progressos sequenciais, pausa e repetição. Pausa por IntersectionObserver fora da tela e por visibilitychange com aba oculta. Percurso vertical no celular. |
-| 6. Como começar | Três passos numerados, com símbolos e conexão horizontal; disposição vertical no celular. |
-| 7. Destaque | Faixa azul em largura total sobre qualidade e testes, com símbolo, descrição e link para currículo. |
-| 8. Encerramento | Duas colunas, convite, ação e um mockup de dispositivo com visual da Better Way e forma orgânica em parallax discreto. |
-| 9. Perguntas | Respostas sempre visíveis, faixas de cores, temas e etiquetas. Galeria com três visuais abre por hover no desktop ou clique/teclado; no mobile é horizontal, com o próximo item aparente. |
-| 10. Contato | Duas colunas, rótulos, seletor estilizado, foco, validação, preparação da mensagem e rodapé com navegação. |
+## Verificação funcional
 
-## Validação
+- `npm run check`: seleção, ordem, URLs distintas, privacidade identificada, imagens/fontes/CV presentes, e-mail atualizado, retrato só no hero e ausência dos elementos antigos.
+- Build de produção com Vite.
+- Navegação por âncoras com compensação da barra, incluindo carregamento direto com hash.
+- Expansão por clique/Enter, troca de projeto, diálogo de imagem, Escape, retorno de foco e contenção de Tab.
+- Menu móvel abre, fecha com Escape e fecha após selecionar seção.
+- Galeria horizontal móvel desloca o conteúdo e deixa o próximo item parcialmente visível.
+- Formulário vazio foca o primeiro campo inválido. Valores válidos geram mailto para o novo Gmail. Nenhuma mensagem enviada nos testes.
+- Alternativa de movimento reduzido: scroll automático, resultado completo estático, cápsula e controle de pausa ausentes.
+- Demo mantém timeline, pausa, repetição, IntersectionObserver e escuta de visibilitychange. A lógica de pausa em aba oculta foi revisada; não foi emulada uma aba oculta por ferramenta.
 
-- Build de produção com Vite concluído. Saída estática de aproximadamente 1,3 MB, com JS de cerca de 140,5 kB gzip.
-- `npm run check`: 11 repositórios únicos, quatro capítulos, arquivos de imagem, fontes, currículo e âncoras presentes.
-- Revisão visual no navegador em desktop (viewport padrão e 1440 × 900), tablet (768 × 1024) e mobile (390 × 844). Sem rolagem horizontal de página ou imagens quebradas nas áreas inspecionadas.
-- Crachá: frente/verso e informações acessíveis verificados.
-- Percurso: seleção por clique e troca com teclas de seta verificada. Acervo atualiza o filtro.
-- Diálogo: ampliação, Escape e retorno de foco ao acionador verificados. O diálogo nativo torna o restante da página inerte enquanto está aberto.
-- Menu móvel: abrir, selecionar seção e fechar verificados.
-- Formulário: envio vazio marca quatro campos e leva foco ao primeiro; preenchimento válido cria o link mailto com assunto e corpo codificados. Nenhuma mensagem foi enviada durante os testes.
-- Movimento reduzido: respeita `prefers-reduced-motion`; a mesma lógica pode ser exercitada pela versão `?motion=reduce`, também acessível pelo rodapé. Resultado completo estático, cápsula ausente, controles automáticos ausentes e rolagem sem suavização verificados nessa versão.
-- Contraste calculado a partir dos tokens OKLCH: texto principal em branco 15,6:1; texto secundário em branco 6,73:1; texto secundário em fundos escuros 7,61:1 ou mais; texto escuro sobre coral 8,38:1; sobre azul 10,67:1; sobre verde 9,85:1; placeholder nos campos 7,09:1.
-- Avaliação de layout e detector realizados em dois agentes isolados, conforme a skill. Detector final: nenhum achado. A revisão corrigiu os gutters da navegação, a posição do CTA na faixa secundária e a sequência dos capítulos no tablet. Espaçamentos de seção usam tokens fluidos; deslocamentos gráficos do crachá, curvas e dispositivo são decisões específicas da composição.
+## Verificação visual
 
-## Limites explícitos
+Browser: desktop 1280×720, tablet 768×1024 e celular 390×844. Sem overflow horizontal da página. Galerias têm rolagem horizontal intencional. Corrigida altura intrínseca de imagens da trajetória no tablet. Inspeção de imagens carregadas e logs do navegador.
 
-O formulário usa o aplicativo de e-mail do visitante, sem serviço de entrega ou armazenamento no servidor. A publicação pelo Sites começa privada. O repositório Artigo-Hardware é um registro de tema sem arquivos publicados; não é apresentado como software implementado. Os visuais que não são capturas reais estão identificados como representações. A classificação por contexto foi feita a partir do currículo, documentação e natureza dos trabalhos. Os três forks são separados da contagem autoral e creditados às fontes.
+Contraste mínimo dos pares de texto medidos: 5,13:1; texto principal/prata 13,20:1; placeholder/campo 7,92:1. Respeito a `prefers-reduced-motion` e alternativa manual equivalente em `?motion=reduce`.
 
-Não foi realizado um benchmark de FPS em aparelho físico nem emulação de aba oculta no ambiente de inspeção; a pausa por visibilidade foi revisada no código. Capturas de inspeção são mantidas localmente na pasta ignorada `.qa/`.
+Os seis deploys retornaram HTTP 200 em 27/10/2026. As páginas públicas de Cortech, FreeSB, Roomi Reservas e Sollie foram inspecionadas para as capturas. Não foram testados login, transações nem fluxos internos das ferramentas externas. Isso não faz parte da revisão do portfólio.
+
+## Limitações concretas
+
+A nova foto ainda depende do envio pelo titular; a anterior foi reaproveitada só na abertura. O currículo é o PDF original. Repositórios privados exigem acesso concedido pelo próprio GitHub. O contato é um preparador de e-mail, não um serviço de envio. Não houve medição de FPS em dispositivo físico.

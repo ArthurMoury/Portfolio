@@ -1,41 +1,28 @@
 # Portfólio · Arthur Moury
 
 ## Register
-
 brand
 
 ## Platform
-
 web
 
 ## Users
-
-Pessoas que querem conhecer Arthur Moury, sua trajetória e os projetos públicos que desenvolveu no trabalho, na faculdade e por iniciativa própria.
+Pessoas que querem conhecer Arthur Moury, sua formação, experiência e projetos antes de iniciar uma conversa.
 
 ## Product Purpose
+Apresentar a pessoa antes dos projetos. Permitir conhecer seis ferramentas, ampliar suas imagens, consultar o código quando houver acesso e abrir o deploy diretamente.
 
-Apresentar Arthur primeiro e, em seguida, permitir explorar seus projetos com representações visuais e links verificáveis. Relacionar a formação e os estágios aos trabalhos correspondentes.
+## Revisão solicitada em 27/10/2026
+A seleção passa a ser somente Cortech, FreeSB, Betterway, Roomi Reservas, Roomi Builder e Sollie, nessa ordem. A lista explícita substitui o antigo acervo público completo. Quatro repositórios são privados e devem ser identificados assim; não alterar permissões.
 
-## Positioning
+A abertura contém saudação, retrato e animação abstrata. Sem fotografia da cidade, logo, localização, saudação secundária, crachá, código de barras ou texto de “continue explorando”. A foto deve existir somente na abertura; a atual é provisória até o titular enviar outra. Não exibir idade.
 
-Uma apresentação pessoal que conecta código, dados e automação a experiências concretas.
+“Sobre mim” vem antes da trajetória e dos projetos e mostra formação, atuação, contato e currículo. As antigas categorias clicáveis dão lugar a um indicador de contexto que muda automaticamente com a rolagem da página. A trajetória mantém imagens sincronizadas com a rolagem, em três capítulos: CESAR School, Boop e Roomi.
 
-## Conversion & proof
-
-A ação inicial leva aos projetos; o contato está disponível na navegação e no encerramento. As fontes são o currículo fornecido localmente e os repositórios públicos das contas ArthurMoury, Amfgs e AM-Roomi, cuja reunião foi confirmada pelo usuário. A foto pessoal fornecida localmente aparece no crachá de entrada. Não exibir idade, conforme escolha do usuário.
+O comportamento das antigas perguntas é preservado para apresentar os seis projetos. Cada faixa possui botão de expansão, descrição, captura e dois visuais de apoio. Os botões GitHub e Acessar são independentes; clicar no nome apenas expande a apresentação. Contato amplo, adequado a qualquer motivo, com mourygodoy@gmail.com; manter LinkedIn, GitHub e currículo.
 
 ## Brand Personality
-
-Curiosa, inventiva e cuidadosa. O movimento deve demonstrar domínio técnico sem dificultar a leitura.
-
-## Design Principles
-
-- A apresentação começa pela pessoa, com informações confirmadas.
-- Manter as dez etapas e os comportamentos do template fornecido pelo usuário.
-- Mostrar projetos e suas evidências, distinguindo autoria e explorações de projetos de terceiros.
-- Organizar os projetos por trabalho, faculdade e projetos independentes.
-- Usar os princípios de materialidade, profundidade e coreografia do Personal Vault.
+Curiosa, inventiva e direta. Movimento com propósito, leitura tranquila e conteúdo verificável.
 
 ## Accessibility & Inclusion
-
-Responsividade, teclado, foco visível, diálogos acessíveis, bom contraste e preferência por movimento reduzido são requisitos explícitos do template. A rolagem permanece nativa e o conteúdo não depende de animação para ser lido.
+Rolagem nativa, teclado, foco visível, diálogos com foco contido e Escape, contraste e movimento reduzido. Conteúdo principal visível sem animação. A demonstração pausa fora da tela e com aba oculta. O contato prepara um e-mail, sem afirmar envio.

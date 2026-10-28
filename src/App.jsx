@@ -1,144 +1,97 @@
 import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, ArrowDown, BriefcaseBusiness, GraduationCap, Sparkles, Code2, GitBranch, Check, X, Menu, Pause, Play, RotateCcw, Mail, Copy, MapPin, CheckCheck, Layers3, ScanLine } from 'lucide-react';
+import { ArrowUpRight, ArrowDown, BriefcaseBusiness, GraduationCap, Code2, Check, X, Menu, Pause, Play, RotateCcw, Mail, Copy, MapPin, CheckCheck, Layers3, ScanLine, FileDown } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
-import { categories, projects, chapters, forks, faqs, profile } from './data/portfolio';
+import { projects, chapters, contexts, profile } from './data/portfolio';
 import { usePageMotion, useReducedMotion } from './motion';
 import s from './App.module.css';
 
 gsap.registerPlugin(ScrollTrigger, MotionPathPlugin);
-const icons = { work: BriefcaseBusiness, study: GraduationCap, spark: Sparkles };
-const repoUrl = p => `https://github.com/${p.repo}`;
 const external = { target: '_blank', rel: 'noreferrer noopener' };
 
-function Logo({ className = '' }) {
-  return <a className={`${s.logo} ${className}`} href="#inicio" aria-label="Arthur Moury, início"><span className={s.monogram} aria-hidden="true">a<span>m</span><i /></span><span>arthur<br />moury.</span></a>;
+function Github({size=18}) { return <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>; }
+function Linkedin({size=18}) { return <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><rect x="2" y="2" width="20" height="20" rx="2"/><path fill="var(--light)" d="M6 10h3v9H6zm1.5-5a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2M11 10h3v1.3c.6-1 1.4-1.5 2.7-1.5 2.2 0 3.3 1.4 3.3 4V19h-3v-4.7c0-1.4-.5-2-1.5-2S14 13 14 14.3V19h-3z"/></svg>; }
+
+function LinkButton({ href, children, secondary = false, ...props }) {
+  return <a href={href} className={`${s.button} ${secondary ? s.buttonSecondary : ''}`} {...props}>{children}<ArrowUpRight size={18} aria-hidden="true" /></a>;
 }
 
-function LinkButton({ href, children, light = false, secondary = false, ...props }) {
-  return <a href={href} className={`${s.button} ${light ? s.buttonLight : ''} ${secondary ? s.buttonSecondary : ''}`} {...props}>{children}<ArrowUpRight size={19} aria-hidden="true" /></a>;
-}
-
-function Badge({ reduced }) {
-  const tilt = useRef(null);
-  const [flipped, setFlipped] = useState(false);
-  const follow = e => {
-    if (reduced || e.pointerType === 'touch') return;
-    const r = e.currentTarget.getBoundingClientRect();
-    gsap.to(tilt.current, { rotateY: (e.clientX - r.left - r.width / 2) / 20, rotateX: -(e.clientY - r.top - r.height / 2) / 30, duration: 0.55, ease: 'power3.out' });
-  };
-  return <div className={s.badgeScene}>
-    <div className={s.badgeSuspension} data-badge>
-      <div className={s.lanyard} aria-hidden="true"><span>ARTHUR MOURY · IDEIAS EM MOVIMENTO · </span></div>
-      <div className={s.clip} aria-hidden="true" />
-      <div ref={tilt} className={s.badgeTilt}>
-        <button className={`${s.badge} ${flipped ? s.badgeFlipped : ''}`} onClick={() => setFlipped(!flipped)} onPointerMove={follow} onPointerLeave={() => gsap.to(tilt.current, { rotateX: 0, rotateY: 0, duration: 0.7 })} aria-label={flipped ? 'Ver frente do crachá de Arthur' : 'Virar crachá para conhecer as habilidades de Arthur'} aria-pressed={flipped}>
-          <span className={s.badgeFront} aria-hidden={flipped}>
-            <span className={s.badgeTop}><span>Prazer, Arthur.</span><ScanLine size={18} /></span>
-            <span className={s.badgePhoto}><img src="/images/arthur-moury.webp" width="700" height="915" alt="Retrato de Arthur Moury" fetchPriority="high" /></span>
-            <span className={s.badgeName}>Arthur<br />Moury<span className={s.badgeDot}>.</span></span>
-            <span className={s.badgeRole}>Desenvolvimento · Dados · IA</span>
-            <span className={s.badgeBottom}><span>CESAR School<br />Recife, PE</span><span className={s.barcode} aria-hidden="true" /></span>
-          </span>
-          <span className={s.badgeBack} aria-hidden={!flipped}>
-            <Code2 size={46} strokeWidth={1.2} /><strong>Movido por<br />curiosidade.</strong>
-            <span>Ciência da Computação<br />CESAR School</span>
-            <span>IA Ops · Roomi</span>
-            <span className={s.badgeSkills}>Python · Java · C<br />React · Node.js · Django<br />Dados · Automação · QA</span>
-            <span>Inglês fluente · Recife, PE</span>
-          </span>
-        </button>
-      </div>
+function Hero() {
+  return <section id="inicio" className={s.hero} aria-labelledby="hero-title" data-context="pessoa">
+    <div className={s.heroArt} aria-hidden="true"><svg viewBox="0 0 1000 1000" fill="none"><defs><linearGradient id="orbit-light" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#a7c4ff" /><stop offset=".46" stopColor="#5677ff" /><stop offset="1" stopColor="#142444" /></linearGradient></defs><g data-orbit>{Array.from({length:21},(_,i)=><ellipse key={i} cx="500" cy="500" rx={330-i*8} ry={140+i*9} transform={`rotate(${i*3-30} 500 500)`} stroke="url(#orbit-light)" strokeWidth="1.1" />)}</g></svg></div>
+    <div className={`${s.container} ${s.heroContent}`}>
+      <div className={s.heroText}><h1 id="hero-title"><span data-hero-copy>Olá, sou</span><span data-hero-copy>Arthur<br /><em>Moury.</em></span></h1><p className={s.heroDescription} data-hero-copy>Entendo problemas.<br /> Construo possibilidades.</p><a href="#sobre" className={s.heroAbout} data-hero-copy>Um pouco sobre mim <ArrowUpRight size={19} /></a></div>
+      <figure className={s.portrait} data-portrait><div className={s.portraitFrame}><img src="/images/arthur-moury.webp" width="700" height="915" alt="Arthur Moury" fetchPriority="high" /></div><span className={s.portraitContour} aria-hidden="true" /><span className={s.portraitDot} aria-hidden="true" /></figure>
     </div>
-    <p className={s.badgeHint}><RotateCcw size={13} /> Toque para virar o crachá</p>
-  </div>;
-}
-
-function Hero({ reduced }) {
-  return <section id="inicio" className={s.hero} aria-labelledby="hero-title" data-section="abertura">
-    <picture className={s.heroPhoto}><source media="(max-width: 640px)" srcSet="/images/recife-mobile.webp" /><img src="/images/recife.webp" width="1920" height="1280" alt="Recife ao entardecer, com a cidade refletida na água" fetchPriority="high" /></picture>
-    <div className={s.heroShade} />
-    <div className={`${s.heroTop} ${s.container}`}><Logo /><span className={s.heroLocation}><span /> Recife, Brasil</span></div>
-    <div className={`${s.heroContent} ${s.container}`}>
-      <div className={s.heroText}>
-        <p className={s.introLabel} data-hero-copy>Bom te ver por aqui.</p>
-        <h1 id="hero-title"><span data-hero-copy>Olá, sou</span><span className={s.heroName} data-hero-copy>Arthur Moury<span>.</span></span></h1>
-        <p className={s.heroDescription} data-hero-copy>Entre código, dados e <br />novas possibilidades.</p>
-        <p className={s.heroBio} data-hero-copy>Estudante de Ciência da Computação na CESAR School e estagiário em IA Ops na Roomi. Gosto de entender problemas e construir o que vem depois.</p>
-        <div data-hero-copy><LinkButton href="#projetos">Conheça meus projetos</LinkButton></div>
-        <div className={s.heroMeta} data-hero-copy><span><GraduationCap size={16} /> CESAR School</span><span><BriefcaseBusiness size={16} /> IA Ops · Roomi</span></div>
-      </div>
-      <Badge reduced={reduced} />
-    </div>
-    <svg className={s.heroScribble} viewBox="0 0 1440 650" fill="none" aria-hidden="true"><path data-hero-stroke d="M-70 480C180 370 300 610 565 484S1040 90 1117 277 919 478 972 305 1276 92 1507 173" /></svg>
-    <div className={`${s.heroBottom} ${s.container}`}><span>Portfólio pessoal · 2026</span><a href="#projetos" aria-label="Rolar para projetos"><ArrowDown size={19} /> Continue explorando</a></div>
-    <svg className={s.heroWave} viewBox="0 0 1440 130" preserveAspectRatio="none" aria-hidden="true"><path data-wave d="M0 74C290 120 405 10 720 64S1170 140 1440 40V130H0Z" /></svg>
+    <a className={s.scrollCue} href="#sobre" aria-label="Rolar para saber mais sobre Arthur"><span aria-hidden="true"><i /></span></a>
   </section>;
 }
 
-function Navigation({ visible }) {
-  const [open, setOpen] = useState(false);
+function Navigation({ visible, context }) {
+  const [open,setOpen] = useState(false);
   const menu = useRef(null);
-  useEffect(() => { if (!visible) setOpen(false); }, [visible]);
-  const close = () => setOpen(false);
-  const escape = e => { if (e.key === 'Escape') { setOpen(false); menu.current?.focus(); } };
-  return <header className={`${s.navigation} ${visible ? s.navigationVisible : ''}`} inert={!visible ? true : undefined} aria-label="Navegação persistente" onKeyDown={escape}>
-    <div className={s.navInner}><Logo /><nav id="site-menu" className={`${s.navLinks} ${open ? s.navOpen : ''}`} aria-label="Navegação principal"><a href="#projetos" onClick={close}>Projetos</a><a href="#trajetoria" onClick={close}>Trajetória</a><a href="#processo" onClick={close}>Como penso</a><a href="#perguntas" onClick={close}>Mais sobre mim</a></nav><div className={s.navActions}><LinkButton href="#contato">Vamos conversar</LinkButton><button ref={menu} className={s.menuButton} aria-label={open ? 'Fechar menu' : 'Abrir menu'} aria-expanded={open} aria-controls="site-menu" onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button></div></div>
+  useEffect(()=>{if(!visible)setOpen(false);},[visible]);
+  const close=()=>setOpen(false);
+  return <header className={`${s.navigation} ${visible?s.navigationVisible:''}`} inert={!visible?true:undefined} onKeyDown={e=>{if(e.key==='Escape'){close();menu.current?.focus();}}}>
+    <div className={`${s.container} ${s.navInner}`}>
+      <a className={s.navHome} href="#inicio" aria-label="Voltar ao início">Arthur Moury</a>
+      <nav id="site-menu" className={`${s.navLinks} ${open?s.navOpen:''}`} aria-label="Navegação principal"><a href="#sobre" onClick={close}>Sobre mim</a><a href="#trajetoria" onClick={close}>Trajetória</a><a href="#projetos" onClick={close}>Projetos</a></nav>
+      <div className={s.navActions}><a href="#contato" onClick={close} className={s.navContact}>Vamos conversar<ArrowUpRight size={16} /></a><button ref={menu} className={s.menuButton} aria-label={open?'Fechar menu':'Abrir menu'} aria-expanded={open} aria-controls="site-menu" onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button></div>
+    </div>
+    <div className={s.contextTrack} data-context-current={context}><div className={s.container}><span className={s.contextShape} aria-hidden="true"/><span key={context} className={s.contextText}>{contexts[context].verb}<span>{contexts[context].label}</span></span><div className={s.readingTrack} aria-hidden="true"><i data-reading-progress /></div></div></div>
   </header>;
 }
 
-function ProjectImage({ project, onOpen, className = '' }) {
-  return <button className={`${s.projectImage} ${className}`} onClick={() => onOpen({ image: project.image, title: project.name, caption: `${project.imageType} · ${project.summary}` })} aria-label={`Ampliar imagem: ${project.name}`}><img src={project.image} alt={`${project.imageType}: ${project.name}`} loading="lazy" width="1260" height="710" /><span className={s.imageExpand}><ScanLine size={17} /><span>Ampliar</span></span></button>;
+function About() {
+  return <section id="sobre" className={s.about} aria-labelledby="about-title" data-context="pessoa"><div className={`${s.container} ${s.aboutGrid}`}>
+    <div><span className={s.sectionKicker}>Sobre mim</span><h2 id="about-title">Antes dos projetos,<br />a pessoa.</h2><p className={s.aboutLead}>Sou Arthur, estudante de Ciência da Computação na CESAR School e estagiário em IA Ops na Roomi.</p><p className={s.aboutText}>Gosto de entender como as coisas funcionam e de transformar esse entendimento em algo que as pessoas possam usar. Entre desenvolvimento, dados e automação, vou encontrando novas formas de construir.</p><div className={s.aboutLinks}><a href={`mailto:${profile.email}`}><Mail size={18}/>{profile.email}</a><a href={profile.linkedin} {...external}><Linkedin size={17}/>LinkedIn</a><a href={profile.github} {...external}><Github size={17}/>GitHub</a></div></div>
+    <div className={s.aboutDetails}><dl><div data-context="faculdade"><dt><GraduationCap size={20}/>Formação</dt><dd>Ciência da Computação<span>CESAR School · 4º período</span></dd></div><div data-context="trabalho"><dt><BriefcaseBusiness size={19}/>Hoje</dt><dd>IA Ops na Roomi<span>Desenvolvimento, automação e qualidade</span></dd></div><div data-context="pessoa"><dt><MapPin size={19}/>De onde eu venho</dt><dd>Recife, Pernambuco<span>Inglês fluente</span></dd></div></dl><a className={s.cvLink} href="/Arthur-Moury-CV.pdf" {...external}><FileDown size={21}/><span>Meu currículo<small>Formação e experiência em um PDF</small></span><ArrowUpRight size={19}/></a></div>
+  </div></section>;
 }
 
-function Projects({ onOpen, reduced }) {
-  const [category, setCategory] = useState('trabalho');
-  const [filter, setFilter] = useState('todos');
-  const panel = useRef(null);
-  const activeCategory = categories.find(c => c.id === category);
-  const featured = projects.find(p => p.category === category && p.feature);
-  const filtered = filter === 'todos' ? projects : projects.filter(p => p.category === filter);
-  const select = id => { setCategory(id); setFilter(id); };
-  useEffect(() => { if (!reduced) { const ctx = gsap.context(() => gsap.fromTo(panel.current, { opacity: 0.8, y: 12 }, { opacity: 1, y: 0, duration: 0.4, clearProps: 'all' })); return () => ctx.revert(); } }, [category,reduced]);
-  useEffect(() => { const frame = requestAnimationFrame(() => ScrollTrigger.refresh()); return () => cancelAnimationFrame(frame); }, [category,filter]);
-  const keyboard = (e, i) => { const direction = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0; if (direction) { e.preventDefault(); const next = (i + direction + 3) % 3; select(categories[next].id); document.getElementById(`path-tab-${categories[next].id}`)?.focus(); } };
-  return <section id="projetos" className={s.projects} data-section="percurso" aria-labelledby="projects-title">
-    <div className={s.container}>
-      <div className={s.sectionIntro}><p className={s.sectionKicker}><span className={s.smallStar} aria-hidden="true">✳</span> O que me move</p><h2 id="projects-title">Vários caminhos.<br /><span className={s.mutedTitle}>A mesma curiosidade.</span></h2><p>Projetos que conectam o que eu estudo,<br className={s.desktopBreak} /> o que eu faço e o que quero descobrir.</p></div>
-      <div className={s.pathway} role="tablist" aria-label="Contexto dos projetos">
-        <svg viewBox="0 0 1000 190" preserveAspectRatio="none" aria-hidden="true"><path className={s.pathTrack} d="M-20 125C140-15 228 10 335 94S490 210 615 111 853-12 1020 75" /><path className={s.pathDraw} data-journey-path d="M-20 125C140-15 228 10 335 94S490 210 615 111 853-12 1020 75" /></svg>
-        {categories.map((c, i) => { const Icon = icons[c.icon]; return <button key={c.id} id={`path-tab-${c.id}`} role="tab" aria-selected={category === c.id} aria-controls="path-panel" tabIndex={category === c.id ? 0 : -1} className={`${s.pathPoint} ${s[`point${i}`]} ${category === c.id ? s.pathPointActive : ''}`} onClick={() => select(c.id)} onKeyDown={e => keyboard(e, i)}><span className={s.pathIcon}><Icon size={24} strokeWidth={1.5} /></span><span>{c.label}</span></button>; })}
-      </div>
-      <div ref={panel} id="path-panel" role="tabpanel" aria-labelledby={`path-tab-${category}`} className={s.pathDetails}>
-        <div className={`${s.featureVisual} ${s[featured.color]}`}><ProjectImage project={featured} onOpen={onOpen} /><span className={s.figureCaption}>{featured.imageType} · {featured.name}</span></div>
-        <div className={s.featureCopy}><span className={s.contextLabel}>{activeCategory.word} / {activeCategory.label}</span><h3>{activeCategory.title}</h3><p>{activeCategory.description}</p><div className={s.featureName}>{featured.name}<span>{featured.summary}</span></div><a className={s.textLink} href={repoUrl(featured)} {...external}>Explorar o projeto <ArrowUpRight size={18} /></a></div>
-      </div>
-      <div className={s.archive}>
-        <div className={s.archiveHeader}><h3>O acervo completo<span>({projects.length})</span></h3><div className={s.filters} role="group" aria-label="Filtrar o acervo">{[{id:'todos', label:'Todos'}, ...categories].map(c => <button key={c.id} onClick={() => { setFilter(c.id); if(c.id !== 'todos') setCategory(c.id); }} aria-pressed={filter === c.id}>{c.id === 'independente' ? 'Independentes' : c.label}</button>)}</div></div>
-        <p className={s.archiveNote} role="status">{filtered.length} {filtered.length === 1 ? 'projeto público' : 'projetos públicos'} · clique na imagem para ampliar ou no nome para abrir o código.</p>
-        <div className={s.projectList}>{filtered.map(p => <article className={s.projectRow} key={p.id}>
-          <ProjectImage project={p} onOpen={onOpen} className={s.rowImage} />
-          <div className={s.rowMain}><a href={repoUrl(p)} {...external}><h4>{p.name}<ArrowUpRight size={18} /></h4></a><p>{p.summary}</p><div className={s.techTags}>{p.tech.slice(0, 4).map(t => <span key={t}>{t}</span>)}</div></div>
-          <div className={s.rowContext}><span>{categories.find(c => c.id === p.category).label}</span><span>{p.year}</span>{p.live && <a href={p.live} {...external}>Visitar site <ArrowUpRight size={14} /></a>}</div>
-        </article>)}</div>
-        <details className={s.forks}><summary><GitBranch size={16} /> Explorações em código aberto <span>3 forks</span></summary><p>Repositórios de terceiros que explorei. A autoria original pertence aos projetos indicados.</p>{forks.map(f => <div key={f.repo}><a href={`https://github.com/${f.repo}`} {...external}>{f.repo}<ArrowUpRight size={14} /></a><span>Fork de <a href={`https://github.com/${f.source}`} {...external}>{f.source}</a></span></div>)}</details>
-      </div>
-    </div>
-  </section>;
+function ProjectImage({ project, onOpen, className='' }) {
+  return <button className={`${s.projectImage} ${className}`} onClick={()=>onOpen({image:project.image,title:project.name,caption:`${project.imageType} · ${project.summary}`})} aria-label={`Ampliar imagem: ${project.name}`}><img src={project.image} alt={`${project.imageType}: ${project.name}`} loading="lazy" width="1280" height="720"/><span className={s.imageExpand}><ScanLine size={17}/><span>Ampliar</span></span></button>;
 }
 
 function Career({ onOpen, activeChapter, setActiveChapter }) {
-  return <section id="trajetoria" className={s.career} data-section="capitulos" aria-labelledby="career-title">
-    <div className={s.container}>
-      <div className={s.careerIntro}><p className={s.sectionKicker}>Uma trajetória em construção</p><h2 id="career-title">Experiência é<br />conectar os pontos<span>.</span></h2><p>Da sala de aula ao primeiro estágio.<br />Do problema cotidiano ao projeto que ganha vida.</p></div>
-      <div className={s.careerGrid}><div className={s.chapterList}>{chapters.map((c,i) => <article id={`capitulo-${c.id}`} key={c.id} className={`${s.chapter} ${i === activeChapter ? s.chapterActive : ''}`} data-chapter={i}>
-        <span className={s.chapterMarker}><span>{String(i+1).padStart(2,'0')}</span>{c.marker}</span><p className={s.organization}>{c.organization}</p><h3>{c.title}</h3><p className={s.chapterRole}>{c.role}</p><p className={s.chapterText}>{c.text}</p><a className={s.textLink} href={c.link} {...(c.link.startsWith('http') ? external : {target:'_blank'})}>{c.linkText}<ArrowUpRight size={18} /></a>
-        <div className={s.chapterMobile}><button onClick={() => onOpen({image:c.image,title:c.organization,caption:`${c.imageType} · ${c.caption}`})} aria-label={`Ampliar imagem de ${c.organization}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy" /><ScanLine size={20} /></button><span>{c.imageType}</span></div>
-      </article>)}</div>
-      <aside className={s.careerStage} aria-label="Visuais da trajetória"><div className={s.chapterImages}>{chapters.map((c,i) => <button key={c.id} data-chapter-visual={i} data-active={activeChapter === i} className={s.chapterVisual} onClick={() => onOpen({ image:c.image,title:c.organization,caption:`${c.imageType} · ${c.caption}` })} tabIndex={activeChapter === i ? 0 : -1} aria-hidden={activeChapter !== i} aria-label={`Ampliar imagem: ${c.caption}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy" /><span className={s.stageCaption}>{c.imageType}<ScanLine size={18} /></span></button>)}</div><div className={s.stageFooter}><span>{chapters[activeChapter].caption}</span><span>{String(activeChapter+1).padStart(2,'0')} / 04</span></div><nav className={s.chapterNav} aria-label="Ir para um capítulo">{chapters.map((c,i) => <a key={c.id} href={`#capitulo-${c.id}`} aria-label={`Capítulo ${i+1}: ${c.organization}`} aria-current={i === activeChapter ? 'step' : undefined} onClick={() => setActiveChapter(i)}><span /></a>)}</nav></aside></div>
-    </div>
+  return <section id="trajetoria" className={s.career} aria-labelledby="career-title"><div className={s.container}>
+    <div className={s.careerIntro}><span className={s.sectionKicker}>Formação & experiência</span><h2 id="career-title">O que me trouxe<br />até aqui.</h2><p>Aprendizados que se conectam,<br/>dentro e fora da sala de aula.</p></div>
+    <div className={s.careerGrid}><div className={s.chapterList}>{chapters.map((c,i)=><article id={`capitulo-${c.id}`} key={c.id} className={`${s.chapter} ${i===activeChapter?s.chapterActive:''}`} data-chapter={i} data-context={c.context}>
+      <span className={s.chapterMarker}>{c.marker}</span><p className={s.organization}>{c.organization}</p><h3>{c.title}</h3><p className={s.chapterRole}>{c.role}</p><p className={s.chapterText}>{c.text}</p><a className={s.textLink} href={c.link} {...(c.link.startsWith('#')?{}:external)}>{c.linkText}<ArrowUpRight size={17}/></a>
+      <div className={s.chapterMobile}><button onClick={()=>onOpen({image:c.image,title:c.organization,caption:`${c.imageType} · ${c.caption}`})} aria-label={`Ampliar imagem de ${c.organization}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/><ScanLine size={20}/></button><span>{c.imageType}</span></div>
+    </article>)}</div><aside className={s.careerStage} aria-label="Visuais da trajetória"><div className={s.chapterImages}>{chapters.map((c,i)=><button key={c.id} className={s.chapterVisual} data-chapter-visual={i} data-active={activeChapter===i} onClick={()=>onOpen({image:c.image,title:c.organization,caption:`${c.imageType} · ${c.caption}`})} tabIndex={activeChapter===i?0:-1} aria-hidden={activeChapter!==i} aria-label={`Ampliar imagem: ${c.caption}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/><span className={s.stageCaption}>{c.imageType}<ScanLine size={18}/></span></button>)}</div><div className={s.stageFooter}><span>{chapters[activeChapter].caption}</span><nav className={s.chapterNav} aria-label="Capítulos da trajetória">{chapters.map((c,i)=><a key={c.id} href={`#capitulo-${c.id}`} aria-label={c.organization} aria-current={i===activeChapter?'step':undefined} onClick={()=>setActiveChapter(i)}><span/></a>)}</nav></div></aside></div>
+  </div></section>;
+}
+
+function ProjectMotif({ type }) {
+  const paths={care:'M32 100H62L78 54L102 146L124 78L139 100H168',board:'M30 36H88V88H30ZM112 112H170V164H112ZM88 62H141V112',finance:'M28 160H172M38 135L79 105L114 119L160 48M125 48H160V83',travel:'M39 146C145 166 160 20 70 48S46 160 156 148M40 146L55 128M40 146L64 151',builder:'M100 25L170 65V140L100 180L30 140V65ZM30 65L100 105L170 65M100 105V180M65 45L135 85V160',field:'M24 45C65 15 135 75 176 45M24 80C65 50 135 110 176 80M24 115C65 85 135 145 176 115M24 150C65 120 135 180 176 150'};
+  return <svg viewBox="0 0 200 200" fill="none" aria-hidden="true"><path d={paths[type]} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
+}
+
+function ProjectGallery({ onOpen }) {
+  const [pinned,setPinned]=useState(null);
+  const [hovered,setHovered]=useState(null);
+  const section=useRef(null);
+  const open=pinned??hovered;
+  const canHover=e=>e.pointerType==='mouse'&&window.matchMedia('(min-width:900px) and (hover:hover)').matches;
+  useEffect(()=>{
+    let frame;
+    const resize=new ResizeObserver(()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>ScrollTrigger.refresh());});
+    resize.observe(section.current);
+    return()=>{resize.disconnect();cancelAnimationFrame(frame);};
+  },[]);
+  return <section id="projetos" ref={section} className={s.projects} aria-labelledby="projects-title">
+    <div className={`${s.container} ${s.projectsIntro}`} data-context="iniciativa"><div><span className={s.sectionKicker}>Projetos selecionados</span><h2 id="projects-title">Cada ideia,<br />um mundo para explorar.</h2></div><p>Seis projetos, de perto.<br/>Abra uma faixa para conhecer o contexto,<br className={s.desktopBreak}/> ver a interface e experimentar.</p></div>
+    {projects.map((p,i)=><article id={`projeto-${p.id}`} key={p.id} className={`${s.projectBand} ${s[p.color]}`} data-project={p.id} data-context={p.context} data-expanded={open===i} onPointerEnter={e=>{if(canHover(e)&&pinned===null)setHovered(i);}} onPointerLeave={e=>{if(canHover(e)&&!e.currentTarget.contains(document.activeElement))setHovered(null);}} onKeyDown={e=>{if(e.key==='Escape'){setPinned(null);setHovered(null);document.getElementById(`project-toggle-${p.id}`)?.focus();}}}>
+      <div className={s.container}><div className={s.projectBandTop}><div className={s.projectIdentity}><span className={s.projectTopic}>{p.topic}</span><h3><button id={`project-toggle-${p.id}`} aria-expanded={open===i} aria-controls={`project-gallery-${p.id}`} onClick={()=>{if(pinned===i){setPinned(null);setHovered(null);}else{setPinned(i);setHovered(null);}}}>{p.name}</button></h3><span className={s.galleryHint}>{open===i?'Recolher projeto':'Explorar projeto'}</span></div><div className={s.projectSummary}><p>{p.summary}</p><div className={s.projectActions}><a href={`https://github.com/${p.repo}`} {...external} aria-label={`GitHub de ${p.name}${p.private?' (repositório privado)':''}`}><Github size={18}/><span>GitHub{p.private&&<small>privado</small>}</span></a><a href={p.live} {...external} aria-label={`Acessar ${p.name}`}>Acessar<ArrowUpRight size={19}/></a></div></div></div>
+      <div id={`project-gallery-${p.id}`} className={`${s.projectGallery} ${open===i?s.projectGalleryOpen:''}`} inert={open!==i?true:undefined} aria-hidden={open!==i}><div className={s.galleryClip}><p className={s.projectDetail}>{p.detail}</p><div className={s.galleryTrack}><figure className={s.galleryScreenshot}><ProjectImage project={p} onOpen={onOpen}/><figcaption>{p.imageType}</figcaption></figure><div className={s.galleryStatement}><ProjectMotif type={p.motif}/><strong>{p.statement}</strong></div><div className={s.galleryFeatures}><span>Por dentro do projeto</span><ul>{p.features.map(f=><li key={f}>{f}</li>)}</ul><div className={s.techTags}>{p.tech.map(t=><span key={t}>{t}</span>)}</div></div></div></div></div>
+      </div></article>)}
   </section>;
+}
+
+function Curriculum() {
+  return <section id="curriculo" className={s.curriculum} data-context="pessoa"><div className={`${s.container} ${s.curriculumInner}`}><FileDown size={46} strokeWidth={1.2}/><div><h2>O percurso completo,<br/>para levar com você.</h2><p>Formação, experiências e competências reunidas no meu currículo.</p></div><LinkButton href="/Arthur-Moury-CV.pdf" {...external}>Abrir currículo</LinkButton></div></section>;
 }
 
 function ProcessDemo({ reduced }) {
@@ -178,7 +131,7 @@ function ProcessDemo({ reduced }) {
   }, [reduced]);
   const toggle = () => { const next = !paused; setPaused(next); isPaused.current = next; if(next) timeline.current?.pause(); else if(visible.current && !document.hidden) timeline.current?.play(); };
   const replay = () => { timeline.current?.pause(0); if(visible.current && !document.hidden && !isPaused.current) timeline.current?.play(); };
-  return <section id="processo" className={s.process} ref={root} data-section="demonstracao" aria-labelledby="process-title">
+  return <section id="processo" className={s.process} ref={root} data-section="demonstracao" data-context="trabalho" aria-labelledby="process-title">
     <div className={s.processRibbon}><div className={s.container}><span>Meu jeito de pensar</span><h2 id="process-title">Da intenção à entrega<span>↗</span></h2></div></div>
     <div className={`${s.processBody} ${s.container}`}>
       <div className={s.processTop}><p>Entender. Conectar. Validar.</p><span>Demonstração ilustrativa de um fluxo de automação</span></div>
@@ -192,25 +145,6 @@ function ProcessDemo({ reduced }) {
   </section>;
 }
 
-function Start() {
-  const steps = [{icon:ScanLine,title:'Encontre uma ideia.',text:'Explore os projetos por trabalho, faculdade ou iniciativa própria. Amplie os visuais e veja o contexto.'},{icon:Code2,title:'Olhe por dentro.',text:'Abra o repositório, leia a documentação e conheça as tecnologias e decisões de cada projeto.'},{icon:Mail,title:'Vamos conversar.',text:'Conte o que chamou sua atenção, apresente uma oportunidade ou compartilhe uma pergunta.'}];
-  return <section id="explorar" className={s.start} data-section="como-comecar" aria-labelledby="start-title"><div className={s.container}><div className={s.startTop}><h2 id="start-title">Um jeito de<br />me conhecer melhor.</h2><LinkButton href="/Arthur-Moury-CV.pdf" target="_blank" secondary>Consultar currículo</LinkButton></div><ol className={s.startSteps}>{steps.map((v,i) => <li key={v.title}><div className={s.stepSymbol}><v.icon size={31} strokeWidth={1.4} /><span>{String(i+1).padStart(2,'0')}</span></div><h3>{v.title}</h3><p>{v.text}</p></li>)}</ol></div></section>;
-}
-
-function Highlight() {
-  return <section className={s.highlight} data-section="destaque" aria-labelledby="highlight-title"><div className={`${s.container} ${s.highlightInner}`}><span className={s.largeSymbol} aria-hidden="true">✳</span><div><h2 id="highlight-title">Criar é só uma parte.<br />Testar também é construir.</h2><p>Tenho interesse em qualidade de software, testes automatizados e CI/CD. A experiência só faz sentido quando o que foi pensado funciona para quem usa.</p></div><a className={s.textLink} href="/Arthur-Moury-CV.pdf" target="_blank">Ver minhas competências<ArrowUpRight size={20} /></a></div></section>;
-}
-
-function Closing() {
-  return <section id="proxima-ideia" className={s.closing} data-section="encerramento" aria-labelledby="closing-title"><div className={`${s.container} ${s.closingGrid}`}><div><p className={s.sectionKicker}>Continuo em movimento</p><h2 id="closing-title">A próxima ideia<br />pode começar<br /><span>numa conversa.</span></h2><p>Curiosidade para aprender. Cuidado para construir.<br />Se existe um problema interessante, quero conhecer.</p><LinkButton href="#contato">Vamos conversar</LinkButton></div><div className={s.deviceScene}><svg className={s.deviceShape} data-device-shape viewBox="0 0 600 620" aria-hidden="true"><path d="M481 90c98 97 78 189 48 288s-93 191-205 187S72 458 61 320 138 73 251 44s159-24 230 46Z" /></svg><figure className={s.device} data-device><div className={s.deviceSpeaker} /><img src="/projects/betterway-mobile.webp" width="420" height="760" alt="Visual mobile da Better Way, projeto de inteligência financeira" loading="lazy" /><figcaption>Better Way · visual do projeto</figcaption></figure><span className={s.deviceLabel}>Do aprendizado<br />à experiência.</span></div></div></section>;
-}
-
-function FAQ() {
-  const [open,setOpen] = useState(null);
-  const canHover = e => e.pointerType === 'mouse' && window.matchMedia('(min-width: 900px) and (hover: hover)').matches;
-  const hover = (i,e) => { if (canHover(e)) setOpen(i); };
-  return <section id="perguntas" className={s.faq} data-section="perguntas" aria-labelledby="faq-title"><div className={`${s.container} ${s.faqIntro}`}><p className={s.sectionKicker}>Além do código</p><h2 id="faq-title">Talvez você<br />esteja se perguntando.</h2></div>{faqs.map((f,i) => <article key={f.question} className={`${s.faqRow} ${s[`faq${f.tone}`]}`} onPointerEnter={e => hover(i,e)} onPointerLeave={e => { if(canHover(e)) setOpen(null); }}><div className={s.container}><div className={s.faqContent}><button aria-expanded={open === i} aria-controls={`faq-gallery-${i}`} onClick={() => setOpen(open === i ? null : i)} className={s.faqQuestion}><h3>{f.question}</h3><span>{open === i ? 'Recolher galeria' : 'Explorar galeria'}</span></button><div className={s.faqAnswer}><p>{f.answer}</p><div className={s.faqTags}><span>{f.topic}</span>{f.tags.map(t => <span key={t}>{t}</span>)}</div></div></div><div id={`faq-gallery-${i}`} className={`${s.faqGallery} ${open === i ? s.faqGalleryOpen : ''}`} inert={open !== i ? true : undefined}><div className={s.faqGalleryClip}><div className={s.faqGalleryTrack}><figure><img src={f.image} alt={`Visual de apoio sobre ${f.topic.toLowerCase()}`} loading="lazy" width="1260" height="710" /></figure><div className={s.galleryType}><span>Arthur Moury</span><strong>{f.support[0]}</strong><span>{f.topic}</span></div><div className={s.galleryDiagram}><div aria-hidden="true"><span /><span /><span /></div><strong>{f.support[1]}</strong></div></div></div></div></div></article>)}</section>;
-}
 
 function Contact({ reduced }) {
   const form = useRef(null);
@@ -231,21 +165,29 @@ function Contact({ reduced }) {
   };
   const copy = async () => { try { await navigator.clipboard.writeText(`Para: ${profile.email}\nAssunto: ${draft.subject}\n\n${draft.body}`); setCopyStatus('Mensagem copiada. Cole no seu e-mail para enviar.'); } catch { setCopyStatus('Não foi possível copiar. Use o link para abrir seu e-mail.'); } };
   const props = id => ({ id:`contact-${id}`,name:id,'aria-invalid':!!errors[id],'aria-describedby':errors[id] ? `error-${id}` : undefined,onChange:() => { setDraft(null); if(errors[id]) setErrors(prev=>({...prev,[id]:undefined})); } });
-  return <section id="contato" className={s.contact} data-section="contato" aria-labelledby="contact-title"><div className={`${s.container} ${s.contactGrid}`}><div className={s.contactCopy}><p className={s.sectionKicker}>Aberto a boas conversas</p><h2 id="contact-title">Sua ideia.<br />Nossa próxima<br /><span>conversa.</span></h2><p>Um projeto, uma oportunidade<br />ou uma troca sobre tecnologia.</p><a className={s.contactEmail} href={`mailto:${profile.email}`}>{profile.email}<ArrowUpRight size={20} /></a><div className={s.contactLinks}><a href={profile.linkedin} {...external}>LinkedIn<ArrowUpRight size={15} /></a><a href={profile.github} {...external}>GitHub<ArrowUpRight size={15} /></a><a href="/Arthur-Moury-CV.pdf" target="_blank">Currículo<ArrowUpRight size={15} /></a></div><p className={s.address}><MapPin size={15} /> Poço da Panela · Recife, PE, Brasil</p></div><form ref={form} className={s.contactForm} noValidate onSubmit={submit}>
+  return <section id="contato" className={s.contact} data-section="contato" data-context="pessoa" aria-labelledby="contact-title"><div className={`${s.container} ${s.contactGrid}`}><div className={s.contactCopy}><p className={s.sectionKicker}>Contato</p><h2 id="contact-title">Sempre há espaço<br />para uma<br /><span>boa conversa.</span></h2><p>Uma oportunidade, uma dúvida ou só uma troca de ideias. Pode chegar — vou gostar de ouvir você.</p><a className={s.contactEmail} href={`mailto:${profile.email}`}>{profile.email}<ArrowUpRight size={20} /></a><div className={s.contactLinks}><a href={profile.linkedin} {...external}>LinkedIn<ArrowUpRight size={15} /></a><a href={profile.github} {...external}>GitHub<ArrowUpRight size={15} /></a><a href="/Arthur-Moury-CV.pdf" target="_blank">Currículo<ArrowUpRight size={15} /></a></div><p className={s.address}><MapPin size={15} /> Recife, Pernambuco</p></div><form ref={form} className={s.contactForm} noValidate onSubmit={submit}>
       <p>Comece por aqui.<span>O formulário prepara a mensagem no seu aplicativo de e-mail.</span></p>
       <div className={s.formField}><label htmlFor="contact-name">Seu nome <span>(obrigatório)</span></label><input {...props('name')} autoComplete="name" maxLength={100} required placeholder="Como posso te chamar?" />{errors.name && <span className={s.fieldError} id="error-name">{errors.name}</span>}</div>
       <div className={s.formField}><label htmlFor="contact-email">Seu e-mail <span>(obrigatório)</span></label><input {...props('email')} type="email" autoComplete="email" maxLength={150} required placeholder="voce@exemplo.com" />{errors.email && <span className={s.fieldError} id="error-email">{errors.email}</span>}</div>
-      <div className={s.formField}><label htmlFor="contact-subject">Sobre o que vamos conversar?</label><div className={s.selectWrap}><select {...props('subject')} required defaultValue=""><option value="" disabled>Escolha um assunto</option><option>Uma oportunidade profissional</option><option>Uma ideia de projeto</option><option>Uma colaboração</option><option>Uma conversa sobre tecnologia</option></select><ArrowDown size={17} aria-hidden="true" /></div>{errors.subject && <span className={s.fieldError} id="error-subject">{errors.subject}</span>}</div>
+      <div className={s.formField}><label htmlFor="contact-subject">Sobre o que vamos conversar?</label><div className={s.selectWrap}><select {...props('subject')} required defaultValue=""><option value="" disabled>Escolha um assunto</option><option>Uma oportunidade profissional</option><option>Uma ideia de projeto</option><option>Uma colaboração</option><option>Uma conversa sobre tecnologia</option><option>Outro motivo</option></select><ArrowDown size={17} aria-hidden="true" /></div>{errors.subject && <span className={s.fieldError} id="error-subject">{errors.subject}</span>}</div>
       <div className={s.formField}><label htmlFor="contact-message">Conte um pouco <span>(obrigatório)</span></label><textarea {...props('message')} required rows={3} maxLength={1800} placeholder="O que você tem em mente?" />{errors.message && <span className={s.fieldError} id="error-message">{errors.message}</span>}</div>
       <button className={s.button} type="submit">Preparar e-mail<ArrowUpRight size={19} /></button>
       <div className={s.formStatus} aria-live="polite">{Object.values(errors).some(Boolean) && <p>Confira os campos indicados para continuar.</p>}{draft && <div className={s.draft}><strong><Check size={17} /> Mensagem pronta para revisar.</strong><p>Abra seu aplicativo e envie quando estiver tudo certo.</p><div><a href={`mailto:${profile.email}?subject=${encodeURIComponent(`[Portfólio] ${draft.subject}`)}&body=${encodeURIComponent(draft.body)}`} className={s.textLink}>Abrir meu e-mail<ArrowUpRight size={16} /></a><button type="button" onClick={copy}><Copy size={15} /> Copiar mensagem</button></div></div>}{copyStatus && <p>{copyStatus}</p>}</div>
     </form></div>
-    <footer className={`${s.container} ${s.footer}`}><div className={s.footerTop}><Logo /><p>Curiosidade em movimento.<br />Ideias que viram experiências.</p><nav aria-label="Navegação do rodapé"><a href="#projetos">Projetos</a><a href="#trajetoria">Trajetória</a><a href="#perguntas">Mais sobre mim</a><a href="#inicio">Voltar ao início <ArrowUpRight size={14} /></a><a href={reduced ? '/' : '/?motion=reduce'}>{reduced ? 'Versão com animações' : 'Reduzir animações'}</a></nav></div><div className={s.footerBottom}><span>© 2026 Arthur Moury</span><span>Feito com código, cuidado e vontade de aprender.</span><a href="https://unsplash.com/photos/FYBV47iO8Ok" {...external}>Fotografia de Recife: Mia Silva / Unsplash</a></div></footer>
+    <footer className={`${s.container} ${s.footer}`}><div className={s.footerTop}><a href="#inicio" className={s.footerName}>Arthur Moury</a><nav aria-label="Navegação do rodapé"><a href="#sobre">Sobre mim</a><a href="#trajetoria">Trajetória</a><a href="#projetos">Projetos</a><a href={reduced?'/?motion=full':'/?motion=reduce'}>{reduced?'Versão com animações':'Reduzir animações'}</a></nav></div><div className={s.footerBottom}><span>© 2026 Arthur Moury</span><a href="#inicio">Voltar ao início <ArrowUpRight size={14}/></a></div></footer>
   </section>;
 }
 
 function ImageDialog({ value, onClose }) {
   const dialog = useRef(null);
+  const containFocus = e => {
+    if(e.key !== 'Tab') return;
+    const focusable = [...dialog.current.querySelectorAll('button, a[href], [tabindex="0"]')];
+    const first = focusable[0], last = focusable.at(-1);
+    if(!first) { e.preventDefault(); return; }
+    if(e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+  };
   useEffect(() => {
     if(!value) return;
     const previous = document.activeElement;
@@ -255,15 +197,17 @@ function ImageDialog({ value, onClose }) {
     document.body.style.overflow = 'hidden';
     return () => { d.close(); document.body.style.overflow = oldOverflow; previous?.focus(); };
   }, [value]);
-  return <dialog ref={dialog} className={s.dialog} aria-labelledby="image-dialog-title" onCancel={e => { e.preventDefault(); onClose(); }} onClick={e => { if(e.target === e.currentTarget) onClose(); }}>{value && <div className={s.dialogContent}><div className={s.dialogHeader}><h2 id="image-dialog-title">{value.title}</h2><button autoFocus onClick={onClose} aria-label="Fechar ampliação"><X size={24} /></button></div><img src={value.image} alt={value.caption} /><p>{value.caption}</p></div>}</dialog>;
+  return <dialog ref={dialog} className={s.dialog} aria-labelledby="image-dialog-title" onKeyDown={containFocus} onCancel={e => { e.preventDefault(); onClose(); }} onClick={e => { if(e.target === e.currentTarget) onClose(); }}>{value && <div className={s.dialogContent}><div className={s.dialogHeader}><h2 id="image-dialog-title">{value.title}</h2><button autoFocus onClick={onClose} aria-label="Fechar ampliação"><X size={24} /></button></div><img src={value.image} alt={value.caption} /><p>{value.caption}</p></div>}</dialog>;
 }
 
+
 export default function App() {
-  const root = useRef(null);
-  const reduced = useReducedMotion();
-  const [navigationVisible,setNavigationVisible] = useState(false);
-  const [activeChapter,setActiveChapter] = useState(0);
-  const [image,setImage] = useState(null);
-  usePageMotion(root,reduced,setNavigationVisible,setActiveChapter);
-  return <div ref={root} className={s.app} data-reduced-motion={reduced}><a className={s.skipLink} href="#projetos">Pular para projetos</a><Navigation visible={navigationVisible} /><main><Hero reduced={reduced} /><Projects onOpen={setImage} reduced={reduced} /><Career onOpen={setImage} activeChapter={activeChapter} setActiveChapter={setActiveChapter} /><ProcessDemo reduced={reduced} /><Start /><Highlight /><Closing /><FAQ /><Contact reduced={reduced} /></main><ImageDialog value={image} onClose={() => setImage(null)} /></div>;
+  const root=useRef(null);
+  const reduced=useReducedMotion();
+  const [navigationVisible,setNavigationVisible]=useState(false);
+  const [activeChapter,setActiveChapter]=useState(0);
+  const [context,setContext]=useState('pessoa');
+  const [image,setImage]=useState(null);
+  usePageMotion(root,reduced,setNavigationVisible,setActiveChapter,setContext);
+  return <div ref={root} className={s.app} data-reduced-motion={reduced}><a className={s.skipLink} href="#sobre">Pular para sobre mim</a><Navigation visible={navigationVisible} context={context}/><main><Hero/><About/><Career onOpen={setImage} activeChapter={activeChapter} setActiveChapter={setActiveChapter}/><ProjectGallery onOpen={setImage}/><ProcessDemo reduced={reduced}/><Curriculum/><Contact reduced={reduced}/></main><ImageDialog value={image} onClose={()=>setImage(null)}/></div>;
 }
