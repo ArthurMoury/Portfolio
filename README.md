@@ -29,7 +29,7 @@ npm run preview
 
 Dados em `src/data/portfolio.js`. A seleção corresponde à lista explícita fornecida pelo titular em 27/10/2026. Cortech, FreeSB, Roomi Reservas e Sollie têm repositórios privados, identificados nos botões; visitantes sem autorização do GitHub não acessam esse código. As permissões não foram alteradas. Todos os projetos têm deploys próprios vinculados.
 
-Formação e experiência vêm do currículo do titular. A idade não é exibida. O retrato atual é provisório até o recebimento da nova foto. O PDF original do currículo é mantido sem edição.
+Formação e experiência vêm do currículo do titular. A idade não é exibida. O retrato é a foto do perfil [ArthurMoury no GitHub](https://github.com/ArthurMoury), escolhida pelo titular em 28/10/2026. O PDF original do currículo é mantido sem edição.
 
 Rolagem nativa, teclado, foco visível, diálogo com Escape e movimento reduzido fazem parte da implementação. Use `?motion=reduce` para conferir a alternativa estática, também acionada pela preferência do sistema. A demonstração pausa fora da tela e quando a aba fica oculta.
 

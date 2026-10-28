@@ -32,4 +32,4 @@ Os seis deploys retornaram HTTP 200 em 27/10/2026. As páginas públicas de Cort
 
 ## Limitações concretas
 
-A nova foto ainda depende do envio pelo titular; a anterior foi reaproveitada só na abertura. O currículo é o PDF original. Repositórios privados exigem acesso concedido pelo próprio GitHub. O contato é um preparador de e-mail, não um serviço de envio. Não houve medição de FPS em dispositivo físico.
+A foto foi substituída pela imagem do perfil ArthurMoury no GitHub, conforme pedido em 28/10/2026; mantém uma única ocorrência na abertura. O currículo é o PDF original. Repositórios privados exigem acesso concedido pelo próprio GitHub. O contato é um preparador de e-mail, não um serviço de envio. Não houve medição de FPS em dispositivo físico.

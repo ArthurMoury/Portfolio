@@ -22,7 +22,7 @@ function Hero() {
     <div className={s.heroArt} aria-hidden="true"><svg viewBox="0 0 1000 1000" fill="none"><defs><linearGradient id="orbit-light" x1="0" y1="0" x2="1" y2="1"><stop stopColor="#a7c4ff" /><stop offset=".46" stopColor="#5677ff" /><stop offset="1" stopColor="#142444" /></linearGradient></defs><g data-orbit>{Array.from({length:21},(_,i)=><ellipse key={i} cx="500" cy="500" rx={330-i*8} ry={140+i*9} transform={`rotate(${i*3-30} 500 500)`} stroke="url(#orbit-light)" strokeWidth="1.1" />)}</g></svg></div>
     <div className={`${s.container} ${s.heroContent}`}>
       <div className={s.heroText}><h1 id="hero-title"><span data-hero-copy>Olá, sou</span><span data-hero-copy>Arthur<br /><em>Moury.</em></span></h1><p className={s.heroDescription} data-hero-copy>Entendo problemas.<br /> Construo possibilidades.</p><a href="#sobre" className={s.heroAbout} data-hero-copy>Um pouco sobre mim <ArrowUpRight size={19} /></a></div>
-      <figure className={s.portrait} data-portrait><div className={s.portraitFrame}><img src="/images/arthur-moury.webp" width="700" height="915" alt="Arthur Moury" fetchPriority="high" /></div><span className={s.portraitContour} aria-hidden="true" /><span className={s.portraitDot} aria-hidden="true" /></figure>
+      <figure className={s.portrait} data-portrait><div className={s.portraitFrame}><img src="/images/arthur-moury.jpg" width="460" height="460" alt="Arthur Moury, foto do perfil no GitHub" fetchPriority="high" /></div><span className={s.portraitContour} aria-hidden="true" /><span className={s.portraitDot} aria-hidden="true" /></figure>
     </div>
     <a className={s.scrollCue} href="#sobre" aria-label="Rolar para saber mais sobre Arthur"><span aria-hidden="true"><i /></span></a>
   </section>;

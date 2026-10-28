@@ -18,7 +18,7 @@ Entrada coordenada do texto, do retrato e das órbitas em GSAP; órbitas continu
 Projetos abrem por mouse, clique ou teclado, com opção de fixar a expansão por clique. Escape recolhe e mantém foco. Galeria horizontal em mobile/tablet, com parte do próximo item à vista. Demonstração de aproximadamente cinco segundos com pausa, repetição e suspensão por visibilidade. Movimento reduzido usa estados completos e sem deslocamentos.
 
 ## Fontes visuais
-Retrato local do titular, provisório. Capturas das páginas públicas de Cortech, FreeSB, Roomi Reservas e Sollie; capturas existentes de Betterway e Roomi Builder. Diagramas de formação e automação identificados como representações. Nenhuma imagem de conta autenticada ou dado de paciente é utilizada. Ícone GitHub do Simple Icons, CC0; fontes locais sob OFL.
+Retrato público do perfil ArthurMoury no GitHub, escolhido pelo titular em 28/10/2026, usado em sua cor original. Capturas das páginas públicas de Cortech, FreeSB, Roomi Reservas e Sollie; capturas existentes de Betterway e Roomi Builder. Diagramas de formação e automação identificados como representações. Nenhuma imagem de conta autenticada ou dado de paciente é utilizada. Ícone GitHub do Simple Icons, CC0; fontes locais sob OFL.
 
 ## Contraste
 Pares de texto principais calculados: texto/prata 13,20:1; secundário/prata 6,50:1; secundário/azul gelo 5,13:1; texto claro/cobalto 6,54:1; secundário/cobalto 5,15:1; placeholder/campo 7,92:1.

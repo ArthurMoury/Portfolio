@@ -15,7 +15,7 @@ Apresentar a pessoa antes dos projetos. Permitir conhecer seis ferramentas, ampl
 ## Revisão solicitada em 27/10/2026
 A seleção passa a ser somente Cortech, FreeSB, Betterway, Roomi Reservas, Roomi Builder e Sollie, nessa ordem. A lista explícita substitui o antigo acervo público completo. Quatro repositórios são privados e devem ser identificados assim; não alterar permissões.
 
-A abertura contém saudação, retrato e animação abstrata. Sem fotografia da cidade, logo, localização, saudação secundária, crachá, código de barras ou texto de “continue explorando”. A foto deve existir somente na abertura; a atual é provisória até o titular enviar outra. Não exibir idade.
+A abertura contém saudação, retrato e animação abstrata. Sem fotografia da cidade, logo, localização, saudação secundária, crachá, código de barras ou texto de “continue explorando”. A foto deve existir somente na abertura. Em 28/10/2026, o titular escolheu a foto pública do perfil ArthurMoury no GitHub para substituir a anterior. Não exibir idade.
 
 “Sobre mim” vem antes da trajetória e dos projetos e mostra formação, atuação, contato e currículo. As antigas categorias clicáveis dão lugar a um indicador de contexto que muda automaticamente com a rolagem da página. A trajetória mantém imagens sincronizadas com a rolagem, em três capítulos: CESAR School, Boop e Roomi.
 
