@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { flushSync } from 'react-dom';
 import { ArrowUpRight, ArrowDown, BriefcaseBusiness, GraduationCap, Code2, Check, X, Menu, Pause, Play, RotateCcw, Mail, Copy, MapPin, CheckCheck, Layers3, ScanLine, FileDown } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -36,7 +37,9 @@ function Navigation({ visible, context }) {
 
 function About() {
   return <section id="sobre" className={s.about} aria-labelledby="about-title" data-context="pessoa"><div className={`${s.container} ${s.aboutGrid}`}>
-    <div><h2 id="about-title">Antes dos projetos,<br />a pessoa.</h2><p className={s.aboutLead}>Sou Arthur, estudante de Ciência da Computação na CESAR School e estagiário em IA Ops na Roomi.</p><p className={s.aboutText}>Gosto de entender como as coisas funcionam e de transformar esse entendimento em algo que as pessoas possam usar. Entre desenvolvimento, dados e automação, vou encontrando novas formas de construir.</p><div className={s.aboutLinks}><a href={`mailto:${profile.email}`}><Mail size={18}/>{profile.email}</a><a href={profile.linkedin} {...external}><Linkedin size={17}/>LinkedIn</a><a href={profile.github} {...external}><Github size={17}/>GitHub</a></div></div>
+    <h2 id="about-title">Antes dos <br />projetos, <br />a pessoa.</h2>
+    <figure className={s.aboutPortrait} data-about-photo><img src="/images/arthur-moury.jpg" width="460" height="460" alt="Arthur Moury" loading="lazy"/><figcaption>Arthur Moury<span>Desenvolvimento · IA · Automação</span></figcaption></figure>
+    <div className={s.aboutCopy}><p className={s.aboutLead}>Sou Arthur, estudante de Ciência da Computação na CESAR School e estagiário em IA Ops na Roomi.</p><p className={s.aboutText}>Gosto de entender como as coisas funcionam e transformar esse entendimento em algo que as pessoas possam usar. Desenvolvimento, dados e automação são algumas das formas que encontrei de fazer isso.</p><div className={s.aboutLinks}><a href={`mailto:${profile.email}`}><Mail size={18}/>{profile.email}</a><a href={profile.linkedin} {...external}><Linkedin size={17}/>LinkedIn</a><a href={profile.github} {...external}><Github size={17}/>GitHub</a></div></div>
     <div className={s.aboutDetails}><dl><div data-context="faculdade"><dt><GraduationCap size={20}/>Formação</dt><dd>Ciência da Computação<span>CESAR School · 4º período</span></dd></div><div data-context="trabalho"><dt><BriefcaseBusiness size={19}/>Hoje</dt><dd>IA Ops na Roomi<span>Desenvolvimento, automação e qualidade</span></dd></div><div data-context="pessoa"><dt><MapPin size={19}/>De onde eu venho</dt><dd>Recife, Pernambuco<span>Inglês fluente</span></dd></div></dl><a className={s.cvLink} href="/Arthur-Moury-CV.pdf" {...external}><FileDown size={21}/><span>Meu currículo<small>Formação e experiência em um PDF</small></span><ArrowUpRight size={19}/></a></div>
   </div></section>;
 }
@@ -49,7 +52,7 @@ function Career({ onOpen, activeChapter, setActiveChapter }) {
   return <section id="trajetoria" className={s.career} aria-labelledby="career-title"><div className={s.container}>
     <div className={s.careerIntro}><h2 id="career-title">O que me trouxe<br />até aqui.</h2></div>
     <div className={s.careerGrid}><div className={s.chapterList}>{chapters.map((c,i)=><article id={`capitulo-${c.id}`} key={c.id} className={`${s.chapter} ${i===activeChapter?s.chapterActive:''}`} data-chapter={i} data-context={c.context}>
-      <span className={s.chapterMarker}>{c.marker}</span><p className={s.organization}>{c.organization}</p><h3>{c.title}</h3><p className={s.chapterRole}>{c.role}</p><p className={s.chapterText}>{c.text}</p><a className={s.textLink} href={c.link} {...(c.link.startsWith('#')?{}:external)}>{c.linkText}<ArrowUpRight size={17}/></a>
+      <span className={s.chapterMarker}>{c.marker}</span><p className={s.organization}>{c.organization}</p><h3>{c.title}</h3><p className={s.chapterRole}>{c.role}</p><p className={s.chapterText}>{c.text}</p><p className={s.chapterProof}>{c.proof}</p><a className={s.textLink} href={c.link} {...(c.link.startsWith('#')?{}:external)}>{c.linkText}<ArrowUpRight size={17}/></a>
       <div className={s.chapterMobile}><button onClick={()=>onOpen({image:c.image,title:c.organization,caption:`${c.imageType} · ${c.caption}`})} aria-label={`Ampliar imagem de ${c.organization}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/><ScanLine size={20}/></button><span>{c.imageType}</span></div>
     </article>)}</div><aside className={s.careerStage} aria-label="Visuais da trajetória"><div className={s.chapterImages}>{chapters.map((c,i)=><button key={c.id} className={s.chapterVisual} data-chapter-visual={i} data-active={activeChapter===i} onClick={()=>onOpen({image:c.image,title:c.organization,caption:`${c.imageType} · ${c.caption}`})} tabIndex={activeChapter===i?0:-1} aria-hidden={activeChapter!==i} aria-label={`Ampliar imagem: ${c.caption}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/><span className={s.stageCaption}>{c.imageType}<ScanLine size={18}/></span></button>)}</div><div className={s.stageFooter}><span>{chapters[activeChapter].caption}</span><nav className={s.chapterNav} aria-label="Capítulos da trajetória">{chapters.map((c,i)=><a key={c.id} href={`#capitulo-${c.id}`} aria-label={c.organization} aria-current={i===activeChapter?'step':undefined} onClick={()=>setActiveChapter(i)}><span/></a>)}</nav></div></aside></div>
   </div></section>;
@@ -60,23 +63,65 @@ function ProjectMotif({ type }) {
   return <svg viewBox="0 0 200 200" fill="none" aria-hidden="true"><path d={paths[type]} stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>;
 }
 
+function projectsBeforeAnchor(hash) {
+  const index=projects.findIndex(p=>hash===`#projeto-${p.id}`);
+  if(index>=0)return projects.slice(0,index+1).map((_,i)=>i);
+  if(['#trajetoria','#certificados','#processo','#curriculo','#contato'].includes(hash)||hash.startsWith('#capitulo-'))return projects.map((_,i)=>i);
+  return [];
+}
+
 function ProjectGallery({ onOpen }) {
-  const [pinned,setPinned]=useState(null);
+  const [openedByScroll,setOpenedByScroll]=useState(()=>new Set(projectsBeforeAnchor(window.location.hash)));
+  const [instant,setInstant]=useState(false);
+  const [overrides,setOverrides]=useState({});
   const [hovered,setHovered]=useState(null);
   const section=useRef(null);
-  const open=pinned??hovered;
+  const isOpen=i=>overrides[i]??(openedByScroll.has(i)||hovered===i);
   const canHover=e=>e.pointerType==='mouse'&&window.matchMedia('(min-width:900px) and (hover:hover)').matches;
   useEffect(()=>{
-    let frame;
-    const resize=new ResizeObserver(()=>{cancelAnimationFrame(frame);frame=requestAnimationFrame(()=>ScrollTrigger.refresh());});
+    let frame, timer, observer, anchorFrame;
+    const seen=new Set(projectsBeforeAnchor(window.location.hash));
+    // Settle earlier rows before the browser calculates a native anchor destination.
+    const prepareAnchor=e=>{
+      if(e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
+      const anchor=e.target.closest('a[href^="#"]');
+      if(!anchor)return;
+      const indices=projectsBeforeAnchor(anchor.getAttribute('href'));
+      if(!indices.length)return;
+      indices.forEach(i=>seen.add(i));
+      flushSync(()=>{setInstant(true);setOpenedByScroll(previous=>new Set([...previous,...indices]));});
+      void section.current.offsetHeight;
+      ScrollTrigger.refresh();
+      cancelAnimationFrame(anchorFrame);
+      anchorFrame=requestAnimationFrame(()=>{anchorFrame=requestAnimationFrame(()=>setInstant(false));});
+    };
+    document.addEventListener('click',prepareAnchor,true);
+    const observe=()=>{
+      observer?.disconnect();
+      observer=new IntersectionObserver(entries=>{
+        const entering=entries.filter(entry=>entry.isIntersecting);
+        if(!entering.length)return;
+        entering.forEach(({target})=>{seen.add(Number(target.dataset.projectTrigger));observer.unobserve(target);});
+        setOpenedByScroll(previous=>{
+          const next=new Set(previous);
+          entering.forEach(({target})=>next.add(Number(target.dataset.projectTrigger)));
+          return next;
+        });
+      },{rootMargin:`-110px 0px -${Math.round(innerHeight*.28)}px 0px`,threshold:0});
+      section.current.querySelectorAll('[data-project-trigger]').forEach(target=>{if(!seen.has(Number(target.dataset.projectTrigger)))observer.observe(target);});
+    };
+    observe();
+    window.addEventListener('resize',observe);
+    // Refresh after expansion settles; don't refresh every animation frame.
+    const resize=new ResizeObserver(()=>{clearTimeout(timer);timer=setTimeout(()=>{frame=requestAnimationFrame(()=>ScrollTrigger.refresh(true));},120);});
     resize.observe(section.current);
-    return()=>{resize.disconnect();cancelAnimationFrame(frame);};
+    return()=>{observer.disconnect();window.removeEventListener('resize',observe);document.removeEventListener('click',prepareAnchor,true);resize.disconnect();clearTimeout(timer);cancelAnimationFrame(frame);cancelAnimationFrame(anchorFrame);};
   },[]);
-  return <section id="projetos" ref={section} className={s.projects} aria-labelledby="projects-title">
+  return <section id="projetos" ref={section} className={s.projects} data-instant={instant} aria-labelledby="projects-title">
     <div className={`${s.container} ${s.projectsIntro}`} data-context="iniciativa"><div><h2 id="projects-title">Cada ideia,<br />um mundo para explorar.</h2></div></div>
-    {projects.map((p,i)=><article id={`projeto-${p.id}`} key={p.id} className={`${s.projectBand} ${s[p.color]}`} data-project={p.id} data-context={p.context} data-expanded={open===i} onPointerEnter={e=>{if(canHover(e)&&pinned===null)setHovered(i);}} onPointerLeave={e=>{if(canHover(e)&&!e.currentTarget.contains(document.activeElement))setHovered(null);}} onKeyDown={e=>{if(e.key==='Escape'){setPinned(null);setHovered(null);document.getElementById(`project-toggle-${p.id}`)?.focus();}}}>
-      <div className={s.container}><div className={s.projectBandTop}><div className={s.projectIdentity}><span className={s.projectTopic}>{p.topic}</span><h3><button id={`project-toggle-${p.id}`} aria-expanded={open===i} aria-controls={`project-gallery-${p.id}`} onClick={()=>{if(pinned===i){setPinned(null);setHovered(null);}else{setPinned(i);setHovered(null);}}}>{p.name}</button></h3><span className={s.galleryHint}>{open===i?'Recolher projeto':'Explorar projeto'}</span></div><div className={s.projectSummary}><p>{p.summary}</p><div className={s.projectActions}><a href={`https://github.com/${p.repo}`} {...external} aria-label={`GitHub de ${p.name}${p.private?' (repositório privado)':''}`}><Github size={18}/><span>GitHub{p.private&&<small>privado</small>}</span></a><a href={p.live} {...external} aria-label={`Acessar ${p.name}`}>Acessar<ArrowUpRight size={19}/></a></div></div></div>
-      <div id={`project-gallery-${p.id}`} className={`${s.projectGallery} ${open===i?s.projectGalleryOpen:''}`} inert={open!==i?true:undefined} aria-hidden={open!==i}><div className={s.galleryClip}><p className={s.projectDetail}>{p.detail}</p><div className={s.galleryTrack}><figure className={s.galleryScreenshot}><ProjectImage project={p} onOpen={onOpen}/><figcaption>{p.imageType}</figcaption></figure><div className={s.galleryStatement}><ProjectMotif type={p.motif}/><strong>{p.statement}</strong></div><div className={s.galleryFeatures}><span>Por dentro do projeto</span><ul>{p.features.map(f=><li key={f}>{f}</li>)}</ul><div className={s.techTags}>{p.tech.map(t=><span key={t}>{t}</span>)}</div></div></div></div></div>
+    {projects.map((p,i)=><article id={`projeto-${p.id}`} key={p.id} className={s.projectBand} data-project={p.id} data-context={p.context} data-expanded={isOpen(i)} onPointerEnter={e=>{if(canHover(e)){setHovered(i);setOverrides(previous=>{if(previous[i]!==false)return previous;const next={...previous};delete next[i];return next;});}}} onPointerLeave={e=>{if(canHover(e)&&!e.currentTarget.contains(document.activeElement))setHovered(null);}} onBlur={e=>{if(!e.currentTarget.contains(e.relatedTarget))setHovered(null);}} onKeyDown={e=>{if(e.key==='Escape'){setOverrides(previous=>({...previous,[i]:false}));setHovered(null);document.getElementById(`project-toggle-${p.id}`)?.focus();}}}>
+      <div className={s.container}><div className={s.projectBandTop} data-project-trigger={i}><div className={s.projectIdentity}><span className={s.projectTopic}>{p.topic}</span><h3><button id={`project-toggle-${p.id}`} aria-expanded={isOpen(i)} aria-controls={`project-gallery-${p.id}`} onClick={()=>setOverrides(previous=>({...previous,[i]:!isOpen(i)}))}>{p.name}</button></h3><span className={s.galleryHint}>{isOpen(i)?'Recolher projeto':'Explorar projeto'}</span></div><div className={s.projectSummary}><p>{p.summary}</p><div className={s.projectActions}><a href={`https://github.com/${p.repo}`} {...external} aria-label={`GitHub de ${p.name}${p.private?' (repositório privado)':''}`}><Github size={18}/><span>GitHub{p.private&&<small>privado</small>}</span></a><a href={p.live} {...external} aria-label={`Acessar ${p.name}`}>Acessar<ArrowUpRight size={19}/></a></div></div></div>
+      <div id={`project-gallery-${p.id}`} className={`${s.projectGallery} ${isOpen(i)?s.projectGalleryOpen:''}`} inert={!isOpen(i)?true:undefined} aria-hidden={!isOpen(i)}><div className={s.galleryClip}><p className={s.projectDetail}>{p.detail}</p><div className={s.galleryTrack}><figure className={s.galleryScreenshot}><ProjectImage project={p} onOpen={onOpen}/><figcaption>{p.imageType}</figcaption></figure><div className={s.galleryStatement}><ProjectMotif type={p.motif}/><strong>{p.statement}</strong></div><div className={s.galleryFeatures}><span>Por dentro do projeto</span><ul>{p.features.map(f=><li key={f}>{f}</li>)}</ul><div className={s.techTags}>{p.tech.map(t=><span key={t}>{t}</span>)}</div></div></div></div></div>
       </div></article>)}
   </section>;
 }

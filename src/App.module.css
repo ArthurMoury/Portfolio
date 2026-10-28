@@ -27,3 +27,29 @@
 /* Dark presentation: project imagery is the color in the page. */
 .career,.about{border-top:1px solid var(--line)}.careerIntro{display:block}.projectsIntro{padding-top:35px;padding-bottom:75px}.projectBand{transition:background .45s var(--ease)}.projectBand[data-expanded=true]{background:var(--surface)}.projectIdentity h3 button{transition:transform .4s var(--ease)}.projectIdentity h3 button:hover{transform:translateX(8px);opacity:1}.projectGalleryOpen .galleryScreenshot{animation:galleryIn .6s var(--ease)}@keyframes galleryIn{from{transform:translateY(15px) scale(.98)}to{transform:none}}
 @media(max-width:640px){.projectsIntro{padding-top:10px;padding-bottom:45px}}
+
+/* The personal introduction is a separate editorial moment after the 3D opening. */
+.aboutGrid{grid-template-columns:.9fr .8fr 1.2fr;gap:55px 5%;align-items:start}
+.aboutGrid>h2{font-size:clamp(2rem,3.1vw,3.1rem);line-height:1.2;padding-top:8px}
+.aboutPortrait{min-width:0;margin:0;will-change:transform,clip-path,opacity}
+.aboutPortrait img{display:block;width:100%;height:auto;aspect-ratio:3/4;object-fit:cover;object-position:50% 32%;border-radius:5px}
+.aboutPortrait figcaption{font-size:13px;margin-top:17px;line-height:1.5}.aboutPortrait figcaption span{display:block;font-size:10px;color:var(--muted);margin-top:4px}
+.aboutCopy .aboutLead{margin-top:0;font-size:clamp(1.1rem,1.65vw,1.45rem)}
+.aboutCopy .aboutText{font-size:14px;margin-top:20px}.aboutCopy .aboutLinks{margin-top:24px;gap:4px 24px}.aboutCopy .aboutLinks a:first-child{font-size:clamp(13px,1.4vw,17px)}
+.aboutDetails{grid-column:1/-1;display:grid;grid-template-columns:1fr 240px;gap:5%;padding-top:0;border-top:1px solid var(--line)}
+.aboutDetails dl{display:grid;grid-template-columns:1.1fr 1.1fr 1fr;gap:25px}.aboutDetails dl>div{border:0;padding:24px 0 0}.aboutDetails dd{font-size:17px}.aboutDetails dd>span{font-size:11px}.aboutDetails .cvLink{padding:24px 0 0;align-self:center}
+.chapterProof{font-size:14px;line-height:1.7;color:var(--light);padding-left:16px;border-left:1px solid var(--line);margin-top:20px}.chapter{min-height:570px}
+.projectBand{background:var(--deepest);--band-muted:#dedee4;--band-line:#ffffff40;--band-soft:#ffffff0c;--project-surface:#242426;transition:background .65s var(--ease),border-color .65s var(--ease)}
+.projectBand[data-project=cortech]{--project-surface:#293b2d;--project-accent:#dcea9d}
+.projectBand[data-project=freesb]{--project-surface:#392266;--project-accent:#f6df65}
+.projectBand[data-project=betterway]{--project-surface:#153729;--project-accent:#baff52}
+.projectBand[data-project=roomi-reservas]{--project-surface:#55301f;--project-accent:#f29a74}
+.projectBand[data-project=roomi-builder]{--project-surface:#492b23;--project-accent:#ff8964}
+.projectBand[data-project=sollie]{--project-surface:#215334;--project-accent:#b8e4bb}
+.projectBand[data-expanded=true]{background:var(--project-surface);border-top-color:#ffffff26}
+@media(max-width:1100px) and (min-width:900px){.aboutGrid{gap:45px 4%;grid-template-columns:.85fr .8fr 1.3fr}.aboutDetails{grid-template-columns:1fr 205px}.aboutDetails dl{gap:18px}.aboutDetails dd{font-size:15px}}
+@media(max-width:899px){.aboutGrid{grid-template-columns:.9fr 1.3fr;gap:35px 7%}.aboutGrid>h2{grid-column:1/-1;font-size:clamp(2.4rem,5vw,3.3rem)}.aboutGrid>h2 br{display:none}.aboutGrid>h2 br:after{content:' '}.aboutPortrait{max-width:300px}.aboutCopy .aboutLead{font-size:20px}.aboutDetails{display:block}.aboutDetails dl{gap:24px}.aboutDetails .cvLink{width:max-content;padding-top:28px}.chapter{min-height:0}.chapterProof{grid-column:1;font-size:13px}.chapterMobile{grid-row:1/8}}
+@media(max-width:640px){.aboutGrid{display:grid;grid-template-columns:1fr;gap:28px}.aboutGrid>h2{font-size:clamp(2rem,8.6vw,2.8rem);padding:0}.aboutGrid>h2 br:first-child{display:block}.aboutPortrait{width:72%;max-width:290px;margin-inline:auto}.aboutPortrait img{aspect-ratio:4/5}.aboutPortrait figcaption{font-size:12px}.aboutCopy .aboutLead{font-size:21px}.aboutCopy .aboutText{font-size:15px}.aboutCopy .aboutLinks a:first-child{font-size:16px}.aboutDetails dl{display:block}.aboutDetails dl>div{padding-block:22px;border-bottom:1px solid var(--line)}.aboutDetails dd{font-size:21px}.aboutDetails dd>span{font-size:13px}.aboutDetails .cvLink{padding-top:24px}.chapterProof{font-size:14px}}
+
+.projectBand[data-expanded=true] .projectTopic,.galleryStatement>svg{color:var(--project-accent)}
+.projects[data-instant=true] .projectGallery{transition:none}

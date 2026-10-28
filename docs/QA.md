@@ -52,3 +52,13 @@ A foto foi substituída pela imagem do perfil ArthurMoury no GitHub, conforme pe
 Projeto `arthur-moury-portfolio` criado no escopo existente `amfgs-5506s-projects`. Integração GitHub → Vercel recusou conexão ao repositório por falta de acesso da integração; publicação feita via CLI autenticada. Não houve concessão de permissões adicionais ao GitHub.
 
 Contraste da revisão dark: texto/carvão 16,66:1; texto secundário/painel 6,94:1; placeholder/campo 6,64:1. Pacote Vercel inspecionado antes do envio: `.env.local`, `.research`, `.qa`, `.git`, `.openai` e `.vercel` excluídos.
+
+## Revisão final: abertura, apresentação e expansão · 28/10/2026
+
+- A abertura não contém imagem de perfil; a fotografia aparece uma única vez em `#sobre`, junto do texto e dos contatos. Opacidade 1 no centro da seção e redução observada na saída. Movimento reduzido mantém o retrato visível e não cria canvas WebGL.
+- Desktop 1280×720: composição em três colunas. Tablet 768×1024: título acima de retrato e texto. Mobile 390×844: sequência vertical. Sem overflow horizontal nas três larguras.
+- Faixas revelam suas cores de identidade pela rolagem. PageDown com ponteiro na navegação abriu os próximos projetos; clique recolheu e Enter reabriu. Hover reabriu uma faixa previamente recolhida. As revelações permanecem para evitar recolhimento automático acima da leitura.
+- Corrigido deslocamento das âncoras durante expansões: preparar as linhas anteriores sem transição antes do cálculo nativo do destino; atualizar ScrollTrigger fora da rolagem ativa. Teste partindo de zero faixas abertas: trajetória terminou a 128px do topo, respeitando a navegação. Mobile também terminou a 128px, com menu fechado.
+- Painel da trajetória mostrou CESAR ao entrar no primeiro capítulo e Roomi Builder no capítulo Roomi, ambos sincronizados ao texto. Quatro capítulos conectam formação, Boop, Roomi e projetos autorais; provas vêm do currículo e dos certificados fornecidos.
+- Hover expandiu Cortech depois de recolhimento manual. Console sem avisos ou erros durante a verificação.
+- A publicação pública inicial da Vercel respondeu HTTP 200 sem autenticação. A versão final é republicada no mesmo projeto.

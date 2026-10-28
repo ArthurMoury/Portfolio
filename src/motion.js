@@ -16,6 +16,7 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext) 
     let disposed=false;
     const hero=document.getElementById('inicio');
     const markers=[...root.current.querySelectorAll('[data-context]')];
+    const chapterElements=[...root.current.querySelectorAll('[data-chapter]')];
     const progress=root.current.querySelector('[data-reading-progress]');
     const update=()=>{
       frame=0;
@@ -23,6 +24,9 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext) 
       let context='pessoa';
       for(const el of markers)if(el.getBoundingClientRect().top<=window.innerHeight*.45)context=el.dataset.context;
       setContext(context);
+      let chapterIndex=0;
+      chapterElements.forEach((chapter,i)=>{if(chapter.getBoundingClientRect().top<=window.innerHeight*.55)chapterIndex=i;});
+      setChapter(chapterIndex);
       const max=document.documentElement.scrollHeight-window.innerHeight;
       if(progress)progress.style.transform=`scaleX(${max>0?Math.min(1,Math.max(0,window.scrollY/max)):0})`;
     };
@@ -32,11 +36,17 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext) 
     const media=gsap.matchMedia();
     const ctx=gsap.context(()=>{
       const q=gsap.utils.selector(root);
-      q('[data-chapter]').forEach((chapter,i)=>ScrollTrigger.create({trigger:chapter,start:'top 55%',end:'bottom 55%',onEnter:()=>setChapter(i),onEnterBack:()=>setChapter(i)}));
       if(reduced)return;
       q('#sobre h2, #projetos h2, #trajetoria h2, #certificados h2').forEach(title => {
         gsap.from(title, { y: 38, clipPath: 'inset(0 0 18% 0)', duration: 1.1, ease: 'power4.out', clearProps: 'all', scrollTrigger: { trigger: title, start: 'top 92%', once: true } });
       });
+      const portrait=q('[data-about-photo]')[0];
+      if(portrait){
+        gsap.timeline({scrollTrigger:{trigger:portrait,start:'top 94%',end:'bottom 12%',scrub:.7}})
+          .fromTo(portrait,{clipPath:'inset(18% 0 18% 0)',opacity:0,y:25},{clipPath:'inset(0% 0 0% 0)',opacity:1,y:0,duration:.2,ease:'power2.out'})
+          .to(portrait,{opacity:1,duration:.58})
+          .to(portrait,{clipPath:'inset(0% 0 16% 0)',opacity:0,y:-20,duration:.22,ease:'power2.in'});
+      }
       q('[data-project]').forEach(band => {
         gsap.from(band.querySelector('h3'), { x: -30, duration: .85, ease: 'power3.out', clearProps: 'all', scrollTrigger: { trigger: band, start: 'top 90%', once: true } });
       });

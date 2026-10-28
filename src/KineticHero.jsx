@@ -110,10 +110,7 @@ export default function KineticHero({ reduced }) {
       gsap.timeline({ defaults: { ease: 'power4.out' } })
         .from(q('[data-name-line]'), { yPercent: 110, rotate: 4, duration: 1.3, stagger: .12, clearProps: 'all' }, .05)
         .from(q('[data-intro-copy]'), { opacity: .25, y: 20, duration: 1, stagger: .13, clearProps: 'all' }, .45)
-        .fromTo(q('[data-photo-window]'), { clipPath: 'inset(50% 0% 50% 0%)', opacity: 0, y: 30, rotate: -4 }, { clipPath: 'inset(0% 0% 0% 0%)', opacity: 1, y: 0, rotate: 0, duration: 1.2 }, .5)
-        .fromTo(q('[data-photo-window] img'), { scale: 1.2 }, { scale: 1.04, duration: 3.8, ease: 'power1.out' }, .5)
-        .to(q('[data-photo-window]'), { clipPath: 'inset(0% 0% 100% 0%)', y: -28, opacity: 0, duration: 1.1, ease: 'power3.inOut' }, 4.1)
-        .fromTo(q('[data-fold]'), { opacity: .16, scale: .82 }, { opacity: 1, scale: 1, duration: 1.5 }, 3.8);
+        .fromTo(q('[data-fold]'), { opacity: .16, scale: .82 }, { opacity: 1, scale: 1, duration: 1.5 }, .1);
       gsap.to(q('[data-hero-stage]'), { y: 65, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: .7 } });
     }, root);
     return () => ctx.revert();
@@ -128,8 +125,7 @@ export default function KineticHero({ reduced }) {
       </div>
       <div className={s.stage} data-hero-stage>
         <Fold reduced={reduced} replay={replay}/>
-        <figure className={s.photo} data-photo-window><img src="/images/arthur-moury.jpg" width="460" height="460" alt="Arthur Moury, foto do perfil no GitHub" fetchPriority="high"/></figure>
-        {!reduced && <button className={s.replay} onClick={() => setReplay(v => v + 1)} aria-label="Repetir entrada e mostrar foto"><RotateCcw size={14}/><span>Rever entrada</span></button>}
+        {!reduced && <button className={s.replay} onClick={() => setReplay(v => v + 1)} aria-label="Repetir animação 3D de entrada"><RotateCcw size={14}/><span>Rever entrada</span></button>}
       </div>
     </div>
     <a className={s.scroll} href="#sobre" aria-label="Rolar para conhecer Arthur"><svg viewBox="0 0 90 80" fill="none" aria-hidden="true"><path d="m14 17 31-15 31 15-31 15Z"/><path d="m14 33 31-15 31 15-31 15Z"/><path d="m14 49 31-15 31 15-31 15Z"/></svg></a>
