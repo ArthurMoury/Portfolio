@@ -14,7 +14,8 @@ for(const f of ['fonts/sora-latin.woff2','fonts/hanken-latin.woff2','images/arth
 const app=readFileSync('src/App.jsx','utf8');
 const hero=readFileSync('src/KineticHero.jsx','utf8');
 const carousel=readFileSync('src/Certificates.jsx','utf8');
-const surface=app+hero+carousel;
+const lab=readFileSync('src/PracticeLab.jsx','utf8');
+const surface=app+hero+carousel+lab;
 assert(!hero.includes('<img'),'A abertura deve conter apenas a arte 3D.');
 assert(app.includes('data-about-photo'),'O retrato deve acompanhar a apresentação pessoal.');
 for(const id of ['inicio','sobre','trajetoria','projetos','certificados','processo','curriculo','contato'])assert(surface.includes(`id="${id}"`),`Âncora ausente: ${id}`);

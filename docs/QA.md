@@ -72,3 +72,16 @@ Contraste da revisão dark: texto/carvão 16,66:1; texto secundário/painel 6,94
 - Âncora da trajetória terminou a 128px do topo. Card0 somente na formação acadêmica, com imagem, stack e GitHub da equipe. Seu deploy anterior retornou 404 e foi retirado conforme orientação do titular. Dozão respondeu HTTP 200; não há repositório publicado identificado.
 - Wallpaper Roomi e imagens Boop/CESAR/Sollie substituem os visuais anteriores. Conteúdo essencial preservado com movimento reduzido.
 - Perfil ArthurMoury recebe README com destaque visual e link do portfólio; a credencial atual não possui escopo para alterar os campos globais de perfil, portanto esses campos foram preservados. Homepage do repositório Portfolio aponta para a Vercel.
+
+## Revisão de 29/10/2026 — desktop na Vercel
+- Build de produção e verificação de conteúdo aprovados.
+- 1280 × 720: sem overflow horizontal; abertura curva termina e libera conteúdo; canvas ocupa a dimensão real do palco após o GSAP.
+- Escultura muda de forma por clique e Enter; pointer tracking mantém a resposta do material/rotação.
+- Retrato totalmente revelado ao chegar à apresentação e recolhido lateralmente ao sair. Borda superior da apresentação: 0px.
+- Transição curva entre apresentação e projetos verificada na rolagem.
+- Roomi Reservas abre com a nova capa; PageDown abre Builder e fecha Reservas (um único projeto expandido).
+- Hash direto e navegação para seções distantes preservam o destino, sem a expansão intermediária interromper a rolagem.
+- Seção Na prática: copiar prompt confirmado; ArrowRight/Home/End trocam as abas; as quatro perspectivas têm conteúdo próprio.
+- Texto antigo da demonstração e etiquetas/links da trajetória ausentes da página.
+- Economia de horas deliberadamente não quantificada até o titular fornecer a medição.
+- Mobile não foi revalidado nesta rodada, conforme escopo solicitado.

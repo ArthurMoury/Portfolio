@@ -1,9 +1,9 @@
 .hero{background:var(--deepest);color:var(--light);position:relative;isolation:isolate;min-height:max(680px,100svh);display:flex;align-items:center;overflow:hidden;padding:85px 0 110px}
-.layout{width:var(--page-width);margin:auto;display:grid;grid-template-columns:1fr 1.1fr;align-items:center;gap:4%;position:relative}
+.layout{width:var(--page-width);margin:auto;display:grid;grid-template-columns:40% 60%;align-items:center;gap:0;position:relative}
 .copy{position:relative;z-index:2}.hello{font-size:clamp(1.3rem,2vw,1.8rem);margin-bottom:23px;color:var(--muted-light)}
 .copy h1{font-size:clamp(4.6rem,8vw,6rem);font-weight:400;letter-spacing:-.04em;line-height:1.08}.nameMask{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}.nameMask>span{display:block;transform-origin:left bottom}.period{color:var(--accent)}
 .description{font-size:clamp(1.1rem,1.7vw,1.4rem);line-height:1.6;color:var(--muted-light);margin-top:35px}.aboutLink{display:flex;align-items:center;gap:30px;min-height:48px;margin-top:25px;width:max-content;font-size:13px;border-bottom:1px solid var(--line)}.aboutLink svg{transition:transform .4s var(--ease)}.aboutLink:hover svg{transform:translate(4px,-4px)}
-.stage{position:relative;min-width:0;height:min(68svh,560px);display:grid;place-items:center}.fold{position:absolute;inset:-14%;color:var(--muted-light)}.fold canvas{width:100%;height:100%;display:block}.fallback{position:absolute;inset:0;width:100%;height:100%;opacity:.18}.fold[data-ready=true] .fallback{display:none}
+.stage{position:relative;min-width:0;height:min(68svh,560px);display:grid;place-items:center}.fold{position:absolute;inset:0;color:var(--muted-light)}.fold canvas{width:100%;height:100%;display:block}.fallback{position:absolute;inset:0;width:100%;height:100%;opacity:.18}.fold[data-ready=true] .fallback{display:none}
 
 .replay{position:absolute;bottom:-12px;right:0;background:none;display:flex;align-items:center;gap:8px;font-size:10px;color:var(--muted-light);min-height:44px;padding:10px 0}.replay:hover{color:var(--light)}
 .scroll{position:absolute;bottom:22px;left:calc(50% - 36px);height:64px;width:72px;display:grid;place-items:center}.scroll svg{width:72px;height:64px;overflow:visible}.scroll path{stroke:var(--accent);stroke-width:1;animation:planes 1.8s var(--ease) 2}.scroll path:nth-child(2){animation-delay:.16s;opacity:.6}.scroll path:nth-child(3){animation-delay:.32s;opacity:.3}.scroll:hover path{stroke:var(--light)}
@@ -15,3 +15,5 @@
 :global([data-reduced-motion=true]) .scroll path{animation:none}
 
 .horizon{position:absolute;bottom:-1px;left:0;width:100%;height:64px;pointer-events:none;overflow:hidden}.horizon svg{display:block;width:100%;height:100%;fill:#1a1c1e}.horizonLine{fill:none;stroke:#85898c;stroke-width:1;stroke-dasharray:180 1800;animation:horizonTravel 6s linear infinite}@keyframes horizonTravel{to{stroke-dashoffset:-1980}}:global([data-reduced-motion=true]) .horizonLine{animation:none}
+
+.entry{position:absolute;inset:0;z-index:5;pointer-events:none;display:flex;flex-direction:column;overflow:hidden}.entry>div{height:50%;background:#25272a;flex-shrink:0;animation:entryFallback 1.8s forwards}.entry>div:first-child{border-radius:0 0 50% 0}.entry>div:last-child{border-radius:50% 0 0 0}.fold{cursor:grab;border-radius:50%}.fold:active{cursor:grabbing}.fold:focus-visible{outline:1px solid #989ca6;outline-offset:-30px}@keyframes entryFallback{99%{visibility:visible}100%{visibility:hidden}}@media(prefers-reduced-motion:reduce){.entry{display:none}}

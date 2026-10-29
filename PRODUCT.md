@@ -41,3 +41,10 @@ Publicação principal na Vercel e destaque no perfil ArthurMoury do GitHub, aut
 
 ## Revisão desktop final
 Priorizar desktop e validação na Vercel. Escultura interativa sem replay; horizonte animado em largura total; retrato profissional enviado pelo usuário e avatar na navegação. Todos os elementos da apresentação revelam-se ao rolar. Cabeçalho dos projetos em superfície distinta; somente uma faixa aberta por vez; imagem + descrição técnica + stack, sem slogans ou painéis decorativos. Sete projetos acessíveis, incluindo Dozão. Card0 somente na trajetória acadêmica, sem deploy. Imagens da trajetória fornecidas pelo autor, incluindo wallpaper Roomi. Carrossel sem contador, setas ou botão de pausa; link do Drive no topo. Faixa da demonstração: Da integração à entrega.
+
+## Revisão desktop — 29 de outubro de 2026
+A entrada usa duas superfícies curvas que se abrem e uma escultura Three.js que reage ao cursor e muda de forma com clique/Enter. O tamanho do renderer usa as dimensões de layout, sem incorporar a escala temporária da animação. A passagem para a apresentação não tem linha de separação. O retrato entra por máscara lateral, permanece legível e sai pela outra lateral com a rolagem. Uma superfície curva faz a transição para o título dos projetos.
+
+Roomi Reservas e Builder usam capturas atuais de suas aberturas. A trajetória conserva os quatro capítulos e a ampliação das imagens, sem botões de repositório, etiquetas de origem ou legendas sobrepostas.
+
+A antiga demonstração genérica foi substituída por quatro perspectivas do trabalho interno: prompts/LLMs, automação de reservas, dashboard/copiloto e evolução em produção. As métricas exibidas são seis etapas, sete verificações de regressão e horizonte de previsão de 90 dias. Não publicar economia de horas: o titular ainda vai fornecer a medição. O exemplo de prompt é uma adaptação sem dados reais de clientes.

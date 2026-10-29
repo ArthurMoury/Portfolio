@@ -43,11 +43,16 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext) 
       q('[data-about-piece]').forEach((piece,i)=>gsap.from(piece,{opacity:0,y:30,duration:.9,delay:(i%3)*.07,ease:'power3.out',clearProps:'all',scrollTrigger:{trigger:piece,start:'top 93%',once:true}}));
       const portrait=q('[data-about-photo]')[0];
       if(portrait){
-        gsap.timeline({scrollTrigger:{trigger:portrait,start:'top 94%',end:'bottom 12%',scrub:.7}})
-          .fromTo(portrait,{clipPath:'inset(18% 0 18% 0)',opacity:0,y:25},{clipPath:'inset(0% 0 0% 0)',opacity:1,y:0,duration:.2,ease:'power2.out'})
-          .to(portrait,{opacity:1,duration:.58})
-          .to(portrait,{clipPath:'inset(0% 0 16% 0)',opacity:0,y:-20,duration:.22,ease:'power2.in'});
+        const image=portrait.querySelector('img');
+        gsap.timeline({scrollTrigger:{trigger:portrait,start:'top 92%',end:'bottom 8%',scrub:.55}})
+          .fromTo(portrait,{clipPath:'inset(0 100% 0 0)',x:22},{clipPath:'inset(0 0% 0 0)',x:0,duration:.25,ease:'power3.out'})
+          .fromTo(image,{scale:1.16,xPercent:-8},{scale:1,xPercent:0,duration:.3,ease:'power3.out'},0)
+          .to(portrait,{clipPath:'inset(0 0% 0 0)',duration:.45})
+          .to(portrait,{clipPath:'inset(0 0 0 100%)',x:-18,duration:.25,ease:'power2.in'})
+          .to(image,{scale:1.08,xPercent:6,duration:.25},.75);
       }
+      const transition=q('[data-section-transition]')[0];
+      if(transition)gsap.fromTo(q('[data-transition-surface]'),{attr:{d:'M0 160Q720 -100 1440 160V200H0Z'}},{attr:{d:'M0 0Q720 0 1440 0V200H0Z'},ease:'none',scrollTrigger:{trigger:transition,start:'top bottom',end:'bottom 35%',scrub:.7}});
       q('[data-project]').forEach(band => {
         gsap.from(band.querySelector('h3'), { x: -30, duration: .85, ease: 'power3.out', clearProps: 'all', scrollTrigger: { trigger: band, start: 'top 90%', once: true } });
       });

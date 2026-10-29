@@ -139,7 +139,7 @@ export const projects = [
       "CSS",
       "Serverless"
     ],
-    "image": "/projects/roomi-reservas.jpg",
+    "image": "/projects/roomi-reservas-cover.webp",
     "imageType": "Captura da página pública",
     "implementation": [
       {
@@ -171,7 +171,7 @@ export const projects = [
       "Three.js",
       "GSAP"
     ],
-    "image": "/projects/roomi-scene.webp",
+    "image": "/projects/roomi-builder-cover.webp",
     "imageType": "Captura da aplicação",
     "implementation": [
       {
@@ -264,11 +264,8 @@ export const chapters = [
     "context": "faculdade",
     "text": "Na graduação, venho construindo uma base em desenvolvimento de software, com projetos que passam por acessibilidade, hardware e aplicações full-stack.",
     "proof": "Projeto em equipe para comparar o impacto ambiental de cartões físicos e pagamentos digitais. Reúne simulações de ciclo de vida, cenários de migração, logística reversa e indicadores de custo e impacto.",
-    "link": "https://github.com/Gustavotorrescastro/Card0",
-    "linkText": "Conhecer Card0 no GitHub",
     "image": "/projects/card0.webp",
     "caption": "Card0 · projeto em equipe na formação acadêmica",
-    "imageType": "Imagem fornecida pelo autor",
     "fit": "contain",
     "background": "#1a1d29",
     "brandImage": "/projects/cesar.webp",
@@ -283,11 +280,8 @@ export const chapters = [
     "context": "trabalho",
     "text": "Trabalhei com automação de processos usando n8n, Make e Zapier, além da gestão de dados no CRM Go High Level. O trabalho começava por entender a rotina e as informações que precisavam circular.",
     "proof": "Conectei ferramentas e etapas de processos, aproximando a operação das possibilidades da automação.",
-    "link": "/Arthur-Moury-CV.pdf",
-    "linkText": "Ver experiência no currículo",
     "image": "/projects/boop.webp",
     "caption": "Boop Mídia · automações de processos",
-    "imageType": "Imagem fornecida pelo autor",
     "fit": "brand",
     "background": "#000000"
   },
@@ -300,11 +294,8 @@ export const chapters = [
     "context": "trabalho",
     "text": "Atuo com dashboards, ferramentas de análise, automações e validação de software. Também pesquiso aplicações de IA e RAG para aproximar informação e contexto de uso.",
     "proof": "Entre os projetos, o Roomi Reservas conecta destinos e hospedagens. No Roomi Builder, escolhas de configuração ganham forma em um resort 3D, acompanhado de estimativas de investimento e operação.",
-    "link": "#projeto-roomi-builder",
-    "linkText": "Explorar Roomi Builder",
     "image": "/projects/roomi-wallpaper.webp",
     "caption": "Roomi · desenvolvimento, IA e operação",
-    "imageType": "Imagem fornecida pelo autor",
     "fit": "cover",
     "background": "#1c1c1a"
   },
@@ -317,11 +308,8 @@ export const chapters = [
     "context": "iniciativa",
     "text": "Exploro problemas diferentes construindo ferramentas: colaboração visual no FreeSB, cuidado no Cortech, decisões financeiras no Betterway e gestão agrícola na Sollie. No Dozão, levo essa exploração para games, visualização 3D e partidas multiplayer.",
     "proof": "Com a Sollie, participei da pré-incubação 2026.1 do Porto Digital. Uma oportunidade de olhar para o produto além do código e amadurecer sua proposta.",
-    "link": "#projeto-sollie",
-    "linkText": "Conhecer a Sollie",
     "image": "/projects/sollie-brand.webp",
     "caption": "Sollie · gestão inteligente no campo",
-    "imageType": "Imagem fornecida pelo autor",
     "fit": "contain",
     "background": "#22291b"
   }

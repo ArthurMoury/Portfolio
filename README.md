@@ -2,7 +2,7 @@
 
 [Acessar o portfólio](https://arthur-moury-portfolio.vercel.app)
 
-Apresentação pessoal, projetos, trajetória e certificados. React, CSS Modules, Three.js, Motion e GSAP/ScrollTrigger.
+Apresentação pessoal, projetos, trajetória, certificados e aplicações reais de IA e automação. React, CSS Modules, Three.js, Motion e GSAP/ScrollTrigger.
 
 ## Experiência
 
@@ -45,3 +45,5 @@ O carrossel continua sob o mouse e pausa por foco de teclado, com diálogo abert
 Direção visual em `DESIGN.md`; verificações em `docs/QA.md`. Referências: [Refokus](https://www.refokus.com/), [Motion](https://motion.dev/docs/react-animation), [Three.js](https://threejs.org/docs/) e [GSAP](https://gsap.com/docs/v3/Plugins/ScrollTrigger/). Fontes Sora e Hanken Grotesk locais sob OFL; ícone GitHub do Simple Icons, CC0.
 
 A revisão desktop remove controles do carrossel e os painéis decorativos dos projetos, exibe stacks verificadas e fecha a faixa anterior ao explorar outra. Card0 aparece apenas na trajetória acadêmica, com imagem, stack e repositório da equipe; o antigo deploy estava indisponível. Dozão possui deploy, mas não foi encontrado um repositório GitHub publicado.
+
+A seção **Na prática** reúne prompts, automação de reservas, validações de um copiloto e evolução de um dashboard em produção. As métricas de economia de tempo aguardam medição do titular.
