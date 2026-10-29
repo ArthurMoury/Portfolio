@@ -21,3 +21,6 @@ Carrossel contínuo: o mouse não pausa o trilho, mas expande o certificado com 
 
 ## Conteúdo
 Somente Cortech, FreeSB, Betterway, Roomi Reservas, Roomi Builder e Sollie. Botões GitHub e Acessar separados. Nenhuma alteração de acesso a repositórios. Email mourygodoy@gmail.com; sem idade nem endereço residencial.
+
+## Revisão desktop final
+Priorizar desktop e validação na Vercel. Escultura interativa sem replay; horizonte animado em largura total; retrato profissional enviado pelo usuário e avatar na navegação. Todos os elementos da apresentação revelam-se ao rolar. Cabeçalho dos projetos em superfície distinta; somente uma faixa aberta por vez; imagem + descrição técnica + stack, sem slogans ou painéis decorativos. Sete projetos acessíveis, incluindo Dozão. Card0 somente na trajetória acadêmica, sem deploy. Imagens da trajetória fornecidas pelo autor, incluindo wallpaper Roomi. Carrossel sem contador, setas ou botão de pausa; link do Drive no topo. Faixa da demonstração: Da integração à entrega.

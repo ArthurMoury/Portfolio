@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { LazyMotion, domAnimation, m, useAnimationFrame, useMotionValue } from 'motion/react';
-import { ArrowLeft, ArrowRight, Pause, Play, ScanLine } from 'lucide-react';
+import { ScanLine } from 'lucide-react';
 import { certificates } from './data/certificates';
 import s from './Certificates.module.css';
 
@@ -9,7 +9,6 @@ export default function Certificates({ reduced, onOpen, modalOpen }) {
   const length = useRef(0), visible = useRef(false), activeTab = useRef(!document.hidden);
   const drag = useRef(null), dragged = useRef(false);
   const x = useMotionValue(0);
-  const [paused, setPaused] = useState(false);
   const [focused, setFocused] = useState(false);
   const wrap = value => length.current ? -(((-value % length.current) + length.current) % length.current) : value;
   useEffect(() => {
@@ -22,13 +21,8 @@ export default function Certificates({ reduced, onOpen, modalOpen }) {
     return () => { observer.disconnect(); resize.disconnect(); document.removeEventListener('visibilitychange', visibility); };
   }, [reduced, x]);
   useAnimationFrame((_, delta) => {
-    if (!reduced && visible.current && activeTab.current && !paused && !focused && !modalOpen && !drag.current) x.set(wrap(x.get() - Math.min(delta, 48) * .035));
+    if (!reduced && visible.current && activeTab.current && !focused && !modalOpen && !drag.current) x.set(wrap(x.get() - Math.min(delta, 48) * .035));
   });
-  const advance = direction => {
-    const step = group.current.firstElementChild.offsetWidth + 24;
-    if (reduced) viewport.current.scrollBy({ left: direction * step, behavior: 'auto' });
-    else x.set(wrap(x.get() - direction * step));
-  };
   const focus = (event, index) => {
     if (!event.target.matches(':focus-visible')) return;
     setFocused(true);
@@ -58,11 +52,7 @@ export default function Certificates({ reduced, onOpen, modalOpen }) {
     <span className={s.caption}><strong>{certificate.title}</strong><span>{certificate.issuer}</span></span>
   </m.button>;
   return <LazyMotion features={domAnimation}><section ref={root} id="certificados" className={s.section} aria-labelledby="certificates-title" data-context="faculdade">
-    <div className={s.heading}><h2 id="certificates-title">O aprendizado<br/><span>não para.</span></h2><div className={s.tools}><span className={s.count}>{certificates.length} certificados & experiências</span><div className={s.controls}>
-      <button onClick={() => advance(-1)} aria-label="Ver certificados anteriores"><ArrowLeft size={18}/></button>
-      {!reduced && <button onClick={() => setPaused(v => !v)} aria-label={paused ? 'Retomar carrossel de certificados' : 'Pausar carrossel de certificados'} aria-pressed={paused}>{paused ? <Play size={16}/> : <Pause size={16}/>}</button>}
-      <button onClick={() => advance(1)} aria-label="Ver próximos certificados"><ArrowRight size={18}/></button>
-    </div></div></div>
+    <div className={s.heading}><h2 id="certificates-title">O aprendizado<br/><span>não para.</span></h2><a className={s.driveLink} href="https://drive.google.com/drive/folders/1XRFKKlfDYoGV3jMZjAE0DvzvVM1JhHvk" target="_blank" rel="noreferrer noopener">Ver pasta no Drive ↗</a></div>
     <div ref={viewport} className={`${s.viewport} ${reduced ? s.static : ''}`} aria-roledescription="carrossel" aria-label="Certificados de Arthur Moury" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={endDrag} onPointerCancel={endDrag} onPointerLeave={endDrag}
       onClickCapture={e => { if (dragged.current) { e.preventDefault(); e.stopPropagation(); dragged.current = false; } }}
       onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false); }}>
@@ -71,6 +61,5 @@ export default function Certificates({ reduced, onOpen, modalOpen }) {
         {!reduced && <div className={s.group} aria-hidden="true">{certificates.map((certificate, index) => card(certificate, index, true))}</div>}
       </m.div>
     </div>
-    <div className={s.bottom}><span>Pequenas conquistas. Novas possibilidades.</span><a href="https://drive.google.com/drive/folders/1XRFKKlfDYoGV3jMZjAE0DvzvVM1JhHvk" target="_blank" rel="noreferrer noopener">Ver pasta no Drive ↗</a></div>
   </section></LazyMotion>;
 }

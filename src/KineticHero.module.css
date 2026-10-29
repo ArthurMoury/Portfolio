@@ -13,3 +13,5 @@
 @media(max-width:640px){.hero{padding:55px 0 95px;min-height:max(760px,100svh)}.layout{display:flex;flex-direction:column;gap:0;align-items:stretch}.hello{font-size:20px;margin-bottom:14px}.copy h1{font-size:clamp(3.8rem,16vw,5rem);line-height:1.05}.description{font-size:16px;margin-top:23px}.description br{display:none}.aboutLink{margin-top:14px;font-size:12px;gap:24px}.stage{width:76%;max-width:310px;height:260px;aspect-ratio:auto;align-self:end;margin-top:18px}.fold{inset:-6% -10%}.replay{bottom:-23px;font-size:9px}.scroll{bottom:15px;left:20px;height:56px;width:60px}.scroll svg{height:56px;width:60px}}
 @media(prefers-reduced-motion:reduce){.scroll path{animation:none}}
 :global([data-reduced-motion=true]) .scroll path{animation:none}
+
+.horizon{position:absolute;bottom:-1px;left:0;width:100%;height:64px;pointer-events:none;overflow:hidden}.horizon svg{display:block;width:100%;height:100%;fill:#1a1c1e}.horizonLine{fill:none;stroke:#85898c;stroke-width:1;stroke-dasharray:180 1800;animation:horizonTravel 6s linear infinite}@keyframes horizonTravel{to{stroke-dashoffset:-1980}}:global([data-reduced-motion=true]) .horizonLine{animation:none}

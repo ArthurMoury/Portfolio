@@ -53,3 +53,13 @@
 
 .projectBand[data-expanded=true] .projectTopic,.galleryStatement>svg{color:var(--project-accent)}
 .projects[data-instant=true] .projectGallery{transition:none}
+/* Desktop editorial revision */
+.navHome{display:flex;align-items:center;gap:10px}.navHome img{border-radius:50%;object-fit:cover;object-position:50% 34%;width:32px;height:32px}
+.about{background:#1a1c1e}.aboutPortrait{max-width:255px;justify-self:center;width:100%}.aboutPortrait img{aspect-ratio:3/4;object-position:50% 35%}
+.projectsHeading{background:#29262f;border-block:1px solid #48424e}.projectsHeading .projectsIntro{padding-block:85px}
+.projectBandTop{grid-template-columns:1fr auto;gap:40px}.projectBandTop .projectActions{justify-self:end;justify-content:flex-end;margin:0}.unavailable{font-size:11px;color:var(--band-muted);display:flex;gap:8px;align-items:center;padding:10px}
+.projectGallery{transition:none}.projectContent{display:grid;grid-template-columns:1.45fr 1fr;gap:6%;padding-bottom:48px;align-items:center}.projectBuild dl{margin:25px 0 0}.projectBuild dl>div{display:grid;grid-template-columns:95px 1fr;gap:15px;padding:14px 0;border-top:1px solid var(--band-line)}.projectBuild dt{font-size:11px;color:var(--project-accent)}.projectBuild dd{margin:0;font-size:13px;line-height:1.65}.buildDescription{font-size:16px;line-height:1.7}.projectGalleryOpen .projectBuild{animation:galleryIn .6s var(--ease)}
+.projectBand[data-project=card0]{--project-surface:#233454;--project-accent:#bde5e7}.projectBand[data-project=dozao]{--project-surface:#163e41;--project-accent:#dfc78f}
+.chapterVisual[data-image-fit=brand]>img,.chapterMobile[data-image-fit=brand] img{object-fit:contain;padding:10%;background:var(--chapter-bg,#17191b)}.chapterVisual[data-image-fit=cover]>img{object-fit:cover}.chapterVisual[data-image-fit=brand]{background:var(--chapter-bg,#17191b)}
+.processRibbon>.container{justify-content:flex-start}.processRibbon h2{margin:0;text-align:left}
+.chapterStack{font-size:12px;color:var(--muted-light);line-height:1.7;margin-top:20px}.chapterStack>span{display:block;color:var(--light);font-size:10px;margin-bottom:6px}.chapterVisual>img.chapterBrand{position:absolute;width:65px;height:65px;right:16px;top:16px;border-radius:4px;object-fit:contain;padding:0}

@@ -62,3 +62,13 @@ Contraste da revisão dark: texto/carvão 16,66:1; texto secundário/painel 6,94
 - Painel da trajetória mostrou CESAR ao entrar no primeiro capítulo e Roomi Builder no capítulo Roomi, ambos sincronizados ao texto. Quatro capítulos conectam formação, Boop, Roomi e projetos autorais; provas vêm do currículo e dos certificados fornecidos.
 - Hover expandiu Cortech depois de recolhimento manual. Console sem avisos ou erros durante a verificação.
 - A publicação pública inicial da Vercel respondeu HTTP 200 sem autenticação. A versão final é republicada no mesmo projeto.
+
+## Revisão desktop publicada · nova seleção e imagens
+
+- Escopo desta revisão: desktop na Vercel, 1280×720. Não foram feitos novos testes de mobile.
+- Publicação respondeu sem autenticação. Canvas 3D carregou, com duas formas visivelmente diferentes após mover o ponteiro. Zero botões de replay na abertura; horizonte atravessa a base da tela.
+- Retrato profissional e avatar corretos; dez elementos da apresentação com revelação por rolagem; sem overflow horizontal.
+- PageDown avançou de Cortech para FreeSB: Cortech fechou e somente FreeSB permaneceu aberto. Painéis decorativos e slogan superior removidos; stack ao lado da captura e ações à direita.
+- Âncora da trajetória terminou a 128px do topo. Card0 somente na formação acadêmica, com imagem, stack e GitHub da equipe. Seu deploy anterior retornou 404 e foi retirado conforme orientação do titular. Dozão respondeu HTTP 200; não há repositório publicado identificado.
+- Wallpaper Roomi e imagens Boop/CESAR/Sollie substituem os visuais anteriores. Conteúdo essencial preservado com movimento reduzido.
+- Perfil ArthurMoury recebe README com destaque visual e link do portfólio; a credencial atual não possui escopo para alterar os campos globais de perfil, portanto esses campos foram preservados. Homepage do repositório Portfolio aponta para a Vercel.

@@ -37,9 +37,10 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext) 
     const ctx=gsap.context(()=>{
       const q=gsap.utils.selector(root);
       if(reduced)return;
-      q('#sobre h2, #projetos h2, #trajetoria h2, #certificados h2').forEach(title => {
+      q('#projetos h2, #trajetoria h2, #certificados h2').forEach(title => {
         gsap.from(title, { y: 38, clipPath: 'inset(0 0 18% 0)', duration: 1.1, ease: 'power4.out', clearProps: 'all', scrollTrigger: { trigger: title, start: 'top 92%', once: true } });
       });
+      q('[data-about-piece]').forEach((piece,i)=>gsap.from(piece,{opacity:0,y:30,duration:.9,delay:(i%3)*.07,ease:'power3.out',clearProps:'all',scrollTrigger:{trigger:piece,start:'top 93%',once:true}}));
       const portrait=q('[data-about-photo]')[0];
       if(portrait){
         gsap.timeline({scrollTrigger:{trigger:portrait,start:'top 94%',end:'bottom 12%',scrub:.7}})

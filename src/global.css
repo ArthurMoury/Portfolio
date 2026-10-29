@@ -17,3 +17,4 @@ html:has([data-reduced-motion=true]){scroll-behavior:auto}
 @media(max-width:1100px){:root{--page-width:calc(100% - 72px)}}
 @media(max-width:899px){:root{--page-width:calc(100% - 56px)}}
 @media(max-width:640px){:root{--page-width:calc(100% - 40px)}}
+html{overflow-anchor:none}

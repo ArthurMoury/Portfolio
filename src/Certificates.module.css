@@ -5,3 +5,5 @@
 @media(max-width:640px){.heading{align-items:start;gap:24px}.heading h2{font-size:clamp(2rem,8.5vw,2.8rem)}.tools{gap:15px}.count{max-width:125px;font-size:10px;line-height:1.5;text-align:right}.controls{gap:5px}.controls button{width:38px;height:44px}.card{width:275px}.document{height:205px;padding:10px}.viewport{padding-block:38px 18px;margin-top:10px}.caption strong{font-size:13px}.caption>span{font-size:10px}.bottom{font-size:10px;gap:20px}.bottom>span{max-width:170px}.bottom a{flex:none}}
 
 @media(max-width:640px){.heading{display:block}.tools{flex-direction:row;align-items:center;justify-content:space-between;margin-top:24px}.count{max-width:none;text-align:left}.card{user-select:none}}
+
+.driveLink{font-size:13px;min-height:44px;display:flex;align-items:center;border-bottom:1px solid var(--line);padding-bottom:6px}.driveLink:hover{color:var(--light)}

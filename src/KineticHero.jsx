@@ -1,9 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
-import { ArrowUpRight, RotateCcw } from 'lucide-react';
+import { useEffect, useRef } from 'react';
+import { ArrowUpRight } from 'lucide-react';
 import gsap from 'gsap';
 import s from './KineticHero.module.css';
 
-function Fold({ reduced, replay }) {
+function Fold({ reduced }) {
   const host = useRef(null);
   useEffect(() => {
     if (reduced) return;
@@ -53,6 +53,7 @@ function Fold({ reduced, replay }) {
         geometry = new T.BufferGeometry();
         geometry.setAttribute('position', new T.Float32BufferAttribute(positions, 3));
         geometry.setIndex(indices); geometry.computeVertexNormals();
+        const basePositions = new Float32Array(positions);
         material = new T.MeshPhysicalMaterial({ color: 0xbcc0c4, metalness: 1, roughness: .23, side: T.DoubleSide, clearcoat: .8, clearcoatRoughness: .16 });
         const fold = new T.Mesh(geometry, material);
         scene.add(fold);
@@ -71,12 +72,19 @@ function Fold({ reduced, replay }) {
           elapsed += last ? Math.min((now - last) / 1000, .05) : 0; last = now;
           const progress = Math.min(elapsed / 5.5, 1);
           const ease = 1 - Math.pow(1 - progress, 4);
-          rx += (pointer.y * .3 - rx) * .035; ry += (pointer.x * .45 - ry) * .035;
+          rx += (pointer.y * .85 - rx) * .055; ry += (pointer.x * 1.3 - ry) * .055;
+          const vertices = geometry.attributes.position.array;
+          for(let i=0;i<vertices.length;i+=3){
+            vertices[i]=basePositions[i]*(1+ry*.3);
+            vertices[i+1]=basePositions[i+1]*(1-ry*.18);
+            vertices[i+2]=basePositions[i+2]+Math.sin(basePositions[i]*2.2+rx*3)*ry*.55;
+          }
+          geometry.attributes.position.needsUpdate=true;geometry.computeVertexNormals();
           fold.rotation.set(.42 + rx, -.4 + ry + (1 - ease) * 2.8, -.45 + ease * .2);
           fold.scale.setScalar(.55 + ease * .45);
           renderer.render(scene, camera);
           node.dataset.ready = 'true';
-          const moving = Math.abs(pointer.y * .3 - rx) + Math.abs(pointer.x * .45 - ry) > .0005;
+          const moving = Math.abs(pointer.y * .85 - rx) + Math.abs(pointer.x * 1.3 - ry) > .0005;
           frame = progress < 1 || moving ? requestAnimationFrame(draw) : 0;
         };
         sync = () => { if (visible && !document.hidden && !frame) frame = requestAnimationFrame(draw); };
@@ -94,7 +102,7 @@ function Fold({ reduced, replay }) {
       geometry?.dispose(); material?.dispose(); environment?.dispose(); renderer?.dispose();
       renderer?.domElement.remove(); delete node.dataset.ready;
     };
-  }, [reduced, replay]);
+  }, [reduced]);
   return <div ref={host} className={s.fold} aria-hidden="true" data-fold>
     <svg className={s.fallback} viewBox="0 0 600 600" fill="none"><g stroke="currentColor">{Array.from({length:14},(_,i)=><ellipse key={i} cx="300" cy="300" rx={190-i*5} ry={85+i*8} transform={`rotate(${i*7} 300 300)`} />)}</g></svg>
   </div>;
@@ -102,7 +110,6 @@ function Fold({ reduced, replay }) {
 
 export default function KineticHero({ reduced }) {
   const root = useRef(null);
-  const [replay, setReplay] = useState(0);
   useEffect(() => {
     if (reduced) return;
     const ctx = gsap.context(() => {
@@ -111,10 +118,11 @@ export default function KineticHero({ reduced }) {
         .from(q('[data-name-line]'), { yPercent: 110, rotate: 4, duration: 1.3, stagger: .12, clearProps: 'all' }, .05)
         .from(q('[data-intro-copy]'), { opacity: .25, y: 20, duration: 1, stagger: .13, clearProps: 'all' }, .45)
         .fromTo(q('[data-fold]'), { opacity: .16, scale: .82 }, { opacity: 1, scale: 1, duration: 1.5 }, .1);
+      gsap.to(q('[data-horizon]'), {attr:{d:'M0 12C280 85 430 0 720 38S1160 100 1440 12V100H0Z'},ease:'none',scrollTrigger:{trigger:root.current,start:'top top',end:'bottom top',scrub:1}});
       gsap.to(q('[data-hero-stage]'), { y: 65, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: .7 } });
     }, root);
     return () => ctx.revert();
-  }, [reduced, replay]);
+  }, [reduced]);
   return <section ref={root} id="inicio" className={s.hero} aria-labelledby="hero-title" data-context="pessoa">
     <div className={s.layout}>
       <div className={s.copy}>
@@ -124,10 +132,9 @@ export default function KineticHero({ reduced }) {
         <a href="#sobre" className={s.aboutLink} data-intro-copy>Conheça meu universo<ArrowUpRight size={18}/></a>
       </div>
       <div className={s.stage} data-hero-stage>
-        <Fold reduced={reduced} replay={replay}/>
-        {!reduced && <button className={s.replay} onClick={() => setReplay(v => v + 1)} aria-label="Repetir animação 3D de entrada"><RotateCcw size={14}/><span>Rever entrada</span></button>}
+        <Fold reduced={reduced}/>
       </div>
     </div>
-    <a className={s.scroll} href="#sobre" aria-label="Rolar para conhecer Arthur"><svg viewBox="0 0 90 80" fill="none" aria-hidden="true"><path d="m14 17 31-15 31 15-31 15Z"/><path d="m14 33 31-15 31 15-31 15Z"/><path d="m14 49 31-15 31 15-31 15Z"/></svg></a>
+    <div className={s.horizon} aria-hidden="true"><svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path data-horizon d="M0 62C280 0 430 100 720 48S1160 0 1440 62V100H0Z"/><path className={s.horizonLine} d="M0 62C280 0 430 100 720 48S1160 0 1440 62"/></svg></div>
   </section>;
 }
