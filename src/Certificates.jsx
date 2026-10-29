@@ -4,7 +4,7 @@ import { ScanLine } from 'lucide-react';
 import { certificates } from './data/certificates';
 import s from './Certificates.module.css';
 
-export default function Certificates({ reduced, onOpen, modalOpen }) {
+function CertificateRow({ items, reverse=false, label, reduced, onOpen, modalOpen }) {
   const root = useRef(null), viewport = useRef(null), group = useRef(null);
   const length = useRef(0), visible = useRef(false), activeTab = useRef(!document.hidden);
   const drag = useRef(null), dragged = useRef(false);
@@ -21,7 +21,7 @@ export default function Certificates({ reduced, onOpen, modalOpen }) {
     return () => { observer.disconnect(); resize.disconnect(); document.removeEventListener('visibilitychange', visibility); };
   }, [reduced, x]);
   useAnimationFrame((_, delta) => {
-    if (!reduced && visible.current && activeTab.current && !focused && !modalOpen && !drag.current) x.set(wrap(x.get() - Math.min(delta, 48) * .035));
+    if (!reduced && visible.current && activeTab.current && !focused && !modalOpen && !drag.current) x.set(wrap(x.get() - Math.min(delta, 48) * (reverse ? -.03 : .033)));
   });
   const focus = (event, index) => {
     if (!event.target.matches(':focus-visible')) return;
@@ -51,15 +51,36 @@ export default function Certificates({ reduced, onOpen, modalOpen }) {
     <span className={s.document}><img src={certificate.thumbnail} alt={`Certificado de Arthur Moury: ${certificate.title}`} width={certificate.width} height={certificate.height} loading="lazy" draggable="false"/><span className={s.expand}><ScanLine size={17}/></span></span>
     <span className={s.caption}><strong>{certificate.title}</strong><span>{certificate.issuer}</span></span>
   </m.button>;
-  return <LazyMotion features={domAnimation}><section ref={root} id="certificados" className={s.section} aria-labelledby="certificates-title" data-context="faculdade">
-    <div className={s.heading}><h2 id="certificates-title">O aprendizado<br/><span>não para.</span></h2><a className={s.driveLink} href="https://drive.google.com/drive/folders/1XRFKKlfDYoGV3jMZjAE0DvzvVM1JhHvk" target="_blank" rel="noreferrer noopener">Ver pasta no Drive ↗</a></div>
-    <div ref={viewport} className={`${s.viewport} ${reduced ? s.static : ''}`} aria-roledescription="carrossel" aria-label="Certificados de Arthur Moury" onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={endDrag} onPointerCancel={endDrag} onPointerLeave={endDrag}
+  return <div ref={root} className={s.row}><p className={s.rowLabel}>{label}</p>
+    <div ref={viewport} className={`${s.viewport} ${reduced ? s.static : ''}`} aria-roledescription="carrossel" aria-label={`Certificados: ${label}`} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={endDrag} onPointerCancel={endDrag} onPointerLeave={endDrag}
       onClickCapture={e => { if (dragged.current) { e.preventDefault(); e.stopPropagation(); dragged.current = false; } }}
       onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false); }}>
       <m.div className={s.track} style={reduced ? undefined : { x }} data-certificate-track>
-        <div ref={group} className={s.group}>{certificates.map((certificate, index) => card(certificate, index))}</div>
-        {!reduced && <div className={s.group} aria-hidden="true">{certificates.map((certificate, index) => card(certificate, index, true))}</div>}
+        <div ref={group} className={s.group}>{items.map((certificate, index) => card(certificate, index))}</div>
+        {!reduced && <div className={s.group} aria-hidden="true">{items.map((certificate, index) => card(certificate, index, true))}</div>}
       </m.div>
     </div>
+  </div>;
+}
+
+const experienceTitles=/Claude|Agent Skills|AWS|incubação|expositor|oficina|REC’n’Play|Mostra/;
+const experiences=certificates.filter(c=>experienceTitles.test(c.title));
+const development=certificates.filter(c=>!experienceTitles.test(c.title));
+const phrases=[['O aprendizado','não para.'],['Sempre adquirindo','conhecimento.'],['Aprender, aplicar,','continuar.']];
+
+export default function Certificates({ reduced, onOpen, modalOpen }) {
+  const root=useRef(null), visible=useRef(false);
+  const [phrase,setPhrase]=useState(0);
+  useEffect(()=>{
+    if(reduced)return;
+    const observer=new IntersectionObserver(([entry])=>{visible.current=entry.isIntersecting;},{threshold:.08});
+    observer.observe(root.current);
+    const timer=setInterval(()=>{if(visible.current&&!document.hidden&&!modalOpen)setPhrase(i=>(i+1)%phrases.length);},6500);
+    return()=>{observer.disconnect();clearInterval(timer);};
+  },[reduced,modalOpen]);
+  return <LazyMotion features={domAnimation}><section ref={root} id="certificados" className={s.section} aria-labelledby="certificates-title" data-context="faculdade">
+    <div className={s.heading}><h2 id="certificates-title" aria-label="Aprendizado contínuo"><span key={phrase} className={s.rotatingTitle} aria-hidden="true">{phrases[phrase][0]}<br/><span>{phrases[phrase][1]}</span></span></h2><a className={s.driveLink} href="https://drive.google.com/drive/folders/1XRFKKlfDYoGV3jMZjAE0DvzvVM1JhHvk" target="_blank" rel="noreferrer noopener">Ver pasta no Drive ↗</a></div>
+    <CertificateRow items={experiences} label="IA, nuvem e experiências" reduced={reduced} onOpen={onOpen} modalOpen={modalOpen}/>
+    <CertificateRow items={development} reverse label="Programação e dados" reduced={reduced} onOpen={onOpen} modalOpen={modalOpen}/>
   </section></LazyMotion>;
 }

@@ -85,3 +85,17 @@ Contraste da revisão dark: texto/carvão 16,66:1; texto secundário/painel 6,94
 - Texto antigo da demonstração e etiquetas/links da trajetória ausentes da página.
 - Economia de horas deliberadamente não quantificada até o titular fornecer a medição.
 - Mobile não foi revalidado nesta rodada, conforme escopo solicitado.
+
+## Projetos acadêmicos e revisão geral — 29/10/2026
+
+Escopo: desktop, 1280 × 720, na Vercel. Esta seção substitui os testes antigos de abas manuais: Na prática agora avança automaticamente, com apagamento/entrada e pausa durante foco por teclado.
+
+- Echo e Gaita Hero confirmados nos Google Sites dos respectivos grupos; capturas públicas reais, stack e atuação descritas a partir da documentação e dos repositórios. O endereço antigo do app Echo está indisponível; o link utilizado é a documentação publicada.
+- Cortech não tem botão de deploy; os outros seis acessos permanecem. Nomes atualizados para Site de reservas e Site Construtor de Hotéis, inclusive no texto da experiência.
+- Dois trilhos de certificados: 12 em IA/nuvem/experiências e 17 em programação/dados. Sem documentos compartilhados entre as listas; os clones visuais não entram na navegação acessível. Ampliação e Escape verificados.
+- Conteúdo essencial, sete projetos, 29 certificados e ordem das seções validados pelo script de conteúdo. Build aprovado. Nenhuma imagem quebrada ou overflow horizontal na sessão de inspeção.
+- Referências comparadas: https://brittanychiang.com/ (clareza da atuação, tecnologias e acessibilidade), https://bruno-simon.com/ (interação 3D com resposta e propósito) e Refokus, referência do titular. A apresentação própria e a rolagem nativa foram preservadas.
+- Achados corrigidos: identificação da seção atual na navegação; rótulos das fileiras desalinhados devido ao limite global de largura de parágrafo; texto do prompt pequeno e troca precoce; nomes antigos no texto profissional; imagem ampliada sem texto alternativo quando a legenda era vazia.
+- Prompt com maior tempo de leitura (42 s), demais perspectivas com 13 s. Leitura com foco por teclado e pausa explícita suspendem o avanço. Não há necessidade de clicar para trocar.
+- Antes do currículo: removida altura mínima ociosa; margem inferior da seção anterior reduzida. Nenhuma estimativa de horas economizadas foi inventada.
+- Limites: mobile não revalidado nesta rodada; o módulo Three.js continua acima de 500 kB antes de compressão, carregado dinamicamente. Formulário prepara um e-mail, não faz envio em servidor.

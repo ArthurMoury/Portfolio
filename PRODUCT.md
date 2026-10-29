@@ -48,3 +48,10 @@ A entrada usa duas superfícies curvas que se abrem e uma escultura Three.js que
 Roomi Reservas e Builder usam capturas atuais de suas aberturas. A trajetória conserva os quatro capítulos e a ampliação das imagens, sem botões de repositório, etiquetas de origem ou legendas sobrepostas.
 
 A antiga demonstração genérica foi substituída por quatro perspectivas do trabalho interno: prompts/LLMs, automação de reservas, dashboard/copiloto e evolução em produção. As métricas exibidas são seis etapas, sete verificações de regressão e horizonte de previsão de 90 dias. Não publicar economia de horas: o titular ainda vai fornecer a medição. O exemplo de prompt é uma adaptação sem dados reais de clientes.
+
+## Refinamento acadêmico e sequências automáticas — 29/10/2026
+A trajetória inclui Gaita Hero e Echo (2025), com capturas reais e links para os Google Sites do grupo. Os demais capítulos continuam sem links de repositório. Os nomes de apresentação são Site de reservas e Site Construtor de Hotéis. Cortech conserva apenas o acesso ao código na galeria.
+
+Certificados em dois fluxos de sentidos opostos, sem repetição de documentos entre os grupos: IA/nuvem/experiências e programação/dados. O título alterna frases de aprendizado contínuo. Hover amplia sem pausar; o diálogo, foco por teclado, aba oculta e movimento reduzido continuam respeitados.
+
+Da integração à entrega avança automaticamente com apagamento e surgimento, sem deslocamento lateral. O prompt tem papel, entradas, método, restrições, formato e revisão. As automações destacam extração, arquivos, status, processos manuais, cálculos e integrações. O espaço antes do currículo foi reduzido.

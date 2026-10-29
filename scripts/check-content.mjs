@@ -7,7 +7,7 @@ assert.deepEqual(projects.map(p=>p.id),expected,'A seleção deve ser exatamente
 assert.equal(new Set(projects.filter(p=>p.repo).map(p=>p.repo)).size,6,'Seis repositórios identificados; Dozão ainda sem repositório publicado.');
 assert.equal(new Set(projects.filter(p=>p.live).map(p=>p.live)).size,7,'Cada projeto deve ter seu próprio deploy.');
 assert.equal(profile.email,'mourygodoy@gmail.com');
-assert.deepEqual(chapters.map(c=>c.id),['formacao','boop','roomi','autoria'],'A trajetória conecta formação, estágios e projetos autorais.');
+assert.deepEqual(chapters.map(c=>c.id),['formacao','gaita-hero','echo','boop','roomi','autoria'],'A trajetória conecta formação, estágios e projetos autorais.');
 for(const p of projects){if(p.repo)assert.match(p.repo,/^[\w-]+\/[\w-]+$/);if(p.live)assert.equal(new URL(p.live).protocol,'https:');assert(p.implementation.length>=3);assert.equal(typeof p.private,'boolean');}
 for(const p of [...projects,...chapters])assert(existsSync(`public${p.image}`),`Imagem ausente: ${p.image}`);
 for(const f of ['fonts/sora-latin.woff2','fonts/hanken-latin.woff2','images/arthur-profile.webp','Arthur-Moury-CV.pdf'])assert(existsSync(`public/${f}`),`Asset ausente: ${f}`);

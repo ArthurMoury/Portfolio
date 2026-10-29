@@ -7,3 +7,5 @@
 @media(max-width:640px){.heading{display:block}.tools{flex-direction:row;align-items:center;justify-content:space-between;margin-top:24px}.count{max-width:none;text-align:left}.card{user-select:none}}
 
 .driveLink{font-size:13px;min-height:44px;display:flex;align-items:center;border-bottom:1px solid var(--line);padding-bottom:6px}.driveLink:hover{color:var(--light)}
+
+.heading h2{min-height:2.4em}.heading h2>.rotatingTitle{display:block;color:var(--light);animation:titleReveal .65s var(--ease)}.heading h2>.rotatingTitle>span{color:var(--muted-light)}.row{margin-top:30px}.rowLabel{max-width:none;width:var(--page-width);margin:0 auto;color:var(--muted-light);font-size:12px}.row .viewport{margin-top:0;padding-top:25px;padding-bottom:12px}.row .card{width:290px}.row .document{height:185px}.row .caption{min-height:76px;padding-top:12px}.row .caption strong{font-size:12px;max-width:270px}.row .caption>span{font-size:10px}.section{padding-bottom:70px}@keyframes titleReveal{from{opacity:0;filter:blur(5px);transform:translateY(12px)}to{opacity:1;filter:blur(0);transform:none}}:global([data-reduced-motion=true]) .rotatingTitle{animation:none}

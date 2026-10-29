@@ -10,13 +10,14 @@ export function useReducedMotion() {
   return reduced;
 }
 
-export function usePageMotion(root,reduced,setNavigation,setChapter,setContext) {
+export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,setActiveSection) {
   useEffect(()=>{
     let frame=0;
     let disposed=false;
     const hero=document.getElementById('inicio');
     const markers=[...root.current.querySelectorAll('[data-context]')];
     const chapterElements=[...root.current.querySelectorAll('[data-chapter]')];
+    const sections=[...root.current.querySelectorAll('main > section[id]')];
     const progress=root.current.querySelector('[data-reading-progress]');
     const update=()=>{
       frame=0;
@@ -24,6 +25,9 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext) 
       let context='pessoa';
       for(const el of markers)if(el.getBoundingClientRect().top<=window.innerHeight*.45)context=el.dataset.context;
       setContext(context);
+      let activeSection='inicio';
+      for(const section of sections)if(section.getBoundingClientRect().top<=180)activeSection=section.id;
+      setActiveSection(activeSection);
       let chapterIndex=0;
       chapterElements.forEach((chapter,i)=>{if(chapter.getBoundingClientRect().top<=window.innerHeight*.55)chapterIndex=i;});
       setChapter(chapterIndex);
@@ -77,5 +81,5 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext) 
     });
     window.addEventListener('load',refresh);
     return()=>{disposed=true;cancelAnimationFrame(frame);window.removeEventListener('scroll',queue);window.removeEventListener('resize',queue);window.removeEventListener('load',refresh);media.revert();ctx.revert();};
-  },[root,reduced,setNavigation,setChapter,setContext]);
+  },[root,reduced,setNavigation,setChapter,setContext,setActiveSection]);
 }
