@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
+import gsap from 'gsap';
 import { ArrowUpRight, ArrowDown, BriefcaseBusiness, GraduationCap, Check, X, Menu, Mail, Copy, MapPin, ScanLine, FileDown } from 'lucide-react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { projects, chapters, contexts, profile } from './data/portfolio';
@@ -64,7 +65,7 @@ function ProjectImage({ project, onOpen, className='' }) {
 }
 
 function Career({ onOpen, activeChapter, setActiveChapter }) {
-  return <section id="trajetoria" className={s.career} aria-labelledby="career-title"><div className={s.container}>
+  return <section id="trajetoria" data-career-story className={s.career} aria-labelledby="career-title"><div className={s.container}>
     <div className={s.careerIntro}><h2 id="career-title">O que me trouxe<br />até aqui.</h2></div>
     <div className={s.careerGrid}><div className={s.chapterList}>{chapters.map((c,i)=><article id={`capitulo-${c.id}`} key={c.id} className={`${s.chapter} ${i===activeChapter?s.chapterActive:''}`} data-chapter={i} data-context={c.context}>
       <span className={s.chapterMarker}>{c.marker}</span><p className={s.organization}>{c.organization}</p><h3>{c.title}</h3><p className={s.chapterRole}>{c.role}</p><p className={s.chapterText}>{c.text}</p><p className={s.chapterProof}>{c.proof}</p>{c.stack&&<p className={s.chapterStack}><span>Tecnologias</span>{c.stack}</p>}{c.site&&<a className={s.textLink} href={c.site} {...external}>Documentação no Google Sites<ArrowUpRight size={16}/></a>}
@@ -73,27 +74,55 @@ function Career({ onOpen, activeChapter, setActiveChapter }) {
   </div></section>;
 }
 
-function ProjectGallery({ onOpen }) {
+function ProjectGallery({ onOpen, reduced }) {
   const initial=projects.findIndex(p=>window.location.hash===`#projeto-${p.id}`);
   const [open,setOpen]=useState(initial<0?null:initial);
   const current=useRef(initial<0?null:initial), section=useRef(null), changing=useRef(false), anchorLock=useRef(!!window.location.hash);
-  const frames=useRef([]);
-  const switchTo=(index,preserve=true)=>{
-    if(index===current.current||changing.current)return;
+  const transition=useRef(null), scrolling=useRef(false);
+  const switchTo=(index,preserve=true,instant=false)=>{
+    if(index===current.current)return;
+    const panels=[...section.current.querySelectorAll('[data-project-panel]')];
     const row=section.current.querySelector(`[data-project-trigger="${index??current.current}"]`);
     const before=row?.getBoundingClientRect().top;
-    changing.current=true;current.current=index;
+    transition.current?.kill();
+    const heights=panels.map(panel=>panel.getBoundingClientRect().height);
+    const target=index??current.current;
+    const compensate=preserve&&row&&before>100&&before<innerHeight;
+    let prefix=heights.slice(0,target).reduce((a,b)=>a+b,0);
+    current.current=index;changing.current=true;
     flushSync(()=>setOpen(index));
-    // Preserve the visible row when a panel above it closes. Wheel/touch scrolling stays native.
-    if(preserve&&row&&before<innerHeight&&before>80){
-      const delta=row.getBoundingClientRect().top-before;
-      if(Math.abs(delta)>1)window.scrollBy({top:delta,behavior:'instant'});
+    if(reduced||instant){
+      gsap.set(panels,{clearProps:'height,gridTemplateRows,overflow'});
+      panels.forEach(p=>gsap.set(p.firstElementChild,{clearProps:'opacity,transform'}));
+      if(compensate)window.scrollBy({top:row.getBoundingClientRect().top-before,behavior:'instant'});
+      changing.current=false;ScrollTrigger.refresh(true);return;
     }
-    ScrollTrigger.refresh(true);
-    frames.current.push(requestAnimationFrame(()=>{changing.current=false;}));
+    // Only the accordion's height change is compensated. Native wheel/touch input stays free.
+    gsap.set(panels,{height:i=>heights[i],gridTemplateRows:'1fr',overflow:'hidden'});
+    const timeline=gsap.timeline({onUpdate:()=>{
+      if(!compensate)return;
+      const next=panels.slice(0,target).reduce((sum,p)=>sum+p.getBoundingClientRect().height,0);
+      const delta=next-prefix;prefix=next;
+      if(Math.abs(delta)>.01)window.scrollBy({top:delta,behavior:'instant'});
+    },onComplete:()=>{
+      gsap.set(panels,{clearProps:'height,gridTemplateRows,overflow'});
+      panels.forEach(p=>gsap.set(p.firstElementChild,{clearProps:'opacity,transform'}));
+      changing.current=false;ScrollTrigger.refresh(true);
+    }});
+    transition.current=timeline;
+    panels.forEach((panel,i)=>{
+      const content=panel.firstElementChild;
+      const height=i===index?content.firstElementChild.getBoundingClientRect().height:0;
+      if(!heights[i]&&!height)return;
+      timeline.to(panel,{height,duration:i===index?.56:.44,ease:'power2.inOut'},0);
+      if(i===index){
+        if(!heights[i])gsap.set(content,{opacity:0,y:12});
+        timeline.to(content,{opacity:1,y:0,duration:.4,ease:'power3.out'},.1);
+      }else timeline.to(content,{opacity:0,y:-8,duration:.28,ease:'power2.in'},0);
+    });
   };
   useEffect(()=>{
-    let frame=0,settle;
+    let frame=0,settle,scrollEnd;
     const update=()=>{
       frame=0;
       if(changing.current||anchorLock.current||document.querySelector('dialog[open]'))return;
@@ -105,6 +134,7 @@ function ProjectGallery({ onOpen }) {
       if(index!==null)switchTo(index);
     };
     const queue=()=>{
+      scrolling.current=true;clearTimeout(scrollEnd);scrollEnd=setTimeout(()=>{scrolling.current=false;},180);
       if(anchorLock.current){clearTimeout(settle);settle=setTimeout(()=>{anchorLock.current=false;},220);return;}
       if(!frame)frame=requestAnimationFrame(update);
     };
@@ -113,13 +143,13 @@ function ProjectGallery({ onOpen }) {
       if(!link||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
       anchorLock.current=true;
       const target=projects.findIndex(p=>link.hash===`#projeto-${p.id}`);
-      if(target>=0)switchTo(target,false);
+      if(target>=0)switchTo(target,false,true);
       clearTimeout(settle);settle=setTimeout(()=>{anchorLock.current=false;},1400);
     };
     const hashChange=()=>{
       anchorLock.current=true;
       const target=projects.findIndex(p=>window.location.hash===`#projeto-${p.id}`);
-      if(target>=0)switchTo(target,false);
+      if(target>=0)switchTo(target,false,true);
       clearTimeout(settle);settle=setTimeout(()=>{anchorLock.current=false;},1400);
     };
     if(anchorLock.current)settle=setTimeout(()=>{anchorLock.current=false;},1400);
@@ -127,12 +157,12 @@ function ProjectGallery({ onOpen }) {
     document.addEventListener('click',anchor,true);
     window.addEventListener('scroll',queue,{passive:true});
     window.addEventListener('resize',queue);
-    return()=>{cancelAnimationFrame(frame);frames.current.forEach(cancelAnimationFrame);clearTimeout(settle);document.removeEventListener('click',anchor,true);window.removeEventListener('hashchange',hashChange);window.removeEventListener('scroll',queue);window.removeEventListener('resize',queue);};
-  },[]);
+    return()=>{cancelAnimationFrame(frame);transition.current?.kill();changing.current=false;scrolling.current=false;section.current?.querySelectorAll('[data-project-panel]').forEach(p=>{gsap.set(p,{clearProps:'height,gridTemplateRows,overflow'});gsap.set(p.firstElementChild,{clearProps:'opacity,transform'});});clearTimeout(settle);clearTimeout(scrollEnd);document.removeEventListener('click',anchor,true);window.removeEventListener('hashchange',hashChange);window.removeEventListener('scroll',queue);window.removeEventListener('resize',queue);};
+  },[reduced]);
   return <section id="projetos" ref={section} className={s.projects} aria-labelledby="projects-title">
     <div className={s.projectsHeading} data-context="iniciativa"><div className={`${s.container} ${s.projectsIntro}`}><h2 id="projects-title">Cada ideia,<br/>um mundo para explorar.</h2></div></div>
     {projects.map((p,i)=><article id={`projeto-${p.id}`} key={p.id} className={s.projectBand} data-project={p.id} data-context={p.context} data-expanded={open===i}
-      onPointerEnter={e=>{if(e.pointerType==='mouse'&&!anchorLock.current)switchTo(i);}}
+      onPointerEnter={e=>{if(e.pointerType==='mouse'&&!anchorLock.current&&!changing.current&&!scrolling.current)switchTo(i);}}
       onKeyDown={e=>{if(e.key==='Escape'){switchTo(null);document.getElementById(`project-toggle-${p.id}`)?.focus({preventScroll:true});}}}>
       <div className={s.container}>
         <div className={s.projectBandTop} data-project-trigger={i}>
@@ -142,7 +172,7 @@ function ProjectGallery({ onOpen }) {
             {p.id==='cortech'?null:p.live?<a href={p.live} {...external} aria-label={`Acessar ${p.name}`}>Acessar<ArrowUpRight size={19}/></a>:<span className={s.unavailable}>Acesso em atualização</span>}
           </div>
         </div>
-        <div id={`project-gallery-${p.id}`} className={`${s.projectGallery} ${open===i?s.projectGalleryOpen:''}`} inert={open!==i?true:undefined} aria-hidden={open!==i}>
+        <div id={`project-gallery-${p.id}`} data-project-panel className={`${s.projectGallery} ${open===i?s.projectGalleryOpen:''}`} inert={open!==i?true:undefined} aria-hidden={open!==i}>
           <div className={s.galleryClip}><div className={s.projectContent}>
             <figure className={s.galleryScreenshot}><ProjectImage project={p} onOpen={onOpen}/><figcaption>{p.imageType}</figcaption></figure>
             <div className={s.projectBuild}><p className={s.buildDescription}>{p.detail}</p><dl>{p.implementation.map(item=><div key={item.label}><dt>{item.label}</dt><dd>{item.text}</dd></div>)}</dl></div>
@@ -221,5 +251,5 @@ export default function App() {
   const [activeSection,setActiveSection]=useState('inicio');
   const [image,setImage]=useState(null);
   usePageMotion(root,reduced,setNavigationVisible,setActiveChapter,setContext,setActiveSection);
-  return <div ref={root} className={s.app} data-reduced-motion={reduced}><a className={s.skipLink} href="#sobre">Pular para informações pessoais</a><Navigation visible={navigationVisible} context={context} activeSection={activeSection}/><main><KineticHero reduced={reduced}/><About/><div className={s.sectionTransition} data-section-transition aria-hidden="true"><svg viewBox="0 0 1440 200" preserveAspectRatio="none"><path data-transition-surface d="M0 160Q720 -100 1440 160V200H0Z"/></svg></div><ProjectGallery onOpen={setImage}/><Career onOpen={setImage} activeChapter={activeChapter} setActiveChapter={setActiveChapter}/><Certificates reduced={reduced} onOpen={setImage} modalOpen={!!image}/><PracticeLab reduced={reduced}/><Curriculum/><Contact reduced={reduced}/></main><ImageDialog value={image} onClose={()=>setImage(null)}/></div>;
+  return <div ref={root} className={s.app} data-reduced-motion={reduced}><a className={s.skipLink} href="#sobre">Pular para informações pessoais</a><Navigation visible={navigationVisible} context={context} activeSection={activeSection}/><main><KineticHero reduced={reduced}/><About/><div className={s.sectionTransition} data-section-transition aria-hidden="true"><svg viewBox="0 0 1440 200" preserveAspectRatio="none"><path data-transition-surface d="M0 160Q720 -100 1440 160V200H0Z"/></svg></div><ProjectGallery onOpen={setImage} reduced={reduced}/><Career onOpen={setImage} activeChapter={activeChapter} setActiveChapter={setActiveChapter}/><Certificates reduced={reduced} onOpen={setImage} modalOpen={!!image}/><PracticeLab reduced={reduced}/><Curriculum/><Contact reduced={reduced}/></main><ImageDialog value={image} onClose={()=>setImage(null)}/></div>;
 }

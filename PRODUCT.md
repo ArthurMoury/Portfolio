@@ -58,3 +58,6 @@ Da integração à entrega avança automaticamente com apagamento e surgimento, 
 
 ## Mobile — 31/10/2026
 O escopo agora inclui telefones em retrato/horizontal e tablets. Preservar as animações Three.js, Motion e GSAP, com interação por toque e layout adequado à leitura móvel. Conteúdo, links de projeto, certificados, currículo e contato são os mesmos do desktop. Manter alternativa para movimento reduzido.
+
+## Revisão do fluxo — 31/10/2026
+Substituir a troca temporizada em Na prática por uma animação real de fluxo, controlada pela rolagem e por pausa/reprodução nas duas versões. Manter o prompt integral e os contextos. A trajetória também muda visualmente com a rolagem no mobile.

@@ -110,3 +110,13 @@ Escopo: desktop, 1280 × 720, na Vercel. Esta seção substitui os testes antigo
 - Na prática adapta indicadores a duas colunas; o prompt inteiro fica disponível em área vertical de leitura. Alternativa reduzida troca os quatro conteúdos por botões, sem rótulos duplicados.
 - Formulário: erros obrigatórios, preparo de rascunho e destino de e-mail corretos; campos usam fonte de 16 px no celular. Nenhum e-mail foi enviado.
 - Build e verificação de conteúdo aprovados. Testes em emulação de viewport, sem acesso a aparelhos iOS/Android físicos nem medição de desempenho neles; gestos touch revisados pelo código de Pointer Events, não por hardware de toque.
+
+## Movimento e continuidade — 31/10/2026
+- Mobile 390×844: saudação, nome e descrição centralizados; CTA da abertura sem caixa visível. Three.js preservado.
+- A transição de Reservas para Construtor foi inspecionada pela rolagem nativa: durante a troca, o painel de saída tinha 224 px e o de entrada 254 px. Ao terminar, somente Construtor permaneceu com 695,98 px e seu cabeçalho ficou em 390,64 px, preservando a posição de leitura. Hover suspenso durante rolagem e transição para evitar seleção acidental de faixas movidas sob o ponteiro.
+- Trajetória mobile: palco passou de sua posição inicial (288,83 px) para sticky a 108 px; a imagem mudou de Card0 para Gaita Hero durante a rolagem. Sem imagens duplicadas abaixo dos capítulos. Desktop conserva palco lateral.
+- Da integração à entrega não usa mais setInterval nem troca de textos por tempo. O progresso da rolagem moveu a cápsula para (300,26; 103,95), desenhou a conexão e ativou Automações em progresso 0,288879. A reprodução explícita percorreu a timeline e terminou em 1; pausa manteve o mesmo progresso mesmo com rolagem adicional.
+- Pause e Play presentes em mobile e desktop. Em preferência de movimento reduzido, ambos ficam desativados e os quatro botões de etapa mantêm o conteúdo acessível.
+- Tela 320×667: painel terminou em 649,63 px, dentro da área visível, sem overflow horizontal. Desktop 1280×720: painel terminou em 638,28 px. Prompt integral abriu em diálogo com os seis campos e Escape/foco corretos.
+- Glifo de seta retirado do link do Drive; ícones vetoriais funcionais mantidos. Nenhum emoji textual nas interfaces alteradas.
+- Verificações por navegador/emulação de viewport; desempenho em hardware iOS/Android físico não medido.

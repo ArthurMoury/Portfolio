@@ -29,7 +29,10 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
       for(const section of sections)if(section.getBoundingClientRect().top<=180)activeSection=section.id;
       setActiveSection(activeSection);
       let chapterIndex=0;
-      chapterElements.forEach((chapter,i)=>{if(chapter.getBoundingClientRect().top<=window.innerHeight*.55)chapterIndex=i;});
+      const stage=root.current.querySelector('[data-career-story] aside');
+      const stageBottom=stage?.getBoundingClientRect().bottom||0;
+      const chapterLine=innerWidth<900?Math.min(innerHeight-50,stageBottom+(innerHeight-stageBottom)*.3):innerHeight*.55;
+      chapterElements.forEach((chapter,i)=>{if(chapter.getBoundingClientRect().top<=chapterLine)chapterIndex=i;});
       setChapter(chapterIndex);
       const max=document.documentElement.scrollHeight-window.innerHeight;
       if(progress)progress.style.transform=`scaleX(${max>0?Math.min(1,Math.max(0,window.scrollY/max)):0})`;
@@ -60,17 +63,9 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
       q('[data-project]').forEach(band => {
         gsap.from(band.querySelector('h3'), { x: -30, duration: .85, ease: 'power3.out', clearProps: 'all', scrollTrigger: { trigger: band, start: 'top 90%', once: true } });
       });
-      media.add('(min-width:900px)',()=>{
-        q('[data-chapter-visual]').forEach((visual,i)=>{
-          const show=direction=>gsap.fromTo(visual,{y:direction*18,scale:.97},{y:0,scale:1,duration:.65,ease:'power3.out',overwrite:true});
-          ScrollTrigger.create({trigger:q('[data-chapter]')[i],start:'top 55%',onEnter:()=>show(1),onEnterBack:()=>show(-1)});
-        });
-      });
-      media.add('(max-width:899px)',()=>{
-        q('[data-chapter-mobile]').forEach(visual=>{
-          gsap.from(visual,{y:24,scale:.96,rotateX:4,opacity:.3,duration:.85,ease:'power3.out',clearProps:'all',scrollTrigger:{trigger:visual,start:'top 94%',once:true}});
-          gsap.fromTo(visual.querySelector('img'),{scale:1.04,yPercent:2},{scale:1,yPercent:-2,ease:'none',scrollTrigger:{trigger:visual,start:'top bottom',end:'bottom top',scrub:.55}});
-        });
+      q('[data-chapter-visual]').forEach((visual,i)=>{
+        const show=direction=>gsap.fromTo(visual,{y:direction*18,scale:.96,clipPath:direction>0?'inset(0 0 12% 0)':'inset(12% 0 0 0)'},{y:0,scale:1,clipPath:'inset(0 0 0% 0)',duration:.7,ease:'power3.out',overwrite:true});
+        ScrollTrigger.create({trigger:q('[data-chapter]')[i],start:()=>`top ${innerWidth<900?'58%':'55%'}`,onEnter:()=>show(1),onEnterBack:()=>show(-1)});
       });
     },root);
     const refresh=()=>{if(!disposed){ScrollTrigger.refresh();queue();}};

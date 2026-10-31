@@ -45,3 +45,12 @@ Preservar carvão/prata, Sora/Hanken e o mesmo percurso, conteúdo e bibliotecas
 A apresentação empilha título, retrato com máscara GSAP, texto e contatos. Projetos passam a uma coluna: título, ações à direita, captura em largura útil e stack legível abaixo. Mantém uma expansão por vez, por rolagem e toque. A trajetória organiza cada capítulo seguido de sua própria imagem, com entrada em profundidade e parallax GSAP; o painel fixo e suas trocas permanecem no desktop.
 
 Menu com foco contido e bloqueio da página enquanto aberto; CTA sempre acessível. Safe areas respeitadas. Certificados continuam em dois fluxos opostos, com resposta ao toque e diálogo. A apresentação automática de IA permanece; o prompt tem uma área de leitura vertical no mobile para manter o texto inteiro disponível sem alongar excessivamente a seção.
+
+## Revisão de movimento — 31/10/2026
+A abertura mobile centraliza saudação, nome e descrição, e retira Conheça meu universo. O link do Drive usa somente texto, sem o glifo de seta. Ícones funcionais vetoriais, como GitHub e controles de reprodução, permanecem.
+
+Projetos abrem e fecham em uma timeline GSAP compartilhada (entrada 560 ms, saída 440 ms). Compensar somente a variação de altura dos painéis anteriores ao cabeçalho em leitura, sem capturar wheel/touch. Recalcular ScrollTrigger ao terminar a troca; âncoras e movimento reduzido usam o estado final imediato.
+
+No mobile, a trajetória agora mantém o palco de imagens fixo abaixo da navegação, com troca por capítulo, máscara e profundidade GSAP. Na horizontal, divide o espaço entre texto e imagem. Esta direção substitui a decisão anterior de imagens estáticas abaixo de cada capítulo.
+
+Da integração à entrega torna-se uma cena conduzida pela rolagem: um circuito desenha conexões, transporta uma cápsula e constrói barras, verificações e horizonte de previsão. Pause congela a cena; Play reproduz a timeline de forma contínua. Sem intervalos para trocar textos. Os detalhes e o prompt integral abrem em diálogo; preferência por movimento reduzido mantém navegação manual e texto acessível.
