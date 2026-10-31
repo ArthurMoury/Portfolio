@@ -46,7 +46,7 @@ function CertificateRow({ items, reverse=false, label, reduced, onOpen, modalOpe
   const endDrag = () => { drag.current = null; };
   const card = (certificate, index, duplicate = false) => <m.button key={certificate.id} type="button" className={s.card} tabIndex={duplicate ? -1 : 0}
     aria-label={`Ampliar certificado: ${certificate.title}`} onFocus={e => focus(e, index)} onClick={() => open(certificate)}
-    whileHover={reduced ? undefined : { scale: 1.09, y: -12, rotate: index % 2 ? 1 : -1 }} whileFocus={reduced ? undefined : { scale: 1.07, y: -10 }}
+    whileTap={reduced ? undefined : { scale:1.04 }} whileHover={reduced ? undefined : { scale: 1.09, y: -12, rotate: index % 2 ? 1 : -1 }} whileFocus={reduced ? undefined : { scale: 1.07, y: -10 }}
     transition={{ duration: .38, ease: [.22, 1, .36, 1] }}>
     <span className={s.document}><img src={certificate.thumbnail} alt={`Certificado de Arthur Moury: ${certificate.title}`} width={certificate.width} height={certificate.height} loading="lazy" draggable="false"/><span className={s.expand}><ScanLine size={17}/></span></span>
     <span className={s.caption}><strong>{certificate.title}</strong><span>{certificate.issuer}</span></span>

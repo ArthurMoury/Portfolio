@@ -47,3 +47,5 @@ Direção visual em `DESIGN.md`; verificações em `docs/QA.md`. Referências: [
 A revisão desktop remove controles do carrossel e os painéis decorativos dos projetos, exibe stacks verificadas e fecha a faixa anterior ao explorar outra. Card0 aparece apenas na trajetória acadêmica, com imagem e stack; o antigo deploy estava indisponível. Dozão possui deploy, mas não foi encontrado um repositório GitHub publicado.
 
 A seção **Na prática** reúne um prompt estruturado, extração de dados, arquivos, status, cálculos, validações de um copiloto e evolução de um dashboard em produção. A apresentação troca automaticamente por apagamento e entrada; pausa fora da tela, em aba oculta ou durante leitura por teclado. As métricas de economia de tempo aguardam medição do titular.
+
+O layout mobile mantém Three.js, GSAP e Motion. Projetos usam capturas amplas com stack abaixo; a trajetória vira uma sequência vertical de imagens animadas. Menu, diálogos, certificados e formulário se adaptam ao toque, com safe areas e alternativa para movimento reduzido. Validação de tamanhos e limites em `docs/QA.md`.

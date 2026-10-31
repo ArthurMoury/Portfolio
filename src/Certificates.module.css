@@ -9,3 +9,12 @@
 .driveLink{font-size:13px;min-height:44px;display:flex;align-items:center;border-bottom:1px solid var(--line);padding-bottom:6px}.driveLink:hover{color:var(--light)}
 
 .heading h2{min-height:2.4em}.heading h2>.rotatingTitle{display:block;color:var(--light);animation:titleReveal .65s var(--ease)}.heading h2>.rotatingTitle>span{color:var(--muted-light)}.row{margin-top:30px}.rowLabel{max-width:none;width:var(--page-width);margin:0 auto;color:var(--muted-light);font-size:12px}.row .viewport{margin-top:0;padding-top:25px;padding-bottom:12px}.row .card{width:290px}.row .document{height:185px}.row .caption{min-height:76px;padding-top:12px}.row .caption strong{font-size:12px;max-width:270px}.row .caption>span{font-size:10px}.section{padding-bottom:70px}@keyframes titleReveal{from{opacity:0;filter:blur(5px);transform:translateY(12px)}to{opacity:1;filter:blur(0);transform:none}}:global([data-reduced-motion=true]) .rotatingTitle{animation:none}
+
+@media(max-width:899px){
+ .heading{display:block}.heading h2{font-size:clamp(2rem,7.7vw,3rem);min-height:2.4em}
+ .driveLink{width:max-content;margin-top:22px;font-size:14px}.row{margin-top:34px}
+ .rowLabel{font-size:13px}.row .card{width:min(76vw,290px)}.row .document{height:190px}
+ .row .caption{min-height:84px}.row .caption strong{font-size:14px}.row .caption>span{font-size:12px}
+ .row .viewport{padding-top:30px;padding-bottom:14px}.section{padding-bottom:52px}
+}
+@media(hover:none){.expand{opacity:1}.card:active{filter:brightness(1.12)}}

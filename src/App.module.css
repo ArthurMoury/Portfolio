@@ -69,3 +69,48 @@
 
 /* A quiet orientation cue while moving through the long-form portfolio. */
 .navLinks a{position:relative;color:var(--muted-light);transition:color .2s}.navLinks a:hover,.navLinks a[aria-current=location]{color:var(--light)}.navLinks a::after{content:"";position:absolute;left:0;right:0;bottom:6px;height:1px;background:currentColor;transform:scaleX(0);transform-origin:left;transition:transform .3s var(--ease)}.navLinks a[aria-current=location]::after{transform:scaleX(1)}
+
+/* Mobile follows the same visual story, with enough room for touch and reading. */
+@media(max-width:899px){
+ .projectBandTop{grid-template-columns:minmax(0,1fr);gap:22px;padding-block:30px}
+ .projectBandTop .projectActions{justify-self:end;flex-wrap:wrap;gap:10px}
+ .projectIdentity{min-width:0}.projectIdentity h3{font-size:clamp(1.9rem,6.5vw,3rem)}
+ .projectGallery{margin-inline:0}.projectContent{grid-template-columns:minmax(0,1fr);gap:26px;padding-bottom:36px}
+ .galleryScreenshot{display:block;width:100%;min-width:0}.galleryScreenshot .projectImage{aspect-ratio:16/10}
+ .galleryScreenshot .projectImage>img{object-fit:contain}.projectBuild{min-width:0}
+ .projectBuild dl>div{grid-template-columns:90px minmax(0,1fr)}.projectBuild dd{font-size:14px;overflow-wrap:anywhere}
+ .buildDescription{font-size:16px}.chapter{display:flex;min-height:0;gap:0;padding-block:44px}
+ .chapter h3{font-size:clamp(1.65rem,5.5vw,2.2rem)}.chapterText{font-size:16px}.chapterProof{font-size:15px}
+ .chapterStack{font-size:14px}.chapterMobile{display:block;margin-top:28px;perspective:900px;overflow:hidden;border-radius:5px}
+ .chapterMobile button{display:block;width:100%;aspect-ratio:16/10}.chapterMobile img{height:100%;width:100%;aspect-ratio:auto;object-fit:contain}
+ .chapterMobile[data-image-fit=cover] img{object-fit:cover}.chapterMobile svg{bottom:12px;right:12px}
+ .navInner{padding-top:env(safe-area-inset-top);height:calc(62px + env(safe-area-inset-top))}
+ .navHome{min-height:44px}.menuButton{width:44px;min-width:44px;min-height:44px;padding:10px}
+ .navLinks{top:calc(98px + env(safe-area-inset-top));max-height:calc(100dvh - 98px - env(safe-area-inset-top));overflow-y:auto;padding:20px max(20px,env(safe-area-inset-right)) 24px max(20px,env(safe-area-inset-left))}
+ .navLinks a{padding:16px 0}.navLinks a::after{right:auto;width:26px}
+ .aboutDetails .cvLink{max-width:100%}.sectionTransition{height:105px}
+ .projectsHeading .projectsIntro{padding-top:25px;padding-bottom:56px}
+ .dialog{width:calc(100vw - 24px);max-height:calc(100dvh - 32px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
+ .dialogHeader{position:sticky;top:-14px;background:var(--deepest);z-index:1;padding-block:8px}
+ .dialogHeader>h2{font-size:18px;overflow-wrap:anywhere}.dialogContent>img{max-height:62dvh}
+ .dialogContent>p{font-size:13px}.dialogContent .textLink{min-height:44px}
+}
+@media(max-width:640px){
+ .aboutGrid{gap:30px}.aboutGrid>h2{font-size:clamp(1.9rem,8.6vw,2.6rem)}
+ .aboutPortrait{width:68%;max-width:255px}.aboutPortrait img{aspect-ratio:3/4}
+ .aboutCopy .aboutLead{font-size:21px}.aboutCopy .aboutText{font-size:16px}
+ .aboutCopy .aboutLinks a:first-child{font-size:17px}.aboutDetails{border-top:0}
+ .aboutDetails dl>div{padding-block:22px}.aboutDetails .cvLink{width:100%}
+ .projectTopic{font-size:12px}.galleryHint{font-size:12px}.projectIdentity h3{font-size:clamp(1.85rem,8.4vw,2.5rem)}
+ .projectActions>a{font-size:13px;min-height:48px}.projectActions small{font-size:10px}
+ .projectBuild dl>div{grid-template-columns:1fr;gap:6px}.projectBuild dt{font-size:12px}.projectBuild dd{font-size:15px}
+ .galleryScreenshot figcaption{font-size:11px}.organization{font-size:16px}.chapterMarker,.chapterRole{font-size:13px}
+ .chapterStack>span{font-size:12px}.chapterMobile button{aspect-ratio:16/10}
+ .contactLinks>a{min-height:44px}.contactEmail{font-size:clamp(1rem,5.1vw,1.3rem);gap:10px;overflow-wrap:anywhere}
+ .contactForm>p>span{font-size:14px}.formField>label{font-size:14px}.fieldError,.formStatus{font-size:13px}
+ .footer{padding-bottom:calc(24px + env(safe-area-inset-bottom))}.curriculum p{font-size:16px}
+ .contactGrid{gap:44px}.footerTop nav a{min-height:44px}
+}
+@media(max-width:380px){.navContact span{display:none}.navContact::before{content:'Contato'}.navHome{gap:7px;font-size:11px}.navHome img{width:28px;height:28px}.navActions{gap:0}}
+
+@media(max-width:899px){.chapterMobile img.chapterBrand{position:absolute;width:48px;height:48px;right:12px;top:12px;object-fit:contain;object-position:center;aspect-ratio:1;padding:0;border-radius:4px;background:none}}

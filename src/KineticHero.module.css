@@ -17,3 +17,19 @@
 .horizon{position:absolute;bottom:-1px;left:0;width:100%;height:64px;pointer-events:none;overflow:hidden}.horizon svg{display:block;width:100%;height:100%;fill:#1a1c1e}.horizonLine{fill:none;stroke:#85898c;stroke-width:1;stroke-dasharray:180 1800;animation:horizonTravel 6s linear infinite}@keyframes horizonTravel{to{stroke-dashoffset:-1980}}:global([data-reduced-motion=true]) .horizonLine{animation:none}
 
 .entry{position:absolute;inset:0;z-index:5;pointer-events:none;display:flex;flex-direction:column;overflow:hidden}.entry>div{height:50%;background:#25272a;flex-shrink:0;animation:entryFallback 1.8s forwards}.entry>div:first-child{border-radius:0 0 50% 0}.entry>div:last-child{border-radius:50% 0 0 0}.fold{cursor:grab;border-radius:50%}.fold:active{cursor:grabbing}.fold:focus-visible{outline:1px solid #989ca6;outline-offset:-30px}@keyframes entryFallback{99%{visibility:visible}100%{visibility:hidden}}@media(prefers-reduced-motion:reduce){.entry{display:none}}
+
+.fold{touch-action:pan-y pinch-zoom}
+@media(max-width:640px){
+ .hero{min-height:100svh;padding:48px 0 72px}
+ .layout{gap:12px}.hello{font-size:19px;margin-bottom:12px}
+ .copy h1{font-size:clamp(3.25rem,15.5vw,4.7rem)}
+ .description{font-size:17px;line-height:1.5;margin-top:20px}.description br{display:block}
+ .aboutLink{font-size:13px;min-height:48px;margin-top:12px}
+ .stage{align-self:center;width:100%;max-width:390px;height:clamp(230px,33svh,320px);margin-top:0}
+ .fold{inset:0}.horizon{height:45px}
+}
+@media(max-width:899px) and (max-height:540px) and (orientation:landscape){
+ .hero{min-height:440px;padding:35px 0 60px}.layout{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+ .copy h1{font-size:clamp(3rem,7vw,4rem)}.hello{margin-bottom:8px;font-size:17px}.description{margin-top:14px;font-size:16px}
+ .aboutLink{margin-top:8px}.stage{height:290px;width:100%;margin:0}.fold{inset:0}
+}

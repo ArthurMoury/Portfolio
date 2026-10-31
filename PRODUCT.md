@@ -55,3 +55,6 @@ A trajetória inclui Gaita Hero e Echo (2025), com capturas reais e links para o
 Certificados em dois fluxos de sentidos opostos, sem repetição de documentos entre os grupos: IA/nuvem/experiências e programação/dados. O título alterna frases de aprendizado contínuo. Hover amplia sem pausar; o diálogo, foco por teclado, aba oculta e movimento reduzido continuam respeitados.
 
 Da integração à entrega avança automaticamente com apagamento e surgimento, sem deslocamento lateral. O prompt tem papel, entradas, método, restrições, formato e revisão. As automações destacam extração, arquivos, status, processos manuais, cálculos e integrações. O espaço antes do currículo foi reduzido.
+
+## Mobile — 31/10/2026
+O escopo agora inclui telefones em retrato/horizontal e tablets. Preservar as animações Three.js, Motion e GSAP, com interação por toque e layout adequado à leitura móvel. Conteúdo, links de projeto, certificados, currículo e contato são os mesmos do desktop. Manter alternativa para movimento reduzido.

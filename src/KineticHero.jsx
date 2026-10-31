@@ -67,7 +67,7 @@ function Fold({ reduced }) {
         const fit = () => {
           const width=node.clientWidth, height=node.clientHeight;
           if (!width || !height) return;
-          camera.aspect = width / height; camera.position.z = 7.4 / Math.min(1, camera.aspect); camera.updateProjectionMatrix(); renderer.setSize(width, height, false); sync();
+          camera.aspect = width / height; camera.position.z = (innerWidth < 900 ? 8.6 : 7.4) / Math.min(1, camera.aspect); camera.updateProjectionMatrix(); renderer.setSize(width, height, false); sync();
         };
         fit(); resize = new ResizeObserver(fit); resize.observe(node);
         let elapsed = 0, last = 0, rx = 0, ry = 0, morph=0;
@@ -99,18 +99,18 @@ function Fold({ reduced }) {
     }).catch(() => { node.dataset.ready = 'false'; });
     const visibility = () => sync();
     interaction.addEventListener('pointermove', move); interaction.addEventListener('pointerleave', reset);
-    node.addEventListener('pointerdown',changeShape);node.addEventListener('keydown',key);
+    node.addEventListener('click',changeShape);node.addEventListener('keydown',key);
     document.addEventListener('visibilitychange', visibility);
     return () => {
       disposed = true; cancelAnimationFrame(frame); observer?.disconnect(); resize?.disconnect();
       interaction.removeEventListener('pointermove', move); interaction.removeEventListener('pointerleave', reset);
-      node.removeEventListener('pointerdown',changeShape);node.removeEventListener('keydown',key);
+      node.removeEventListener('click',changeShape);node.removeEventListener('keydown',key);
       document.removeEventListener('visibilitychange', visibility);
       geometry?.dispose(); material?.dispose(); environment?.dispose(); renderer?.dispose();
       renderer?.domElement.remove(); delete node.dataset.ready;
     };
   }, [reduced]);
-  return <div ref={host} className={s.fold} role={reduced?"img":"button"} tabIndex={reduced?undefined:0} aria-label={reduced?"Escultura abstrata":"Escultura interativa. Mova o cursor ou pressione Enter para transformar."} data-fold>
+  return <div ref={host} className={s.fold} role={reduced?"img":"button"} tabIndex={reduced?undefined:0} aria-label={reduced?"Escultura abstrata":"Escultura interativa. Mova o cursor, toque ou pressione Enter para transformar."} data-fold>
     <svg className={s.fallback} viewBox="0 0 600 600" fill="none"><g stroke="currentColor">{Array.from({length:14},(_,i)=><ellipse key={i} cx="300" cy="300" rx={190-i*5} ry={85+i*8} transform={`rotate(${i*7} 300 300)`} />)}</g></svg>
   </div>;
 }

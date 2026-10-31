@@ -38,3 +38,10 @@ A trajetória inclui Gaita Hero e Echo (2025), com capturas reais e links para o
 Certificados em dois fluxos de sentidos opostos, sem repetição de documentos entre os grupos: IA/nuvem/experiências e programação/dados. O título alterna frases de aprendizado contínuo. Hover amplia sem pausar; o diálogo, foco por teclado, aba oculta e movimento reduzido continuam respeitados.
 
 Da integração à entrega avança automaticamente com apagamento e surgimento, sem deslocamento lateral. O prompt tem papel, entradas, método, restrições, formato e revisão. As automações destacam extração, arquivos, status, processos manuais, cálculos e integrações. O espaço antes do currículo foi reduzido.
+
+## Adaptação mobile — 31/10/2026
+Preservar carvão/prata, Sora/Hanken e o mesmo percurso, conteúdo e bibliotecas de movimento do desktop. Abertura em uma tela com nome acima da escultura 3D centralizada; toque ou Enter muda sua forma, sem impedir a rolagem vertical. Na horizontal, o layout volta a duas colunas.
+
+A apresentação empilha título, retrato com máscara GSAP, texto e contatos. Projetos passam a uma coluna: título, ações à direita, captura em largura útil e stack legível abaixo. Mantém uma expansão por vez, por rolagem e toque. A trajetória organiza cada capítulo seguido de sua própria imagem, com entrada em profundidade e parallax GSAP; o painel fixo e suas trocas permanecem no desktop.
+
+Menu com foco contido e bloqueio da página enquanto aberto; CTA sempre acessível. Safe areas respeitadas. Certificados continuam em dois fluxos opostos, com resposta ao toque e diálogo. A apresentação automática de IA permanece; o prompt tem uma área de leitura vertical no mobile para manter o texto inteiro disponível sem alongar excessivamente a seção.

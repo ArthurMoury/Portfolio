@@ -67,7 +67,10 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
         });
       });
       media.add('(max-width:899px)',()=>{
-        q('[data-chapter] img').forEach(image=>gsap.from(image,{y:14,scale:.98,duration:.6,ease:'power3.out',clearProps:'all',scrollTrigger:{trigger:image,start:'top 95%',once:true}}));
+        q('[data-chapter-mobile]').forEach(visual=>{
+          gsap.from(visual,{y:24,scale:.96,rotateX:4,opacity:.3,duration:.85,ease:'power3.out',clearProps:'all',scrollTrigger:{trigger:visual,start:'top 94%',once:true}});
+          gsap.fromTo(visual.querySelector('img'),{scale:1.04,yPercent:2},{scale:1,yPercent:-2,ease:'none',scrollTrigger:{trigger:visual,start:'top bottom',end:'bottom top',scrub:.55}});
+        });
       });
     },root);
     const refresh=()=>{if(!disposed){ScrollTrigger.refresh();queue();}};

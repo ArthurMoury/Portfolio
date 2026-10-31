@@ -23,11 +23,28 @@ function Navigation({ visible, context, activeSection }) {
   const menu = useRef(null);
   useEffect(()=>{if(!visible)setOpen(false);},[visible]);
   const close=()=>setOpen(false);
-  return <header className={`${s.navigation} ${visible?s.navigationVisible:''}`} inert={!visible?true:undefined} onKeyDown={e=>{if(e.key==='Escape'){close();menu.current?.focus();}}}>
+  useEffect(()=>{
+    if(!open)return;
+    const main=document.querySelector('main'), oldOverflow=document.body.style.overflow;
+    main.inert=true;document.body.style.overflow='hidden';
+    const resize=()=>{if(innerWidth>=900)setOpen(false);};
+    window.addEventListener('resize',resize);
+    return()=>{main.inert=false;document.body.style.overflow=oldOverflow;window.removeEventListener('resize',resize);};
+  },[open]);
+  const keys=e=>{
+    if(e.key==='Escape'){close();menu.current?.focus();}
+    if(e.key==='Tab'&&open){
+      const controls=[...e.currentTarget.querySelectorAll('a,button')].filter(el=>el.getClientRects().length);
+      const first=controls[0],last=controls.at(-1);
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last?.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first?.focus();}
+    }
+  };
+  return <header className={`${s.navigation} ${visible?s.navigationVisible:''}`} inert={!visible?true:undefined} onKeyDown={keys}>
     <div className={`${s.container} ${s.navInner}`}>
       <a className={s.navHome} href="#inicio" aria-label="Voltar ao início"><img src="/images/arthur-profile.webp" alt="" width="32" height="32"/>Arthur Moury</a>
       <nav id="site-menu" className={`${s.navLinks} ${open?s.navOpen:''}`} aria-label="Navegação principal">{[['sobre','Quem sou'],['projetos','Projetos'],['trajetoria','Trajetória'],['certificados','Certificados'],['processo','Na prática']].map(([id,label])=><a key={id} href={`#${id}`} onClick={close} aria-current={activeSection===id?'location':undefined}>{label}</a>)}</nav>
-      <div className={s.navActions}><a href="#contato" onClick={close} className={s.navContact} aria-current={activeSection==='contato'?'location':undefined}>Vamos conversar<ArrowUpRight size={16} /></a><button ref={menu} className={s.menuButton} aria-label={open?'Fechar menu':'Abrir menu'} aria-expanded={open} aria-controls="site-menu" onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button></div>
+      <div className={s.navActions}><a href="#contato" onClick={close} className={s.navContact} aria-label="Vamos conversar" aria-current={activeSection==='contato'?'location':undefined}><span>Vamos conversar</span><ArrowUpRight size={16} /></a><button ref={menu} className={s.menuButton} aria-label={open?'Fechar menu':'Abrir menu'} aria-expanded={open} aria-controls="site-menu" onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button></div>
     </div>
     <div className={s.contextTrack} data-context-current={context}><div className={s.container}><span className={s.contextShape} aria-hidden="true"/><span key={context} className={s.contextText}>{contexts[context].verb}<span>{contexts[context].label}</span></span><div className={s.readingTrack} aria-hidden="true"><i data-reading-progress /></div></div></div>
   </header>;
@@ -51,7 +68,7 @@ function Career({ onOpen, activeChapter, setActiveChapter }) {
     <div className={s.careerIntro}><h2 id="career-title">O que me trouxe<br />até aqui.</h2></div>
     <div className={s.careerGrid}><div className={s.chapterList}>{chapters.map((c,i)=><article id={`capitulo-${c.id}`} key={c.id} className={`${s.chapter} ${i===activeChapter?s.chapterActive:''}`} data-chapter={i} data-context={c.context}>
       <span className={s.chapterMarker}>{c.marker}</span><p className={s.organization}>{c.organization}</p><h3>{c.title}</h3><p className={s.chapterRole}>{c.role}</p><p className={s.chapterText}>{c.text}</p><p className={s.chapterProof}>{c.proof}</p>{c.stack&&<p className={s.chapterStack}><span>Tecnologias</span>{c.stack}</p>}{c.site&&<a className={s.textLink} href={c.site} {...external}>Documentação no Google Sites<ArrowUpRight size={16}/></a>}
-      <div className={s.chapterMobile} data-image-fit={c.fit} style={{'--chapter-bg':c.background}}><button onClick={()=>onOpen({image:c.image,title:c.organization,caption:''})} aria-label={`Ampliar imagem de ${c.organization}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/><ScanLine size={20}/></button></div>
+      <div className={s.chapterMobile} data-chapter-mobile data-image-fit={c.fit} style={{'--chapter-bg':c.background}}><button onClick={()=>onOpen({image:c.image,title:c.organization,caption:''})} aria-label={`Ampliar imagem de ${c.organization}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/>{c.brandImage&&<img className={s.chapterBrand} src={c.brandImage} alt="CESAR School" width="70" height="70"/>}<ScanLine size={20}/></button></div>
     </article>)}</div><aside className={s.careerStage} aria-label="Visuais da trajetória"><div className={s.chapterImages}>{chapters.map((c,i)=><button key={c.id} className={s.chapterVisual} data-image-fit={c.fit} style={{'--chapter-bg':c.background}} data-chapter-visual={i} data-active={activeChapter===i} onClick={()=>onOpen({image:c.image,title:c.organization,caption:''})} tabIndex={activeChapter===i?0:-1} aria-hidden={activeChapter!==i} aria-label={`Ampliar imagem: ${c.caption}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/>{c.brandImage&&<img className={s.chapterBrand} src={c.brandImage} alt="CESAR School" width="70" height="70"/>}</button>)}</div><div className={s.stageFooter}><nav className={s.chapterNav} aria-label="Capítulos da trajetória">{chapters.map((c,i)=><a key={c.id} href={`#capitulo-${c.id}`} aria-label={c.organization} aria-current={i===activeChapter?'step':undefined} onClick={()=>setActiveChapter(i)}><span/></a>)}</nav></div></aside></div>
   </div></section>;
 }

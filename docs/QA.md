@@ -99,3 +99,14 @@ Escopo: desktop, 1280 × 720, na Vercel. Esta seção substitui os testes antigo
 - Prompt com maior tempo de leitura (42 s), demais perspectivas com 13 s. Leitura com foco por teclado e pausa explícita suspendem o avanço. Não há necessidade de clicar para trocar.
 - Antes do currículo: removida altura mínima ociosa; margem inferior da seção anterior reduzida. Nenhuma estimativa de horas economizadas foi inventada.
 - Limites: mobile não revalidado nesta rodada; o módulo Three.js continua acima de 500 kB antes de compressão, carregado dinamicamente. Formulário prepara um e-mail, não faz envio em servidor.
+
+## Mobile — 31/10/2026
+- Validação por viewport no navegador: 320×667, 390×844, 430×932, 844×390 (horizontal), 768×1024 (tablet) e regressão desktop 1280×720. Sem overflow horizontal da página nos tamanhos inspecionados.
+- Corrigida cascata desktop que mantinha duas colunas e margens negativas nas expansões mobile. Na largura de 390 px, a captura do Construtor de Hotéis passou a ocupar 350 px; descrição e stack aparecem abaixo. Apenas uma faixa fica expandida.
+- Three.js preservado: canvas presente no mobile, mudança de forma por clique/teclado e evento click compatível com toque. Distância da câmera móvel inclui margem para as deformações. GSAP de entrada, nome, máscara do retrato, superfície de transição e revelações continuam ativos.
+- Trajetória mobile com uma imagem por capítulo e GSAP de entrada com perspectiva, escala e parallax por rolagem. Matrizes de escala/posição e opacidade observadas durante a entrada; imagens ampliáveis. Desktop conserva painel fixo e troca entre capítulos.
+- Menu abre/fecha, contém Tab/Shift+Tab, fecha por Escape, restaura foco e bloqueia interação/rolagem do conteúdo enquanto aberto. CTA compacto nas telas menores; safe areas e viewport-fit configurados.
+- Dois trilhos de certificados preservados, captions maiores e feedback Motion ao toque. Certificado Claude Code 101 abre no diálogo correto e Escape fecha/restaura foco. Prefers-reduced-motion mantém 29 documentos únicos e nenhum canvas.
+- Na prática adapta indicadores a duas colunas; o prompt inteiro fica disponível em área vertical de leitura. Alternativa reduzida troca os quatro conteúdos por botões, sem rótulos duplicados.
+- Formulário: erros obrigatórios, preparo de rascunho e destino de e-mail corretos; campos usam fonte de 16 px no celular. Nenhum e-mail foi enviado.
+- Build e verificação de conteúdo aprovados. Testes em emulação de viewport, sem acesso a aparelhos iOS/Android físicos nem medição de desempenho neles; gestos touch revisados pelo código de Pointer Events, não por hardware de toque.
