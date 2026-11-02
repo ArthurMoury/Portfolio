@@ -120,3 +120,6 @@ Escopo: desktop, 1280 × 720, na Vercel. Esta seção substitui os testes antigo
 - Tela 320×667: painel terminou em 649,63 px, dentro da área visível, sem overflow horizontal. Desktop 1280×720: painel terminou em 638,28 px. Prompt integral abriu em diálogo com os seis campos e Escape/foco corretos.
 - Glifo de seta retirado do link do Drive; ícones vetoriais funcionais mantidos. Nenhum emoji textual nas interfaces alteradas.
 - Verificações por navegador/emulação de viewport; desempenho em hardware iOS/Android físico não medido.
+
+## Prompt de exemplo — 02/11/2026
+A etapa Prompts & LLMs mostra um prompt escrito, em lugar das três etiquetas ilustrativas. Cenário fictício de pedidos de uma loja: contexto, objetivo, perguntas que mudam a recomendação, riscos, suposições, comparação e teste inicial. O mesmo conteúdo alimenta o painel, o diálogo e a ação de copiar. Linguagem direta, sem XML, variáveis ou atribuição do exemplo a um projeto real do titular. Conteúdo verificado e build aprovado.

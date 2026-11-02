@@ -54,3 +54,6 @@ Projetos abrem e fecham em uma timeline GSAP compartilhada (entrada 560 ms, saí
 No mobile, a trajetória agora mantém o palco de imagens fixo abaixo da navegação, com troca por capítulo, máscara e profundidade GSAP. Na horizontal, divide o espaço entre texto e imagem. Esta direção substitui a decisão anterior de imagens estáticas abaixo de cada capítulo.
 
 Da integração à entrega torna-se uma cena conduzida pela rolagem: um circuito desenha conexões, transporta uma cápsula e constrói barras, verificações e horizonte de previsão. Pause congela a cena; Play reproduz a timeline de forma contínua. Sem intervalos para trocar textos. Os detalhes e o prompt integral abrem em diálogo; preferência por movimento reduzido mantém navegação manual e texto acessível.
+
+## Prompt visível — 02/11/2026
+O painel Prompts & LLMs exibe o texto de um exemplo completo, com leitura vertical dentro da cena. Os quatro blocos usam linguagem de uma conversa de trabalho: Contexto, O que preciso, Cuidados e Como responder. A ampliação e a cópia usam esse mesmo texto. O cenário é identificado como fictício.

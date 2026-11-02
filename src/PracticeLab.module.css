@@ -5,3 +5,9 @@
 @media(prefers-reduced-motion:reduce){.lab *{animation:none;transition:none}}
 /* Keep the content readable while the verification marks assemble. */
 .route{stroke-width:2.5}.routeFill{stroke-width:3}.node text{font-size:20px}.automation li{position:relative;opacity:1;transform:none}.automation li>svg{opacity:clamp(.15,calc(var(--phase-progress)*3 - var(--order)*.25),1);transform:scale(clamp(.5,calc(var(--phase-progress)*3 - var(--order)*.25),1))}.automation li:after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:#d6c2ef;transform:scaleX(clamp(0,calc(var(--phase-progress)*3 - var(--order)*.25),1));transform-origin:left}
+
+/* The prompt itself is readable in the scene, with the same full text in the dialog. */
+.promptText{max-height:190px;overflow-y:auto;scrollbar-width:thin;scrollbar-color:#8e819e #232b36;margin-top:8px;padding-right:12px;overscroll-behavior:auto}
+.promptText dl{margin:0}.promptText dl>div+div{margin-top:16px}.promptText dt{font-size:12px;color:#d6c2ef;margin-bottom:6px}.promptText dd{margin:0;color:#e5e8ee;font-size:15px;line-height:1.65;text-wrap:pretty}.promptText:focus-visible{outline:2px solid #d6c2ef;outline-offset:4px}
+@media(max-width:899px){.promptText{max-height:150px;padding-right:8px}.promptText dd{font-size:14px;line-height:1.6}.promptText dt{font-size:12px}}
+@media(max-width:899px) and (max-height:740px){.promptText{max-height:100px}.promptText dd{font-size:13px}.promptText dl>div+div{margin-top:12px}}
