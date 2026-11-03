@@ -35,3 +35,5 @@
 }
 
 @media(max-width:899px){.copy{text-align:center}.nameMask>span{transform-origin:center bottom}.description{margin-inline:auto}.aboutLink{display:none}}
+
+.entry>div{background:var(--deepest);margin-bottom:-1px}.hero{border:0}.stage{z-index:3}

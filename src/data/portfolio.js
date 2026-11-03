@@ -3,7 +3,7 @@ export const profile = {
   "fullName": "Arthur Moury Fernandes de Godoy Santos",
   "email": "mourygodoy@gmail.com",
   "location": "Recife, Pernambuco",
-  "education": "Ciência da Computação · CESAR School",
+  "education": "Ciência da Computação, CESAR School",
   "linkedin": "https://www.linkedin.com/in/arthur-moury-fernandes-de-godoy-santos-3b7872353/",
   "github": "https://github.com/ArthurMoury"
 };
@@ -257,7 +257,8 @@ export const projects = [
 export const chapters = [
   {
     "id": "formacao",
-    "marker": "2025 → agora",
+    "client": "Edenred",
+    "marker": "2025 até agora",
     "organization": "CESAR School",
     "role": "Ciência da Computação",
     "title": "Aprender. Fazer. Compartilhar.",
@@ -265,7 +266,7 @@ export const chapters = [
     "text": "Na graduação, venho construindo uma base em desenvolvimento de software, com projetos que passam por acessibilidade, hardware e aplicações full-stack.",
     "proof": "Projeto em equipe para comparar o impacto ambiental de cartões físicos e pagamentos digitais. Reúne simulações de ciclo de vida, cenários de migração, logística reversa e indicadores de custo e impacto.",
     "image": "/projects/card0.webp",
-    "caption": "Card0 · projeto em equipe na formação acadêmica",
+    "caption": "Card0, projeto em equipe na formação acadêmica",
     "fit": "contain",
     "background": "#1a1d29",
     "brandImage": "/projects/cesar.webp",
@@ -273,9 +274,10 @@ export const chapters = [
   },
   {
     "id": "gaita-hero",
-    "marker": "2025 · projeto acadêmico",
+    "client": "CESAR School",
+    "marker": "2025, projeto acadêmico",
     "organization": "Gaita Hero",
-    "role": "CESAR School · acessibilidade motora",
+    "role": "CESAR School, acessibilidade motora",
     "title": "Jogar também pode começar com um sopro.",
     "context": "faculdade",
     "text": "Participei do desenvolvimento de um jogo figital pensado para pessoas com deficiência motora. Uma gaita adaptada transforma a pressão do sopro em comandos para acompanhar o ritmo da música.",
@@ -289,9 +291,10 @@ export const chapters = [
   },
   {
     "id": "echo",
-    "marker": "2025 · projeto acadêmico",
+    "client": "Jornal do Comércio",
+    "marker": "2025, projeto acadêmico",
     "organization": "Echo",
-    "role": "CESAR School · Agile Coach no time de desenvolvimento",
+    "role": "CESAR School, Agile Coach no time de desenvolvimento",
     "title": "Uma relação mais próxima com quem lê.",
     "context": "faculdade",
     "text": "No grupo Echo, trabalhamos o desafio de fidelização dos usuários do Jornal do Commercio. Participei do time de desenvolvimento como Agile Coach, em colaboração com estudantes de design e computação.",
@@ -305,7 +308,7 @@ export const chapters = [
   },
   {
     "id": "boop",
-    "marker": "jan — mar / 2026",
+    "marker": "jan a mar / 2026",
     "organization": "Boop Mídia",
     "role": "Estágio em automações de processos",
     "title": "Transformar rotinas em fluxos.",
@@ -313,13 +316,13 @@ export const chapters = [
     "text": "Trabalhei com automação de processos usando n8n, Make e Zapier, além da gestão de dados no CRM Go High Level. O trabalho começava por entender a rotina e as informações que precisavam circular.",
     "proof": "Conectei ferramentas e etapas de processos, aproximando a operação das possibilidades da automação.",
     "image": "/projects/boop.webp",
-    "caption": "Boop Mídia · automações de processos",
+    "caption": "Boop Mídia, automações de processos",
     "fit": "brand",
     "background": "#000000"
   },
   {
     "id": "roomi",
-    "marker": "mar / 2026 → agora",
+    "marker": "mar / 2026 até agora",
     "organization": "Roomi",
     "role": "Estágio em IA Ops",
     "title": "Da operação à experiência digital.",
@@ -327,13 +330,13 @@ export const chapters = [
     "text": "Atuo com dashboards, ferramentas de análise, automações e validação de software. Também pesquiso aplicações de IA e RAG para aproximar informação e contexto de uso.",
     "proof": "Entre os projetos, o Site de reservas conecta destinos e hospedagens. No Site Construtor de Hotéis, escolhas de configuração ganham forma em um resort 3D, acompanhado de estimativas de investimento e operação.",
     "image": "/projects/roomi-wallpaper.webp",
-    "caption": "Roomi · desenvolvimento, IA e operação",
+    "caption": "Roomi, desenvolvimento, IA e operação",
     "fit": "cover",
     "background": "#1c1c1a"
   },
   {
     "id": "autoria",
-    "marker": "2026 · em construção",
+    "marker": "2026, em construção",
     "organization": "Projetos autorais",
     "role": "Desenvolvimento de produtos",
     "title": "Tirar ideias do papel.",
@@ -341,7 +344,7 @@ export const chapters = [
     "text": "Exploro problemas diferentes construindo ferramentas: colaboração visual no FreeSB, cuidado no Cortech, decisões financeiras no Betterway e gestão agrícola na Sollie. No Dozão, levo essa exploração para games, visualização 3D e partidas multiplayer.",
     "proof": "Com a Sollie, participei da pré-incubação 2026.1 do Porto Digital. Uma oportunidade de olhar para o produto além do código e amadurecer sua proposta.",
     "image": "/projects/sollie-brand.webp",
-    "caption": "Sollie · gestão inteligente no campo",
+    "caption": "Sollie, gestão inteligente no campo",
     "fit": "contain",
     "background": "#22291b"
   }

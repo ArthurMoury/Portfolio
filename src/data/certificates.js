@@ -7,7 +7,7 @@ export const certificates = [
     "width": 1800,
     "height": 1272,
     "url": "https://drive.google.com/file/d/1ZYZER4MyH-BHWpRypFo2g0sMEzRSV-71/view?usp=drivesdk",
-    "title": "Pré-incubação 2026.1 · Sollie",
+    "title": "Pré-incubação 2026.1, Sollie",
     "issuer": "Porto Digital"
   },
   {
@@ -68,7 +68,7 @@ export const certificates = [
     "width": 1800,
     "height": 1013,
     "url": "https://drive.google.com/file/d/1xnKHmjf-AtAOaS-lfjMp4s0EwINSulvR/view?usp=drivesdk",
-    "title": "Vem Curtir o CESAR · expositor",
+    "title": "Vem Curtir o CESAR, expositor",
     "issuer": "CESAR School"
   },
   {
@@ -148,8 +148,8 @@ export const certificates = [
     "width": 1800,
     "height": 1275,
     "url": "https://drive.google.com/file/d/1TkaH6gGtqokIQaLFiKPyWAPf7n7RsTHL/view?usp=drivesdk",
-    "title": "Introdução ao Bootcamp CI&T · Backend com Java & AWS",
-    "issuer": "DIO · CI&T"
+    "title": "Introdução ao Bootcamp CI&T, Backend com Java & AWS",
+    "issuer": "DIO, CI&T"
   },
   {
     "id": "1M_AdL7nJNwTIJdtsiiaQwb_wJVs1eQbT",
@@ -179,7 +179,7 @@ export const certificates = [
     "height": 793,
     "url": "https://drive.google.com/file/d/1FsHaagWvmXou2KOa8_Veo97hx-5tf0fA/view?usp=drivesdk",
     "title": "Introdução à Experiência Decola Tech",
-    "issuer": "DIO · Avanade"
+    "issuer": "DIO, Avanade"
   },
   {
     "id": "1XKTBXek5grPWUR6yufDwnAiY1vGz4kic",
@@ -188,7 +188,7 @@ export const certificates = [
     "width": 1800,
     "height": 1013,
     "url": "https://drive.google.com/file/d/1XKTBXek5grPWUR6yufDwnAiY1vGz4kic/view?usp=drivesdk",
-    "title": "PyLab Experience · oficina ministrada",
+    "title": "PyLab Experience, oficina ministrada",
     "issuer": "CESAR School",
     "redacted": true
   },
@@ -219,7 +219,7 @@ export const certificates = [
     "width": 2000,
     "height": 924,
     "url": "https://drive.google.com/file/d/1e92vvvA42mbh4PL9OLfZ2XxhdavZoVab/view?usp=drivesdk",
-    "title": "Seleção · Santander Bootcamp 2025",
+    "title": "Seleção, Santander Bootcamp 2025",
     "issuer": "Santander Open Academy"
   },
   {
@@ -230,7 +230,7 @@ export const certificates = [
     "height": 1220,
     "url": "https://drive.google.com/file/d/1pu_vGLEWBe8Ml3OvC1lay2Vyf-5AvDqE/view?usp=drivesdk",
     "title": "Fundamentos do Python 1",
-    "issuer": "Cisco Networking Academy · CESAR School"
+    "issuer": "Cisco Networking Academy, CESAR School"
   },
   {
     "id": "189ZHxfPyZt_jBgxHhOpHf2oqHhUTs0W0",
@@ -259,8 +259,8 @@ export const certificates = [
     "width": 1800,
     "height": 1275,
     "url": "https://drive.google.com/file/d/1Zs2M_K24J2FQ_Tp0_A0X3A_T2RUsE114/view?usp=drivesdk",
-    "title": "Live de Lançamento · Decola Tech Avanade 2025",
-    "issuer": "DIO · Avanade"
+    "title": "Live de Lançamento, Decola Tech Avanade 2025",
+    "issuer": "DIO, Avanade"
   },
   {
     "id": "17Tq78kBge5nzEFX4k0yBz6MSh1kpJkdH",
@@ -280,7 +280,7 @@ export const certificates = [
     "height": 1341,
     "url": "https://drive.google.com/file/d/1aaZr6LTKLgW6htzo2DnZ4C3GBW_9q659/view?usp=drivesdk",
     "title": "JavaScript Essentials 1",
-    "issuer": "Cisco Networking Academy · CESAR School"
+    "issuer": "Cisco Networking Academy, CESAR School"
   },
   {
     "id": "1A4BV_XMVQeEVfRN6nxcP3qgDzAx4rtoN",

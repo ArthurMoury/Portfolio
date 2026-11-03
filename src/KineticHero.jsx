@@ -127,8 +127,11 @@ export default function KineticHero({ reduced }) {
         .from(q('[data-name-line]'), { yPercent: 110, rotate: 4, duration: 1.3, stagger: .12, clearProps: 'all' }, .45)
         .from(q('[data-intro-copy]'), { opacity: .25, y: 20, duration: 1, stagger: .13, clearProps: 'all' }, .85)
         .fromTo(q('[data-fold]'), { opacity: .1, scale: .6 }, { opacity: 1, scale: 1, duration: 1.5 }, .1);
-      gsap.to(q('[data-horizon]'), {attr:{d:'M0 12C280 85 430 0 720 38S1160 100 1440 12V100H0Z'},ease:'none',scrollTrigger:{trigger:root.current,start:'top top',end:'bottom top',scrub:1}});
-      gsap.to(q('[data-hero-stage]'), { y: 65, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: .7 } });
+      const stage=q('[data-hero-stage]')[0];
+      const flight=gsap.timeline({scrollTrigger:{trigger:root.current,start:'top top',end:'+=100%',pin:true,scrub:1,invalidateOnRefresh:true}});
+      flight.to(q('[data-intro-copy], [data-name-line], [data-horizon]'),{opacity:0,duration:.24,ease:'none'},0)
+        .to(stage,{x:()=>innerWidth/2-(stage.getBoundingClientRect().left+stage.getBoundingClientRect().width/2),y:()=>innerHeight/2-(stage.getBoundingClientRect().top+stage.getBoundingClientRect().height/2),scale:18,transformOrigin:'50% 50%',duration:1,ease:'power2.in'},0)
+        .to(stage,{opacity:0,duration:.18,ease:'none'},.82);
     }, root);
     return () => ctx.revert();
   }, [reduced]);
