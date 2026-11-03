@@ -146,3 +146,10 @@
 .chapterClient>img[src$="cesar-school.png"]{max-width:48px;height:44px}
 .chapterClient>img[src$="jornal-do-commercio.svg"]{max-width:74px;height:42px}
 @media(max-width:640px){.chapterClient{gap:12px;flex-wrap:wrap}.chapterClient>img{max-width:78px;height:38px}.chapterClient>strong{font-size:13px}}
+
+.opening{position:relative;min-height:100svh;background:#0b0d10}
+.opening>:global(#inicio){position:absolute;inset:0 0 auto;height:100svh;min-height:0;z-index:2}
+.opening>:global(#sobre){min-height:100svh;display:flex;align-items:center}
+.navigation:not(.navigationVisible){visibility:hidden;opacity:0;pointer-events:none}
+@media(prefers-reduced-motion:reduce){.opening>:global(#inicio){position:relative}.opening>:global(#sobre){visibility:visible}}
+[data-reduced-motion=true] .opening>:global(#inicio){position:relative}

@@ -8,7 +8,7 @@ function Fold({ reduced, flightRef }) {
   useEffect(() => {
     if (reduced) return;
     let disposed = false, renderer, geometry, material, environment, observer, resize;
-    let frame = 0, visible = true, flightProgress = 0;
+    let frame = 0, visible = true, flightProgress = flightRef.progress || 0;
     const pointer = { x: 0, y: 0 };
     let shape=0;
     const changeShape=()=>{shape=(shape+1)%3;sync();};
@@ -16,7 +16,7 @@ function Fold({ reduced, flightRef }) {
     const node = host.current;
     const interaction=node.closest('section');
     const move = e => {
-      const rect = node.getBoundingClientRect();
+      const rect = interaction.querySelector('[data-hero-stage]').getBoundingClientRect();
       pointer.x = Math.max(-.7,Math.min(.7,(e.clientX - rect.left) / rect.width - .5));
       pointer.y = Math.max(-.7,Math.min(.7,(e.clientY - rect.top) / rect.height - .5));
       sync();
@@ -65,11 +65,17 @@ function Fold({ reduced, flightRef }) {
         const light = new T.DirectionalLight(0xffffff, 3);
         light.position.set(2, 3, 4); scene.add(light);
         let cameraDistance = 7.4;
+        const target = new T.Vector3();
         const fit = () => {
           const width=node.clientWidth, height=node.clientHeight;
           if (!width || !height) return;
           camera.aspect = width / height;
-          cameraDistance = (innerWidth < 900 ? 8.6 : 7.4) / Math.min(1, camera.aspect);
+          const anchor = interaction.querySelector('[data-hero-stage]').getBoundingClientRect();
+          const bounds = node.getBoundingClientRect();
+          cameraDistance = (innerWidth < 900 ? 8.6 : 7.4) * height / anchor.height;
+          const worldHeight = 2 * Math.tan(T.MathUtils.degToRad(camera.fov / 2)) * cameraDistance;
+          target.set(((anchor.left + anchor.width / 2 - bounds.left) / width - .5) * worldHeight * camera.aspect, (.5 - (anchor.top + anchor.height / 2 - bounds.top) / height) * worldHeight, 0);
+          fold.position.copy(target);
           camera.updateProjectionMatrix(); renderer.setSize(width, height, false); sync();
         };
         fit(); resize = new ResizeObserver(fit); resize.observe(node);
@@ -78,7 +84,7 @@ function Fold({ reduced, flightRef }) {
           if (disposed || !visible || document.hidden) { frame = 0; last = 0; return; }
           elapsed += last ? Math.min((now - last) / 1000, .05) : 0; last = now;
           const progress = Math.min(elapsed / 3.2, 1);
-          const ease = 1 - Math.pow(1 - progress, 4);
+          const ease = Math.max(1 - Math.pow(1 - progress, 4), T.MathUtils.smoothstep(flightProgress, 0, .15));
           const interactionWeight = Math.pow(1 - Math.min(1, flightProgress * 2.4), 2);
           rx += (pointer.y * 1.1 * interactionWeight - rx) * .09;
           ry += (pointer.x * 1.7 * interactionWeight - ry) * .09;
@@ -93,7 +99,9 @@ function Fold({ reduced, flightRef }) {
           fold.rotation.set(.42 + rx, -.4 + ry + (1 - ease) * 2.8, -.45 + ease * .2 + morph*.6);
           fold.scale.setScalar(.3 + ease * .7);
           // The mesh is built around the origin, so the camera travels through its actual opening.
-          camera.position.set(0, 0, cameraDistance - (cameraDistance + 1.15) * flightProgress * flightProgress);
+          const alignment = T.MathUtils.smoothstep(flightProgress, 0, .55);
+          camera.position.set(target.x * alignment, target.y * alignment, cameraDistance - (cameraDistance + 1.15) * flightProgress * flightProgress);
+          fold.visible = flightProgress < 1;
           renderer.render(scene, camera);
           node.dataset.ready = 'true';
           const moving = Math.abs(pointer.y * 1.1 - rx) + Math.abs(pointer.x * 1.7 - ry) > .0005;
@@ -134,15 +142,22 @@ export default function KineticHero({ reduced }) {
       gsap.timeline({ defaults: { ease: 'power4.out' } })
         .fromTo(q('[data-entry-top]'),{yPercent:0},{yPercent:-102,duration:1.25,ease:'power3.inOut'},.05)
         .fromTo(q('[data-entry-bottom]'),{yPercent:0},{yPercent:102,duration:1.25,ease:'power3.inOut'},.05)
-        .from(q('[data-name-line]'), { yPercent: 110, rotate: 4, duration: 1.3, stagger: .12, clearProps: 'all' }, .45)
-        .from(q('[data-intro-copy]'), { opacity: .25, y: 20, duration: 1, stagger: .13, clearProps: 'all' }, .85)
-        .fromTo(q('[data-fold]'), { opacity: .1, scale: .6 }, { opacity: 1, scale: 1, duration: 1.5 }, .1);
-      const stage=q('[data-hero-stage]')[0];
-      let flight;
-      flight=gsap.timeline({scrollTrigger:{trigger:root.current,start:'top top',end:'+=125%',pin:true,scrub:1,invalidateOnRefresh:true,onUpdate:()=>flightRef.current?.(flight.progress())}});
-      flight.to(q('[data-intro-copy], [data-name-line], [data-horizon]'),{opacity:0,duration:.24,ease:'none'},0)
-        .to(stage,{x:()=>innerWidth/2-(stage.getBoundingClientRect().left+stage.getBoundingClientRect().width/2),y:()=>innerHeight/2-(stage.getBoundingClientRect().top+stage.getBoundingClientRect().height/2),scale:2.5,transformOrigin:'50% 50%',duration:1,ease:'power2.inOut'},0)
-        .to(stage,{opacity:0,duration:.13,ease:'none'},.87);
+        .from(q('[data-name-line]'), { yPercent: 110, rotate: 4, duration: 1.3, stagger: .12, clearProps: 'transform' }, .45)
+        .from(q('[data-intro-copy]'), { y: 20, duration: 1, stagger: .13, clearProps: 'transform' }, .85)
+        .fromTo(q('[data-fold]'), { opacity: .1 }, { opacity: 1, duration: 1.5 }, .1);
+      const opening=root.current.closest('[data-opening]');
+      const about=opening.querySelector('#sobre');
+      const photo=about.querySelector('[data-about-photo]');
+      gsap.set(about,{autoAlpha:0});
+      const travel={progress:0};
+      const flight=gsap.timeline({scrollTrigger:{id:'opening-flight',trigger:opening,start:'top top',end:'+=150%',pin:true,scrub:.65,invalidateOnRefresh:true}});
+      flight.to(q('[data-intro-copy], [data-name-line], [data-horizon]'),{opacity:0,duration:.2,ease:'none'},0)
+        .to(travel,{progress:1,duration:.7,ease:'none',onUpdate:()=>{flightRef.progress=travel.progress;flightRef.current?.(travel.progress);}},0)
+        .to(root.current,{autoAlpha:0,duration:.06},.68)
+        .to(about,{autoAlpha:1,duration:.24,ease:'power2.out'},.75)
+        .fromTo(about.querySelectorAll('[data-about-piece]'),{opacity:0},{opacity:1,duration:.22,stagger:.008},.77)
+        .fromTo(photo,{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:.24,ease:'power3.out'},.77);
+
     }, root);
     return () => ctx.revert();
   }, [reduced]);
@@ -155,10 +170,9 @@ export default function KineticHero({ reduced }) {
         <p className={s.description} data-intro-copy>Entendo problemas.<br/> Construo possibilidades.</p>
         <a href="#sobre" className={s.aboutLink} data-intro-copy>Conheça meu universo<ArrowUpRight size={18}/></a>
       </div>
-      <div className={s.stage} data-hero-stage>
-        <Fold reduced={reduced} flightRef={flightRef}/>
-      </div>
+      <div className={s.stage} data-hero-stage aria-hidden="true"/>
     </div>
+    <Fold reduced={reduced} flightRef={flightRef}/>
     <div className={s.horizon} aria-hidden="true"><svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path data-horizon d="M0 62C280 0 430 100 720 48S1160 0 1440 62V100H0Z"/></svg></div>
   </section>;
 }

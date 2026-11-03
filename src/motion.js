@@ -17,11 +17,12 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
     const hero=document.getElementById('inicio');
     const markers=[...root.current.querySelectorAll('[data-context]')];
     const chapterElements=[...root.current.querySelectorAll('[data-chapter]')];
-    const sections=[...root.current.querySelectorAll('main > section[id]')];
+    const sections=[...root.current.querySelectorAll('main section[id]')];
     const progress=root.current.querySelector('[data-reading-progress]');
     const update=()=>{
       frame=0;
-      setNavigation(hero.getBoundingClientRect().bottom<=132);
+      const openingFlight=ScrollTrigger.getById('opening-flight');
+      setNavigation(openingFlight ? window.scrollY > openingFlight.end + 20 : hero.getBoundingClientRect().bottom<=132);
       let context='pessoa';
       for(const el of markers)if(el.getBoundingClientRect().top<=window.innerHeight*.45)context=el.dataset.context;
       setContext(context);
@@ -38,6 +39,14 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
       if(progress)progress.style.transform=`scaleX(${max>0?Math.min(1,Math.max(0,window.scrollY/max)):0})`;
     };
     const queue=()=>{if(!frame)frame=requestAnimationFrame(update);};
+    const jumpToAbout=e=>{
+      if(e.target.closest('a[href="#sobre"]')&&!reduced){
+        e.preventDefault();
+        const flight=ScrollTrigger.getById('opening-flight');
+        if(flight)window.scrollTo({top:flight.end,behavior:'smooth'});
+      }
+    };
+    document.addEventListener('click',jumpToAbout);
     update();
     window.addEventListener('scroll',queue,{passive:true});window.addEventListener('resize',queue);
     const media=gsap.matchMedia();
@@ -47,17 +56,6 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
       q('#projetos h2, #trajetoria h2, #certificados h2').forEach(title => {
         gsap.from(title, { y: 38, clipPath: 'inset(0 0 18% 0)', duration: 1.1, ease: 'power4.out', clearProps: 'all', scrollTrigger: { trigger: title, start: 'top 92%', once: true } });
       });
-      q('[data-about-piece]').forEach((piece,i)=>gsap.from(piece,{opacity:0,y:30,duration:.9,delay:(i%3)*.07,ease:'power3.out',clearProps:'all',scrollTrigger:{trigger:piece,start:'top 93%',once:true}}));
-      const portrait=q('[data-about-photo]')[0];
-      if(portrait){
-        const image=portrait.querySelector('img');
-        gsap.timeline({scrollTrigger:{trigger:portrait,start:'top 92%',end:'bottom 8%',scrub:.55}})
-          .fromTo(portrait,{clipPath:'inset(0 100% 0 0)',x:22},{clipPath:'inset(0 0% 0 0)',x:0,duration:.25,ease:'power3.out'})
-          .fromTo(image,{scale:1.16,xPercent:-8},{scale:1,xPercent:0,duration:.3,ease:'power3.out'},0)
-          .to(portrait,{clipPath:'inset(0 0% 0 0)',duration:.45})
-          .to(portrait,{clipPath:'inset(0 0 0 100%)',x:-18,duration:.25,ease:'power2.in'})
-          .to(image,{scale:1.08,xPercent:6,duration:.25},.75);
-      }
       const transition=q('[data-section-transition]')[0];
       if(transition)gsap.fromTo(q('[data-transition-surface]'),{attr:{d:'M0 160Q720 -100 1440 160V200H0Z'}},{attr:{d:'M0 0Q720 0 1440 0V200H0Z'},ease:'none',scrollTrigger:{trigger:transition,start:'top bottom',end:'bottom 35%',scrub:.7}});
       q('[data-project]').forEach(band => {
@@ -74,10 +72,14 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
       refresh();
       // React mounts after the browser's first anchor lookup on a direct URL.
       const id=window.location.hash.slice(1);
-      if(id && window.scrollY===0) document.getElementById(id)?.scrollIntoView({behavior:'instant',block:'start'});
+      if(id && window.scrollY===0){
+        const flight=ScrollTrigger.getById('opening-flight');
+        if(id==='sobre'&&flight)window.scrollTo({top:flight.end,behavior:'instant'});
+        else document.getElementById(id)?.scrollIntoView({behavior:'instant',block:'start'});
+      }
       queue();
     });
     window.addEventListener('load',refresh);
-    return()=>{disposed=true;cancelAnimationFrame(frame);window.removeEventListener('scroll',queue);window.removeEventListener('resize',queue);window.removeEventListener('load',refresh);media.revert();ctx.revert();};
+    return()=>{disposed=true;document.removeEventListener('click',jumpToAbout);cancelAnimationFrame(frame);window.removeEventListener('scroll',queue);window.removeEventListener('resize',queue);window.removeEventListener('load',refresh);media.revert();ctx.revert();};
   },[root,reduced,setNavigation,setChapter,setContext,setActiveSection]);
 }

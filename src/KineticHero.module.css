@@ -1,5 +1,5 @@
 .hero{--hero-void:#0b0d10;background:var(--hero-void);color:var(--light);position:relative;isolation:isolate;min-height:max(680px,100svh);display:flex;align-items:center;overflow:hidden;padding:85px 0 110px}
-.hero::before{content:"";position:absolute;inset:-15%;pointer-events:none;background:radial-gradient(ellipse 10% 17% at 69% 46%,#0b0d10 64%,transparent 100%),radial-gradient(ellipse 38% 56% at 70% 43%,#34363a 0%,#191b1e 45%,transparent 88%),linear-gradient(145deg,transparent 38%,#05060855 69%,transparent 92%);opacity:.85}
+.hero::before{display:none}
 .layout{width:var(--page-width);margin:auto;display:grid;grid-template-columns:40% 60%;align-items:center;gap:0;position:relative}
 .copy{position:relative;z-index:2}.hello{display:flex;align-items:center;gap:24px;font-size:clamp(1.3rem,2vw,1.8rem);margin-bottom:23px;color:var(--muted-light)}.hello::after{content:"";display:block;width:105px;height:1px;background:linear-gradient(90deg,#b7babd,transparent)}
 .copy h1{font-size:clamp(4.6rem,8vw,6rem);font-weight:400;letter-spacing:-.04em;line-height:1.08}.nameMask{display:block;overflow:hidden;padding-bottom:.08em;margin-bottom:-.08em}.nameMask>span{display:block;transform-origin:left bottom}.period{color:var(--accent)}
@@ -37,6 +37,11 @@
 }
 
 @media(max-width:899px){.copy{text-align:center}.nameMask>span{transform-origin:center bottom}.description{margin-inline:auto}.aboutLink{display:none}}
-@media(max-width:899px){.hello{justify-content:center}.hero::before{background:radial-gradient(ellipse 16% 13% at 50% 61%,#0b0d10 62%,transparent 100%),radial-gradient(ellipse 55% 36% at 50% 61%,#292b2f 0%,#17191c 45%,transparent 88%)}}
+@media(max-width:899px){.hello{justify-content:center}.hero::before{display:none}}
 
 .entry>div{background:#0b0d10;margin-bottom:-1px}.hero{border:0}.stage{z-index:3}
+
+/* A full viewport renderer cannot expose the edges of a smaller canvas. */
+.fold{position:absolute;inset:0;border-radius:0;z-index:1}
+.stage{pointer-events:none;z-index:0}
+@media(max-width:899px){.fold{inset:0}}
