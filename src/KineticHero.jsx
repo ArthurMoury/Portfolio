@@ -3,12 +3,12 @@ import { ArrowUpRight } from 'lucide-react';
 import gsap from 'gsap';
 import s from './KineticHero.module.css';
 
-function Fold({ reduced }) {
+function Fold({ reduced, flightRef }) {
   const host = useRef(null);
   useEffect(() => {
     if (reduced) return;
     let disposed = false, renderer, geometry, material, environment, observer, resize;
-    let frame = 0, visible = true;
+    let frame = 0, visible = true, flightProgress = 0;
     const pointer = { x: 0, y: 0 };
     let shape=0;
     const changeShape=()=>{shape=(shape+1)%3;sync();};
@@ -64,10 +64,13 @@ function Fold({ reduced }) {
         scene.add(new T.HemisphereLight(0xffffff, 0x333333, 2));
         const light = new T.DirectionalLight(0xffffff, 3);
         light.position.set(2, 3, 4); scene.add(light);
+        let cameraDistance = 7.4;
         const fit = () => {
           const width=node.clientWidth, height=node.clientHeight;
           if (!width || !height) return;
-          camera.aspect = width / height; camera.position.z = (innerWidth < 900 ? 8.6 : 7.4) / Math.min(1, camera.aspect); camera.updateProjectionMatrix(); renderer.setSize(width, height, false); sync();
+          camera.aspect = width / height;
+          cameraDistance = (innerWidth < 900 ? 8.6 : 7.4) / Math.min(1, camera.aspect);
+          camera.updateProjectionMatrix(); renderer.setSize(width, height, false); sync();
         };
         fit(); resize = new ResizeObserver(fit); resize.observe(node);
         let elapsed = 0, last = 0, rx = 0, ry = 0, morph=0;
@@ -76,7 +79,9 @@ function Fold({ reduced }) {
           elapsed += last ? Math.min((now - last) / 1000, .05) : 0; last = now;
           const progress = Math.min(elapsed / 3.2, 1);
           const ease = 1 - Math.pow(1 - progress, 4);
-          rx += (pointer.y * 1.1 - rx) * .055; ry += (pointer.x * 1.7 - ry) * .055;
+          const interactionWeight = Math.pow(1 - Math.min(1, flightProgress * 2.4), 2);
+          rx += (pointer.y * 1.1 * interactionWeight - rx) * .09;
+          ry += (pointer.x * 1.7 * interactionWeight - ry) * .09;
           morph+=(shape-morph)*.045;
           const vertices = geometry.attributes.position.array;
           for(let i=0;i<vertices.length;i+=3){
@@ -87,12 +92,15 @@ function Fold({ reduced }) {
           geometry.attributes.position.needsUpdate=true;geometry.computeVertexNormals();
           fold.rotation.set(.42 + rx, -.4 + ry + (1 - ease) * 2.8, -.45 + ease * .2 + morph*.6);
           fold.scale.setScalar(.3 + ease * .7);
+          // The mesh is built around the origin, so the camera travels through its actual opening.
+          camera.position.set(0, 0, cameraDistance - (cameraDistance + 1.15) * flightProgress * flightProgress);
           renderer.render(scene, camera);
           node.dataset.ready = 'true';
           const moving = Math.abs(pointer.y * 1.1 - rx) + Math.abs(pointer.x * 1.7 - ry) > .0005;
           frame = progress < 1 || moving || Math.abs(shape-morph)>.001 ? requestAnimationFrame(draw) : 0;
         };
         sync = () => { if (visible && !document.hidden && !frame) frame = requestAnimationFrame(draw); };
+        flightRef.current = value => { flightProgress = value; sync(); };
         observer = new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; sync(); });
         observer.observe(node); sync();
       } catch { node.dataset.ready = 'false'; }
@@ -107,9 +115,10 @@ function Fold({ reduced }) {
       node.removeEventListener('click',changeShape);node.removeEventListener('keydown',key);
       document.removeEventListener('visibilitychange', visibility);
       geometry?.dispose(); material?.dispose(); environment?.dispose(); renderer?.dispose();
+      flightRef.current = null;
       renderer?.domElement.remove(); delete node.dataset.ready;
     };
-  }, [reduced]);
+  }, [reduced, flightRef]);
   return <div ref={host} className={s.fold} role={reduced?"img":"button"} tabIndex={reduced?undefined:0} aria-label={reduced?"Escultura abstrata":"Escultura interativa. Mova o cursor, toque ou pressione Enter para transformar."} data-fold>
     <svg className={s.fallback} viewBox="0 0 600 600" fill="none"><g stroke="currentColor">{Array.from({length:14},(_,i)=><ellipse key={i} cx="300" cy="300" rx={190-i*5} ry={85+i*8} transform={`rotate(${i*7} 300 300)`} />)}</g></svg>
   </div>;
@@ -117,6 +126,7 @@ function Fold({ reduced }) {
 
 export default function KineticHero({ reduced }) {
   const root = useRef(null);
+  const flightRef = useRef(null);
   useEffect(() => {
     if (reduced) return;
     const ctx = gsap.context(() => {
@@ -128,10 +138,11 @@ export default function KineticHero({ reduced }) {
         .from(q('[data-intro-copy]'), { opacity: .25, y: 20, duration: 1, stagger: .13, clearProps: 'all' }, .85)
         .fromTo(q('[data-fold]'), { opacity: .1, scale: .6 }, { opacity: 1, scale: 1, duration: 1.5 }, .1);
       const stage=q('[data-hero-stage]')[0];
-      const flight=gsap.timeline({scrollTrigger:{trigger:root.current,start:'top top',end:'+=100%',pin:true,scrub:1,invalidateOnRefresh:true}});
+      let flight;
+      flight=gsap.timeline({scrollTrigger:{trigger:root.current,start:'top top',end:'+=125%',pin:true,scrub:1,invalidateOnRefresh:true,onUpdate:()=>flightRef.current?.(flight.progress())}});
       flight.to(q('[data-intro-copy], [data-name-line], [data-horizon]'),{opacity:0,duration:.24,ease:'none'},0)
-        .to(stage,{x:()=>innerWidth/2-(stage.getBoundingClientRect().left+stage.getBoundingClientRect().width/2),y:()=>innerHeight/2-(stage.getBoundingClientRect().top+stage.getBoundingClientRect().height/2),scale:18,transformOrigin:'50% 50%',duration:1,ease:'power2.in'},0)
-        .to(stage,{opacity:0,duration:.36,ease:'none'},.42);
+        .to(stage,{x:()=>innerWidth/2-(stage.getBoundingClientRect().left+stage.getBoundingClientRect().width/2),y:()=>innerHeight/2-(stage.getBoundingClientRect().top+stage.getBoundingClientRect().height/2),scale:2.5,transformOrigin:'50% 50%',duration:1,ease:'power2.inOut'},0)
+        .to(stage,{opacity:0,duration:.13,ease:'none'},.87);
     }, root);
     return () => ctx.revert();
   }, [reduced]);
@@ -145,7 +156,7 @@ export default function KineticHero({ reduced }) {
         <a href="#sobre" className={s.aboutLink} data-intro-copy>Conheça meu universo<ArrowUpRight size={18}/></a>
       </div>
       <div className={s.stage} data-hero-stage>
-        <Fold reduced={reduced}/>
+        <Fold reduced={reduced} flightRef={flightRef}/>
       </div>
     </div>
     <div className={s.horizon} aria-hidden="true"><svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path data-horizon d="M0 62C280 0 430 100 720 48S1160 0 1440 62V100H0Z"/></svg></div>

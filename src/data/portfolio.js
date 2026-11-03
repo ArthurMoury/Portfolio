@@ -258,6 +258,7 @@ export const chapters = [
   {
     "id": "formacao",
     "client": "Edenred",
+    "clientLogo": "/clients/edenred.svg",
     "marker": "2025 até agora",
     "organization": "CESAR School",
     "role": "Ciência da Computação",
@@ -269,12 +270,12 @@ export const chapters = [
     "caption": "Card0, projeto em equipe na formação acadêmica",
     "fit": "contain",
     "background": "#1a1d29",
-    "brandImage": "/projects/cesar.webp",
     "stack": "Next.js, React, TypeScript, Tailwind CSS, Framer Motion, Recharts, Axios, Nodemailer e Cypress."
   },
   {
     "id": "gaita-hero",
     "client": "CESAR School",
+    "clientLogo": "/clients/cesar-school.png",
     "marker": "2025, projeto acadêmico",
     "organization": "Gaita Hero",
     "role": "CESAR School, acessibilidade motora",
@@ -292,6 +293,7 @@ export const chapters = [
   {
     "id": "echo",
     "client": "Jornal do Comércio",
+    "clientLogo": "/clients/jornal-do-commercio.svg",
     "marker": "2025, projeto acadêmico",
     "organization": "Echo",
     "role": "CESAR School, Agile Coach no time de desenvolvimento",
