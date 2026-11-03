@@ -131,7 +131,7 @@ export default function KineticHero({ reduced }) {
       const flight=gsap.timeline({scrollTrigger:{trigger:root.current,start:'top top',end:'+=100%',pin:true,scrub:1,invalidateOnRefresh:true}});
       flight.to(q('[data-intro-copy], [data-name-line], [data-horizon]'),{opacity:0,duration:.24,ease:'none'},0)
         .to(stage,{x:()=>innerWidth/2-(stage.getBoundingClientRect().left+stage.getBoundingClientRect().width/2),y:()=>innerHeight/2-(stage.getBoundingClientRect().top+stage.getBoundingClientRect().height/2),scale:18,transformOrigin:'50% 50%',duration:1,ease:'power2.in'},0)
-        .to(stage,{opacity:0,duration:.18,ease:'none'},.82);
+        .to(stage,{opacity:0,duration:.36,ease:'none'},.42);
     }, root);
     return () => ctx.revert();
   }, [reduced]);
