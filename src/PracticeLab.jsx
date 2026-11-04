@@ -1,91 +1,93 @@
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Copy, Check, ArrowRight, X } from 'lucide-react';
+import { ArrowUpRight, Copy, Check, X, FileText, Database, FolderOpen, Calculator, RefreshCw, Layers, MessageSquare, SlidersHorizontal, GitCommitHorizontal, ScanLine } from 'lucide-react';
+import { examplePrompt } from './data/practice';
 import s from './PracticeLab.module.css';
-import PromptExperiment, { examplePrompt } from './PromptExperiment';
 
-const cases = [
-  { tab:'Prompts & LLMs', title:'Da pergunta à decisão.', text:'Exemplo fictício: analisar relatos de usuários e escolher uma melhoria de produto com evidências.', stack:'Análise de contexto, Evidências, Limites, Critérios de validação' },
-  { tab:'Automações', title:'Menos operações manuais. Mais tempo para resolver.', text:'Extração de dados, fluxos de manuseio de arquivos, atualização de status, processos manuais e cálculos matemáticos. Conecto essas etapas em rotinas que tratam a informação e mantêm as bases organizadas.', stack:'Node.js, Playwright, n8n, Make, APIs' },
-  { tab:'Ferramentas internas', title:'Dados e contexto na mesma conversa.', text:'Atuação na evolução do dashboard interno da Roomi: indicadores de operação, comparação entre períodos e um copiloto que consulta os dados do filtro ativo. As validações verificam se os números do chat correspondem aos do painel.', stack:'JavaScript, APIs, Dashboards, Validação de dados' },
-  { tab:'Em produção', title:'A entrega continua depois do deploy.', text:'No dashboard da Roomi, acompanho a evolução de funcionalidades em produção e suas validações. Um exemplo é a ampliação do horizonte de previsão diária para 90 dias, com intervalos de confiança e verificações de consistência.', stack:'Previsão diária, Monitoramento, QA, Integração de dados' },
-];
-
-const summaries=[
-  'Um experimento de análise com contexto delimitado e evidências verificáveis.',
-  'Dados, arquivos, status e cálculos conectados em rotinas de trabalho.',
-  'O mesmo filtro e os mesmos números no painel e na conversa com a IA.',
-  'Previsões, acompanhamento e validações que continuam depois da entrega.',
-];
-const automation=['Extração de dados','Manuseio de arquivos','Atualização de status','Processos manuais','Cálculos matemáticos','Integração de sistemas'];
 gsap.registerPlugin(ScrollTrigger);
+const operations = [
+  {icon:FileText, name:'Extração de dados', result:'Informação estruturada'},
+  {icon:FolderOpen, name:'Manuseio de arquivos', result:'Arquivos organizados'},
+  {icon:Calculator, name:'Cálculos matemáticos', result:'Valores processados'},
+  {icon:RefreshCw, name:'Atualização de status', result:'Sistemas sincronizados'},
+];
+const releases = [
+  ['Definir o comportamento','Entender a necessidade e os limites da mudança.'],
+  ['Verificar a consistência','Conferir cálculos, agregações e comparações.'],
+  ['Publicar a evolução','Integrar a mudança à ferramenta em uso.'],
+  ['Acompanhar a operação','Observar o uso e orientar os próximos ajustes.'],
+];
+
+function PromptDocument(){return <dl className={s.promptText}>{examplePrompt.map(([label,text])=><div key={label}><dt>{label}</dt><dd>{text}</dd></div>)}</dl>;}
 
 export default function PracticeLab({ reduced }) {
-  const root=useRef(null), inner=useRef(null), timeline=useRef(null), modeRef=useRef('scroll'), visible=useRef(false), phase=useRef(0), modalRef=useRef(null), dialog=useRef(null);
-  const [active,setActive]=useState(0), [mode,setMode]=useState('scroll'), [copied,setCopied]=useState(false), [modal,setModal]=useState(null);
-  modalRef.current=modal;
-  const item=cases[active];
-  const changeMode=value=>{modeRef.current=value;setMode(value);};
+  const root=useRef(null), dialog=useRef(null);
+  const [expanded,setExpanded]=useState(false),[copied,setCopied]=useState(false);
   useEffect(()=>{
-    if(reduced){changeMode('paused');return;}
-    changeMode('scroll');
-    const node=root.current, path=node.querySelector('[data-flow-path]'), fill=node.querySelector('[data-flow-fill]'), capsule=node.querySelector('[data-flow-capsule]');
-    const length=path.getTotalLength(), driver={value:0};
-    fill.style.strokeDasharray=length;
-    const draw=()=>{
-      const value=driver.value, index=Math.min(3,Math.floor(value*4)), local=Math.min(1,value*4-index);
-      node.style.setProperty('--story-progress',value);node.style.setProperty('--phase-progress',local);
-      fill.style.strokeDashoffset=length*(1-value);
-      const point=path.getPointAtLength(length*value);capsule.setAttribute('transform',`translate(${point.x} ${point.y})`);
-      node.querySelectorAll('[data-flow-node]').forEach((n,i)=>{n.dataset.reached=String(value>=i/3);});
-      const count=node.querySelector('[data-practice-count]');if(count)count.textContent=String(Math.min(7,Math.ceil(local*7)));
-      if(index!==phase.current){phase.current=index;setActive(index);setCopied(false);}
-    };
-    const animation=gsap.timeline({paused:true,onUpdate:draw,onComplete:()=>{if(modeRef.current==='play')changeMode('paused');}});
-    animation.to(driver,{value:.25,duration:6,ease:'none'}).to(driver,{value:.5,duration:6,ease:'none'}).to(driver,{value:.75,duration:6,ease:'none'}).to(driver,{value:1,duration:6,ease:'none'});
-    timeline.current=animation;draw();
-    const trigger=ScrollTrigger.create({trigger:node,start:()=>`top ${parseFloat(getComputedStyle(inner.current).top)||118}px`,end:'bottom bottom',onUpdate:self=>{if(modeRef.current==='scroll'&&modalRef.current===null)animation.progress(self.progress);}});
-    const sync=()=>{if(modeRef.current==='play'){if(visible.current&&!document.hidden&&modalRef.current===null)animation.play();else animation.pause();}};
-    const observer=new IntersectionObserver(([entry])=>{visible.current=entry.isIntersecting;sync();});observer.observe(node);
-    document.addEventListener('visibilitychange',sync);
-    return()=>{trigger.kill();animation.kill();timeline.current=null;observer.disconnect();document.removeEventListener('visibilitychange',sync);};
+    if(reduced)return;
+    const ctx=gsap.context(()=>{
+      const q=gsap.utils.selector(root);
+      q('[data-work-reveal]').forEach(el=>gsap.from(el,{y:32,opacity:.25,duration:.85,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 92%',once:true},clearProps:'transform,opacity'}));
+      const flow=q('[data-operation-flow]')[0];
+      gsap.fromTo(q('[data-operation]'),{'--fill':0},{'--fill':1,stagger:.22,ease:'none',scrollTrigger:{trigger:flow,start:'top 85%',end:'bottom 50%',scrub:.6}});
+      const context=q('[data-shared-context]')[0];
+      gsap.fromTo(q('[data-connection]'),{strokeDashoffset:1},{strokeDashoffset:0,stagger:.25,ease:'none',scrollTrigger:{trigger:context,start:'top 85%',end:'bottom 50%',scrub:.6}});
+      gsap.fromTo(q('[data-context-tag]'),{y:14,opacity:.7},{y:0,opacity:1,stagger:.12,ease:'none',scrollTrigger:{trigger:context,start:'top 80%',end:'bottom 55%',scrub:.6}});
+      const release=q('[data-release]')[0];
+      gsap.fromTo(q('[data-release-line]'),{scaleY:0},{scaleY:1,ease:'none',scrollTrigger:{trigger:release,start:'top 75%',end:'bottom 65%',scrub:.6}});
+      gsap.from(q('[data-release-step]'),{x:18,opacity:.7,stagger:.18,ease:'none',scrollTrigger:{trigger:release,start:'top 80%',end:'bottom 65%',scrub:.6}});
+    },root);
+    return()=>ctx.revert();
   },[reduced]);
   useEffect(()=>{
-    if(modal===null)return;
-    timeline.current?.pause();
-    const previous=document.activeElement, old=document.body.style.overflow, node=dialog.current;
+    if(!expanded)return;
+    const previous=document.activeElement, old=document.body.style.overflow,node=dialog.current;
     document.body.style.overflow='hidden';node.showModal();
-    return()=>{node.close();document.body.style.overflow=old;previous?.focus({preventScroll:true});if(modeRef.current==='play'&&visible.current&&!document.hidden)timeline.current?.play();};
-  },[modal]);
-  const seek=index=>{
-    phase.current=index;setActive(index);setCopied(false);
-    timeline.current?.progress((index+.05)/4);
-    if(reduced)root.current.style.setProperty('--phase-progress',1);
-  };
-  const copy=async()=>{try{await navigator.clipboard.writeText(examplePrompt.map(([label,text])=>`${label}: ${text}`).join('\n\n'));setCopied(true);}catch{setCopied('error');}};
-  const containFocus=e=>{
+    return()=>{node.close();document.body.style.overflow=old;previous?.focus({preventScroll:true});};
+  },[expanded]);
+  const copy=async()=>{try{await navigator.clipboard.writeText(examplePrompt.map(([label,text])=>`${label}\n${text}`).join('\n\n'));setCopied(true);}catch{setCopied('error');}};
+  const focus=e=>{
     if(e.key!=='Tab')return;
-    const items=[...dialog.current.querySelectorAll('button,a[href]')],first=items[0],last=items.at(-1);
+    const items=[...dialog.current.querySelectorAll('button')],first=items[0],last=items.at(-1);
     if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
     else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
   };
-  return <section ref={root} id="processo" className={s.lab} data-context="trabalho" data-reduced={reduced} data-mode={mode} data-active={active} aria-labelledby="practice-title">
-    <div ref={inner} className={s.inner}>
-      <div className={s.heading}><h2 id="practice-title">Da integração<br className={s.mobileBreak}/> à entrega.</h2></div>
-      <nav className={s.phases} aria-label="Aplicações de IA e automação">{cases.map((c,i)=><button key={c.tab} onClick={()=>seek(i)} aria-current={active===i?'step':undefined}><span>{String(i+1).padStart(2,'0')}</span>{c.tab}</button>)}</nav>
-      <div className={s.circuit} aria-hidden="true"><svg viewBox="0 0 900 170"><path data-flow-path className={s.route} d="M60 85C145 -20 235 190 320 85S495 -20 580 85S755 190 840 85"/><path data-flow-fill className={s.routeFill} d="M60 85C145 -20 235 190 320 85S495 -20 580 85S755 190 840 85"/>{[60,320,580,840].map((x,i)=><g key={x} data-flow-node transform={`translate(${x} 85)`} className={s.node}><circle r="22"/><text y="5" textAnchor="middle">{i+1}</text></g>)}<g data-flow-capsule className={s.capsule} transform="translate(60 85)"><rect x="-12" y="-6" width="24" height="12" rx="6"/></g></svg></div>
-      <div id="practice-panel" className={s.panel} data-phase={active}>
-        {active===0?<PromptExperiment copied={copied} onCopy={copy} onExpand={()=>setModal(0)}/>:<>
-        <div key={`copy-${active}`} className={s.copy}><h3>{item.title}</h3><p>{summaries[active]}</p><div className={s.stack}>{item.stack}</div><button className={s.detailLink} onClick={()=>setModal(active)}>Ver contexto<ArrowRight size={16}/></button></div>
-        <div key={`visual-${active}`} className={s.visual}>
-          {active===1&&<ol className={s.automation}>{automation.map((label,i)=><li key={label} style={{'--order':i}}><span>{String(i+1).padStart(2,'0')}</span>{label}<Check size={15}/></li>)}</ol>}
-          {active===2&&<div className={s.validation}><div><span>Filtro ativo</span><i/></div><div><span>Total do painel</span><i/></div><p><strong data-practice-count>7</strong><span>verificações de regressão.<small>Agregação, comparação e limites de acesso.</small></span></p></div>}
-          {active===3&&<div className={s.production}><p><strong>90</strong><span>dias no horizonte<br/>de previsão diária.</span></p><div className={s.horizon} aria-hidden="true">{Array.from({length:90},(_,i)=><i key={i} style={{'--day':i}}/>)}</div><small>Funcionalidade em produção desde outubro de 2026.</small></div>}
+  return <section ref={root} id="processo" className={s.lab} data-context="trabalho" data-reduced={reduced} aria-labelledby="practice-title">
+    <div className={s.container}>
+      <header className={s.intro} data-work-reveal><span className={s.kicker}>IDEIAS, SISTEMAS, PESSOAS</span><h2 id="practice-title">O trabalho<br/><em>por dentro.</em></h2><p>Como uso IA, desenvolvimento e automação para transformar uma necessidade em algo que funciona.</p></header>
+
+      <article className={`${s.chapter} ${s.promptChapter}`} aria-labelledby="prompt-title">
+        <div className={s.story} data-work-reveal><span className={s.category}>Prompts & LLMs</span><h3 id="prompt-title">Dar contexto.<br/>Pedir evidências.<br/><em>Questionar a resposta.</em></h3><p>Uma boa instrução define o problema e também os limites da resposta. Neste exemplo, a IA recebe relatos de usuários e precisa recomendar uma melhoria sem inventar números.</p><div className={s.principles}><span>Contexto delimitado</span><span>Fontes identificadas</span><span>Critério de validação</span></div><button className={s.textButton} onClick={()=>setExpanded(true)}>Ler o prompt completo<ArrowUpRight size={18}/></button><small>Exemplo fictício criado para este portfólio.</small></div>
+        <div className={s.promptComposition} data-work-reveal>
+          <div className={s.document}><div className={s.documentHeader}><span><FileText size={17}/>Uma decisão de produto</span><button onClick={copy} aria-label="Copiar prompt de exemplo">{copied===true?<Check size={17}/>:<Copy size={17}/>}<span>{copied===true?'Copiado':'Copiar'}</span></button></div><div className={s.documentBody} role="region" aria-label="Prompt completo de exemplo" tabIndex={0}><PromptDocument/></div><div className={s.documentFooter} aria-live="polite">{copied==='error'?'Selecione o texto para copiar.':'Cinco blocos para uma decisão verificável.'}</div></div>
+          <aside className={s.evidence}><span className={s.evidenceMark} aria-hidden="true">↳</span><div><span>O que observar na resposta</span><p>A recomendação cita os relatos? Expõe o que falta saber? Propõe um teste que alguém consegue executar?</p></div></aside>
         </div>
-        </>}
-      </div>
+      </article>
+
+      <article className={`${s.chapter} ${s.automationChapter}`} aria-labelledby="automation-title">
+        <div className={s.operationVisual} data-operation-flow data-work-reveal>
+          <div className={s.operationTop}><span>ENTRADA</span><span>TRATAMENTO</span><span>DESTINO</span></div>
+          <div className={s.operations}>{operations.map(({icon:Icon,name,result})=><div className={s.operation} data-operation key={name}><div className={s.source}><Icon size={20}/><span>{name}</span></div><span className={s.transfer} aria-hidden="true"><i/><b/></span><div className={s.destination}><Check size={16}/><span>{result}</span></div></div>)}</div>
+          <div className={s.operationBottom}><span>Processos manuais conectados</span><Layers size={20}/><span>Uma rotina que continua</span></div>
+        </div>
+        <div className={s.story} data-work-reveal><span className={s.category}>Automações</span><h3 id="automation-title">Menos etapas<br/>para fazer<br/><em>à mão.</em></h3><p>Extraio dados, organizo arquivos, automatizo atualizações de status e conecto cálculos a outros processos. O objetivo é fazer a informação circular entre as ferramentas da operação.</p><p className={s.footnote}>Na Boop, trabalhei com n8n, Make, Zapier e dados no CRM Go High Level. Hoje, continuo explorando automações e integrações na Roomi.</p><div className={s.tools}><span>n8n</span><span>Make</span><span>Zapier</span><span>APIs</span></div></div>
+      </article>
+
+      <article className={`${s.chapter} ${s.toolsChapter}`} aria-labelledby="tools-title">
+        <div className={s.story} data-work-reveal><span className={s.category}>Ferramentas internas</span><h3 id="tools-title">Um contexto.<br/><em>Duas formas<br/>de consultar.</em></h3><p>Na evolução do dashboard da Roomi, indicadores e copiloto precisam trabalhar com o mesmo recorte de dados. A pergunta feita à IA deve respeitar os filtros que estão no painel.</p><div className={s.fact}><ScanLine size={22}/><p><strong>7 verificações de regressão</strong><span>Agregação, comparação e limites de acesso.</span></p></div></div>
+        <div className={s.contextVisual} data-shared-context data-work-reveal>
+          <div className={s.contextSource}><Database size={22}/><div><span>CONTEXTO COMPARTILHADO</span><strong>Dados do filtro ativo</strong></div><SlidersHorizontal size={19}/></div>
+          <svg className={s.connections} viewBox="0 0 600 110" preserveAspectRatio="none" aria-hidden="true"><path d="M300 0V40Q300 60 280 60H170Q150 60 150 80V110"/><path d="M300 0V40Q300 60 320 60H430Q450 60 450 80V110"/><path data-connection pathLength="1" d="M300 0V40Q300 60 280 60H170Q150 60 150 80V110"/><path data-connection pathLength="1" d="M300 0V40Q300 60 320 60H430Q450 60 450 80V110"/></svg>
+          <div className={s.contextOutputs}><div><Layers size={21}/><h4>No painel</h4><p>Indicadores e comparações.</p><span data-context-tag>Mesmo período</span></div><div><MessageSquare size={21}/><h4>Na conversa</h4><p>Perguntas sobre os dados.</p><span data-context-tag>Mesmo recorte</span></div></div><p className={s.contextCaption}>Conferir a resposta faz parte da construção.</p>
+        </div>
+      </article>
+
+      <article className={`${s.chapter} ${s.releaseChapter}`} aria-labelledby="release-title">
+        <div className={s.story} data-work-reveal><span className={s.category}>Em produção</span><h3 id="release-title">Publicar é<br/><em>continuar.</em></h3><p>Uma ferramenta em uso exige cuidado depois do deploy. Acompanho funcionalidades, validações e ajustes que mantêm a operação consistente.</p><div className={s.releaseExample}><span>UMA EVOLUÇÃO NA ROOMI</span><p>Horizonte de previsão diária ampliado para <strong>90 dias</strong>, com intervalos de confiança e verificações de consistência.</p></div></div>
+        <div className={s.releaseVisual} data-release data-work-reveal><div className={s.releaseHeader}><GitCommitHorizontal size={22}/><span>O que acompanha uma entrega</span></div><div className={s.releaseSteps}><i className={s.releaseLine} data-release-line aria-hidden="true"/>{releases.map(([title,text],i)=><div key={title} className={s.releaseStep} data-release-step><span className={s.releaseDot} aria-hidden="true"/><span className={s.releaseIndex}>{String(i+1).padStart(2,'0')}</span><div><h4>{title}</h4><p>{text}</p></div></div>)}</div><p className={s.releaseClosing}>O uso real orienta a próxima versão.</p></div>
+      </article>
     </div>
-    <dialog ref={dialog} className={s.dialog} aria-labelledby="practice-dialog-title" onKeyDown={containFocus} onCancel={e=>{e.preventDefault();setModal(null);}} onClick={e=>{if(e.target===e.currentTarget)setModal(null);}}>{modal!==null&&<div><header><h2 id="practice-dialog-title">{cases[modal].title}</h2><button autoFocus onClick={()=>setModal(null)} aria-label="Fechar detalhes"><X/></button></header><p>{cases[modal].text}</p>{modal===0?<><button className={s.copyPrompt} onClick={copy}>{copied===true?<Check size={17}/>:<Copy size={17}/>} {copied===true?'Prompt copiado':'Copiar prompt completo'}</button><dl>{examplePrompt.map(([label,text])=><div key={label}><dt>{label}</dt><dd>{text}</dd></div>)}</dl></>:<p className={s.stack}>{cases[modal].stack}</p>}</div>}</dialog>
+    <dialog ref={dialog} className={s.dialog} aria-labelledby="prompt-dialog-title" onKeyDown={focus} onCancel={e=>{e.preventDefault();setExpanded(false);}} onClick={e=>{if(e.target===e.currentTarget)setExpanded(false);}}><div className={s.dialogHeader}><div><span>EXEMPLO DE PROMPT</span><h2 id="prompt-dialog-title">Uma decisão de produto</h2></div><button autoFocus aria-label="Fechar prompt" onClick={()=>setExpanded(false)}><X/></button></div><div className={s.dialogContent}><p className={s.dialogIntro}>Cenário fictício. Você pode copiar a instrução completa e experimentar em um LLM.</p><PromptDocument/><button className={s.copyButton} onClick={copy}>{copied===true?<Check size={18}/>:<Copy size={18}/>} {copied===true?'Prompt copiado':'Copiar prompt completo'}</button><span className={s.copyStatus} aria-live="polite">{copied==='error'?'Não foi possível copiar. Selecione o texto acima.':''}</span></div></dialog>
   </section>;
 }

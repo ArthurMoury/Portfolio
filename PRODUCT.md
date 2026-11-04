@@ -61,3 +61,7 @@ O escopo agora inclui telefones em retrato/horizontal e tablets. Preservar as an
 
 ## Revisão do fluxo — 31/10/2026
 Substituir a troca temporizada em Na prática por uma animação real de fluxo, controlada pela rolagem e por pausa/reprodução nas duas versões. Manter o prompt integral e os contextos. A trajetória também muda visualmente com a rolagem no mobile.
+
+
+## Reconstrução da seção de trabalho — 04/11/2026
+A antiga seção “Da integração à entrega” foi inteiramente substituída por “O trabalho por dentro”. Quatro composições abertas seguem a rolagem natural, sem painel fixo, abas de fases, circuito curvo ou reprodução automática. Prompts e LLMs trazem documento copiável e ampliação; automações apresentam entradas e destinos animados; ferramentas internas mostram o contexto compartilhado entre painel e copiloto; produção apresenta validação, publicação e acompanhamento. Os movimentos GSAP respondem à rolagem, com conteúdo estático disponível em movimento reduzido. Não apresentar economia de horas sem medição fornecida pelo titular.
