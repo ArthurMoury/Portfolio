@@ -154,5 +154,8 @@
 @media(prefers-reduced-motion:reduce){.opening>:global(#inicio){position:relative}.opening>:global(#sobre){visibility:visible}}
 [data-reduced-motion=true] .opening>:global(#inicio){position:relative}
 
-.careerProgress{height:1px;flex:1;background:var(--line);overflow:hidden}.careerProgress i{display:block;height:100%;background:var(--accent);transform:scaleX(0);transform-origin:left}.stageFooter{gap:28px}.chapterVisual{transform-origin:50% 55%;backface-visibility:hidden}.chapterVisual[data-active=true]{z-index:1}.chapterVisual>img{will-change:transform}
+.chapterVisual{transform-origin:50% 55%;backface-visibility:hidden}.chapterVisual[data-active=true]{z-index:1}.chapterVisual>img{will-change:transform}
 @media(prefers-reduced-motion:reduce){.chapterVisual{transition:none}}
+
+/* Text, metadata and technical detail have their own reveal rhythm. */
+.chapterStack>[data-text-reveal]{font-size:inherit;color:inherit;margin:0}.projectBuild{--reveal-surface:var(--project-surface)}.projectBuild dl>[data-project-spec]{position:relative;border-top-color:transparent;--spec-progress:1}.projectBuild dl>[data-project-spec]::before{content:'';position:absolute;inset:0 0 auto;height:1px;background:var(--band-line);transform:scaleX(var(--spec-progress));transform-origin:left}.careerStage{padding-bottom:0}

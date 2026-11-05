@@ -18,7 +18,9 @@
 
 .horizon{position:absolute;bottom:-1px;left:0;width:100%;height:64px;pointer-events:none;overflow:hidden}.horizon svg{display:block;width:100%;height:100%;fill:#0b0d10}.horizonLine{fill:none;stroke:#85898c;stroke-width:1;stroke-dasharray:180 1800;animation:horizonTravel 6s linear infinite}@keyframes horizonTravel{to{stroke-dashoffset:-1980}}:global([data-reduced-motion=true]) .horizonLine{animation:none}
 
-.entry{position:absolute;inset:0;z-index:5;pointer-events:none;display:flex;flex-direction:column;overflow:hidden}.entry>div{height:50%;background:#25272a;flex-shrink:0;animation:entryFallback 1.8s forwards}.entry>div:first-child{border-radius:0 0 50% 0}.entry>div:last-child{border-radius:50% 0 0 0}.fold{cursor:grab;border-radius:50%}.fold:active{cursor:grabbing}.fold:focus-visible{outline:1px solid #989ca6;outline-offset:-30px}@keyframes entryFallback{99%{visibility:visible}100%{visibility:hidden}}@media(prefers-reduced-motion:reduce){.entry{display:none}}
+.entry{position:absolute;inset:0;z-index:5;pointer-events:none;display:flex;flex-direction:column;overflow:hidden}.entry>div{flex:1;min-height:0;background:linear-gradient(90deg,#101215,#24272b,#101215);margin-bottom:-1px;transform:translateX(-110%);animation:entryFallback 2.1s forwards}.fold{cursor:grab;border-radius:50%}.fold:active{cursor:grabbing}.fold:focus-visible{outline:1px solid #989ca6;outline-offset:-30px}@keyframes entryFallback{99%{visibility:visible}100%{visibility:hidden}}@media(prefers-reduced-motion:reduce){.entry{display:none}}
+.nameGlyph{display:inline-block;transform-origin:left bottom}.descriptionMask{display:block;overflow:clip;padding-bottom:.08em;margin-bottom:-.08em}.descriptionMask>span{display:block}
+
 
 .fold{touch-action:pan-y pinch-zoom}
 @media(max-width:640px){
@@ -39,7 +41,7 @@
 @media(max-width:899px){.copy{text-align:center}.nameMask>span{transform-origin:center bottom}.description{margin-inline:auto}.aboutLink{display:none}}
 @media(max-width:899px){.hello{justify-content:center}.hero::before{display:none}}
 
-.entry>div{background:#0b0d10;margin-bottom:-1px}.hero{border:0}.stage{z-index:3}
+.hero{border:0}.stage{z-index:3}
 
 /* A full viewport renderer cannot expose the edges of a smaller canvas. */
 .fold{position:absolute;inset:0;border-radius:0;z-index:1}

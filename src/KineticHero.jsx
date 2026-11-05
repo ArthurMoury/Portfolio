@@ -140,11 +140,13 @@ export default function KineticHero({ reduced }) {
     const ctx = gsap.context(() => {
       const q = gsap.utils.selector(root);
       gsap.timeline({ defaults: { ease: 'power4.out' } })
-        .fromTo(q('[data-entry-top]'),{yPercent:0},{yPercent:-102,duration:1.25,ease:'power3.inOut'},.05)
-        .fromTo(q('[data-entry-bottom]'),{yPercent:0},{yPercent:102,duration:1.25,ease:'power3.inOut'},.05)
-        .from(q('[data-name-line]'), { yPercent: 110, rotate: 4, duration: 1.3, stagger: .12, clearProps: 'transform' }, .45)
-        .from(q('[data-intro-copy]'), { y: 20, duration: 1, stagger: .13, clearProps: 'transform' }, .85)
-        .fromTo(q('[data-fold]'), { opacity: .1 }, { opacity: 1, duration: 1.5 }, .1);
+        .fromTo(q('[data-entry-slice]'),{x:0,xPercent:0},{xPercent:i=>i%2?105:-105,duration:1.08,stagger:.065,ease:'power3.inOut'},.08)
+        .fromTo(q('[data-hero-greeting]'),{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:.65,clearProps:'clipPath'},.36)
+        .fromTo(q('[data-hero-glyph]'),{yPercent:115,rotation:6},{yPercent:0,rotation:0,duration:.85,stagger:.045,clearProps:'transform'},.48)
+        .fromTo(q('[data-description-line]'),{yPercent:110},{yPercent:0,duration:.7,stagger:.13,clearProps:'transform'},1.04)
+        .fromTo(q('[data-hero-action]'),{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:.65,clearProps:'clipPath'},1.25)
+        .fromTo(q('[data-fold]'), { opacity: .1 }, { opacity: 1, duration: 1.2 }, .15)
+        .set(q('[data-entry-slice]'),{visibility:'hidden'},1.65);
       const opening=root.current.closest('[data-opening]');
       const about=opening.querySelector('#sobre');
       const photo=about.querySelector('[data-about-photo]');
@@ -166,13 +168,13 @@ export default function KineticHero({ reduced }) {
     return () => ctx.revert();
   }, [reduced]);
   return <section ref={root} id="inicio" className={s.hero} aria-labelledby="hero-title" data-context="pessoa">
-    {!reduced&&<div className={s.entry} aria-hidden="true"><div data-entry-top/><div data-entry-bottom/></div>}
+    {!reduced&&<div className={s.entry} aria-hidden="true">{Array.from({length:6},(_,i)=><div key={i} data-entry-slice/>)}</div>}
     <div className={s.layout}>
       <div className={s.copy}>
-        <p className={s.hello} data-intro-copy>Olá, sou</p>
-        <h1 id="hero-title" aria-label="Arthur Moury"><span className={s.nameMask}><span data-name-line>Arthur</span></span><span className={s.nameMask}><span data-name-line>Moury<span className={s.period}>.</span></span></span></h1>
-        <p className={s.description} data-intro-copy>Entendo problemas.<br/> Construo possibilidades.</p>
-        <a href="#sobre" className={s.aboutLink} data-intro-copy>Conheça meu universo<ArrowUpRight size={18}/></a>
+        <p className={s.hello} data-intro-copy data-hero-greeting>Olá, sou</p>
+        <h1 id="hero-title" aria-label="Arthur Moury"><span className={s.nameMask}><span data-name-line aria-hidden="true">{[...'Arthur'].map((letter,i)=><span className={s.nameGlyph} data-hero-glyph key={i}>{letter}</span>)}</span></span><span className={s.nameMask}><span data-name-line aria-hidden="true">{[...'Moury.'].map((letter,i)=><span className={`${s.nameGlyph} ${letter==='.'?s.period:''}`} data-hero-glyph key={i}>{letter}</span>)}</span></span></h1>
+        <p className={s.description} data-intro-copy><span className={s.descriptionMask}><span data-description-line>Entendo problemas.</span></span><span className={s.descriptionMask}><span data-description-line>Construo possibilidades.</span></span></p>
+        <a href="#sobre" className={s.aboutLink} data-intro-copy data-hero-action>Conheça meu universo<ArrowUpRight size={18}/></a>
       </div>
       <div className={s.stage} data-hero-stage aria-hidden="true"/>
     </div>

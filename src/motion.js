@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { revealText } from './textMotion';
 gsap.registerPlugin(ScrollTrigger);
 
 export function useReducedMotion() {
@@ -35,10 +36,6 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
       const chapterLine=innerWidth<900?Math.min(innerHeight-50,stageBottom+(innerHeight-stageBottom)*.3):innerHeight*.55;
       chapterElements.forEach((chapter,i)=>{if(chapter.getBoundingClientRect().top<=chapterLine)chapterIndex=i;});
       setChapter(chapterIndex);
-      const careerProgress=root.current.querySelector('[data-career-progress]');
-      const activeBounds=chapterElements[chapterIndex]?.getBoundingClientRect();
-      const local=activeBounds?Math.min(1,Math.max(0,(chapterLine-activeBounds.top)/activeBounds.height)):0;
-      if(careerProgress)careerProgress.style.transform=`scaleX(${(chapterIndex+local)/chapterElements.length})`;
       const max=document.documentElement.scrollHeight-window.innerHeight;
       if(progress)progress.style.transform=`scaleX(${max>0?Math.min(1,Math.max(0,window.scrollY/max)):0})`;
     };
@@ -57,7 +54,7 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
     const ctx=gsap.context(()=>{
       const q=gsap.utils.selector(root);
       if(reduced)return;
-      q('#projetos h2, #trajetoria h2, #certificados h2').forEach(title => {
+      q('#projetos h2, #certificados h2').forEach(title => {
         gsap.from(title, { y: 38, clipPath: 'inset(0 0 18% 0)', duration: 1.1, ease: 'power4.out', clearProps: 'all', scrollTrigger: { trigger: title, start: 'top 92%', once: true } });
       });
       const transition=q('[data-section-transition]')[0];
@@ -65,11 +62,27 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
       q('[data-project]').forEach(band => {
         gsap.from(band.querySelector('h3'), { x: -30, duration: .85, ease: 'power3.out', clearProps: 'all', scrollTrigger: { trigger: band, start: 'top 90%', once: true } });
       });
+      const careerTitle=q('#career-title')[0];
+      const titleReveal=gsap.timeline({scrollTrigger:{trigger:careerTitle,start:'top 90%',end:'top 36%',scrub:.6}});
+      careerTitle.querySelectorAll('[data-text-reveal]').forEach((line,i)=>revealText(titleReveal,line,i*.16,i%2?-1:1));
       q('[data-chapter]').forEach((chapter,i)=>{
-        const visual=q('[data-chapter-visual]')[i];
-        const pieces=[...chapter.children].filter(el=>!el.hasAttribute('data-chapter-mobile'));
-        gsap.from(pieces,{y:24,opacity:.25,stagger:.085,duration:.75,ease:'power3.out',clearProps:'transform,opacity',scrollTrigger:{trigger:chapter,start:()=>`top ${innerWidth<900?'78%':'82%'}`,once:true}});
-        gsap.fromTo(visual.querySelector('img'),{scale:1.035,yPercent:1.2},{scale:1,yPercent:-1.2,ease:'none',scrollTrigger:{trigger:chapter,start:'top 65%',end:'bottom 30%',scrub:.8}});
+        const find=selector=>chapter.querySelector(selector);
+        const enter=(trigger,start='top 90%')=>({trigger,start,toggleActions:'play none none reverse'});
+        const metadata=gsap.timeline({scrollTrigger:enter(find('[data-career-date]'))});
+        metadata.fromTo(find('[data-career-date]'),{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:.6,ease:'power3.out'},0);
+        revealText(metadata,find('[data-career-org]'),.1);
+        const heading=gsap.timeline({scrollTrigger:enter(find('[data-career-title]'),'top 87%')});
+        revealText(heading,find('[data-career-title]'),0,i%2?-1:1);
+        const copy=gsap.timeline({scrollTrigger:enter(find('[data-career-role]'))});
+        copy.fromTo(find('[data-career-role]'),{opacity:0,x:-12},{opacity:1,x:0,duration:.5,ease:'power3.out'},0);
+        const description=gsap.timeline({scrollTrigger:enter(find('[data-career-copy]'))});
+        revealText(description,find('[data-career-copy]'),0);
+        const client=find('[data-career-client]');
+        if(client)gsap.fromTo(client,{clipPath:'inset(0 100% 0 0)',x:14},{clipPath:'inset(0 0% 0 0)',x:0,duration:.65,ease:'power3.out',scrollTrigger:enter(client)});
+        const stack=find('[data-career-stack]');
+        if(stack){const skills=gsap.timeline({scrollTrigger:enter(stack)});skills.fromTo(stack.firstElementChild,{opacity:0},{opacity:1,duration:.35},0);revealText(skills,stack,.1);}
+        const link=find('[data-career-link]');
+        if(link)gsap.fromTo(link,{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:.5,ease:'power3.out',scrollTrigger:enter(link)});
       });
     },root);
     const refresh=()=>{if(!disposed){ScrollTrigger.refresh();queue();}};

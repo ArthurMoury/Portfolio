@@ -10,6 +10,8 @@ import KineticHero from './KineticHero';
 import Certificates from './Certificates';
 import PracticeLab from './PracticeLab';
 import SubjectSelect from './SubjectSelect';
+import TextReveal from './TextReveal';
+import { revealText } from './textMotion';
 
 const external = { target: '_blank', rel: 'noreferrer noopener' };
 
@@ -65,7 +67,7 @@ function ProjectImage({ project, onOpen, className='' }) {
   return <button className={`${s.projectImage} ${className}`} onClick={()=>onOpen({image:project.image,title:project.name,caption:`${project.imageType}, ${project.summary}`})} aria-label={`Ampliar imagem: ${project.name}`}><img src={project.image} alt={`${project.imageType}: ${project.name}`} loading="lazy" width="1280" height="720"/><span className={s.imageExpand}><ScanLine size={17}/><span>Ampliar</span></span></button>;
 }
 
-function Career({ onOpen, activeChapter, setActiveChapter, reduced }) {
+function Career({ onOpen, activeChapter, reduced }) {
   const stage=useRef(null), previous=useRef(activeChapter);
   useEffect(()=>{
     if(reduced){previous.current=activeChapter;return;}
@@ -79,11 +81,11 @@ function Career({ onOpen, activeChapter, setActiveChapter, reduced }) {
     return()=>ctx.revert();
   },[activeChapter,reduced]);
   return <section id="trajetoria" data-career-story className={s.career} aria-labelledby="career-title"><div className={s.container}>
-    <div className={s.careerIntro}><h2 id="career-title">O que me trouxe<br />até aqui.</h2></div>
+    <div className={s.careerIntro}><h2 id="career-title"><TextReveal text="O que me trouxe" curtain/><TextReveal text="até aqui." curtain/></h2></div>
     <div className={s.careerGrid}><div className={s.chapterList}>{chapters.map((c,i)=><article id={`capitulo-${c.id}`} key={c.id} className={`${s.chapter} ${i===activeChapter?s.chapterActive:''}`} data-chapter={i} data-context={c.context}>
-      <span className={s.chapterMarker}>{c.marker}</span><p className={s.organization}>{c.organization}</p><h3>{c.title}</h3><p className={s.chapterRole}>{c.role}</p><p className={s.chapterText}>{c.text} {c.proof}</p>{c.client&&<div className={s.chapterClient}><span>Cliente</span><img src={c.clientLogo} alt={`Logo de ${c.client}`} width="100" height="50" loading="lazy"/></div>}{c.stack&&<p className={s.chapterStack}><span>Tecnologias</span>{c.stack}</p>}{c.site&&<a className={s.textLink} href={c.site} {...external}>Documentação no Google Sites<ArrowUpRight size={16}/></a>}
+      <span className={s.chapterMarker} data-career-date>{c.marker}</span><p className={s.organization} data-career-org><TextReveal text={c.organization}/></p><h3 data-career-title><TextReveal text={c.title} curtain/></h3><p className={s.chapterRole} data-career-role>{c.role}</p><p className={s.chapterText} data-career-copy><TextReveal text={`${c.text} ${c.proof}`}/></p>{c.client&&<div className={s.chapterClient} data-career-client><span>Cliente</span><img src={c.clientLogo} alt={`Logo de ${c.client}`} width="100" height="50" loading="lazy"/></div>}{c.stack&&<p className={s.chapterStack} data-career-stack><span>Tecnologias</span><TextReveal text={c.stack}/></p>}{c.site&&<a className={s.textLink} data-career-link href={c.site} {...external}>Documentação no Google Sites<ArrowUpRight size={16}/></a>}
       <div className={s.chapterMobile} data-chapter-mobile data-image-fit={c.fit} style={{'--chapter-bg':c.background}}><button onClick={()=>onOpen({image:c.image,title:c.organization,caption:''})} aria-label={`Ampliar imagem de ${c.organization}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/>{c.brandImage&&<img className={s.chapterBrand} src={c.brandImage} alt="CESAR School" width="70" height="70"/>}<ScanLine size={20}/></button></div>
-    </article>)}</div><aside ref={stage} className={s.careerStage} aria-label="Visuais da trajetória"><div className={s.chapterImages}>{chapters.map((c,i)=><button key={c.id} className={s.chapterVisual} data-image-fit={c.fit} style={{'--chapter-bg':c.background}} data-chapter-visual={i} data-active={activeChapter===i} onClick={()=>onOpen({image:c.image,title:c.organization,caption:''})} tabIndex={activeChapter===i?0:-1} aria-hidden={activeChapter!==i} aria-label={`Ampliar imagem: ${c.caption}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/>{c.brandImage&&<img className={s.chapterBrand} src={c.brandImage} alt="CESAR School" width="70" height="70"/>}</button>)}</div><div className={s.stageFooter}><div className={s.careerProgress} aria-hidden="true"><i data-career-progress/></div><nav className={s.chapterNav} aria-label="Capítulos da trajetória">{chapters.map((c,i)=><a key={c.id} href={`#capitulo-${c.id}`} aria-label={c.organization} aria-current={i===activeChapter?'step':undefined} onClick={()=>setActiveChapter(i)}><span/></a>)}</nav></div></aside></div>
+    </article>)}</div><aside ref={stage} className={s.careerStage} aria-label="Visuais da trajetória"><div className={s.chapterImages}>{chapters.map((c,i)=><button key={c.id} className={s.chapterVisual} data-image-fit={c.fit} style={{'--chapter-bg':c.background}} data-chapter-visual={i} data-active={activeChapter===i} onClick={()=>onOpen({image:c.image,title:c.organization,caption:''})} tabIndex={activeChapter===i?0:-1} aria-hidden={activeChapter!==i} aria-label={`Ampliar imagem: ${c.caption}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/>{c.brandImage&&<img className={s.chapterBrand} src={c.brandImage} alt="CESAR School" width="70" height="70"/>}</button>)}</div></aside></div>
   </div></section>;
 }
 
@@ -91,13 +93,14 @@ function ProjectGallery({ onOpen, reduced }) {
   const initial=projects.findIndex(p=>window.location.hash===`#projeto-${p.id}`);
   const [open,setOpen]=useState(initial<0?null:initial);
   const current=useRef(initial<0?null:initial), section=useRef(null), changing=useRef(false), anchorLock=useRef(!!window.location.hash);
-  const transition=useRef(null), scrolling=useRef(false);
+  const transition=useRef(null), scrolling=useRef(false), textEntrance=useRef(null);
   const switchTo=(index,preserve=true,instant=false)=>{
     if(index===current.current)return;
     const panels=[...section.current.querySelectorAll('[data-project-panel]')];
     const row=section.current.querySelector(`[data-project-trigger="${index??current.current}"]`);
     const before=row?.getBoundingClientRect().top;
     transition.current?.kill();
+    textEntrance.current?.revert();
     const heights=panels.map(panel=>panel.getBoundingClientRect().height);
     const target=index??current.current;
     const compensate=preserve&&row&&before>0&&before<innerHeight;
@@ -130,6 +133,23 @@ function ProjectGallery({ onOpen, reduced }) {
       changing.current=false;ScrollTrigger.refresh(true);
     }});
     transition.current=timeline;
+    if(index!==null){
+      const band=panels[index].closest('[data-project]');
+      textEntrance.current=gsap.context(()=>{
+        const mobile=innerWidth<900;
+        const copy=band.querySelector('[data-project-copy]');
+        const trigger=node=>mobile?{trigger:node,start:'top 92%',toggleActions:'play none none reverse'}:undefined;
+        const details=gsap.timeline({delay:.18,scrollTrigger:trigger(copy)});
+        revealText(details,copy,0,index%2?-1:1);
+        band.querySelectorAll('[data-project-spec]').forEach((spec,i)=>{
+          const row=mobile?gsap.timeline({scrollTrigger:trigger(spec)}):details;
+          const at=mobile?0:.22+i*.12;
+          row.fromTo(spec,{'--spec-progress':0},{'--spec-progress':1,duration:.55,ease:'power3.out'},at);
+          row.fromTo(spec.querySelector('dt'),{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:.45,ease:'power3.out',clearProps:'clipPath'},at);
+          revealText(row,spec.querySelector('dd'),at+.08);
+        });
+      },band);
+    }
     panels.forEach((panel,i)=>{
       const content=panel.firstElementChild;
       const height=i===index?content.firstElementChild.getBoundingClientRect().height:0;
@@ -177,7 +197,7 @@ function ProjectGallery({ onOpen, reduced }) {
     document.addEventListener('click',anchor,true);
     window.addEventListener('scroll',queue,{passive:true});
     window.addEventListener('resize',queue);
-    return()=>{cancelAnimationFrame(frame);transition.current?.kill();changing.current=false;scrolling.current=false;section.current?.querySelectorAll('[data-project-panel]').forEach(p=>{gsap.set(p,{clearProps:'height,gridTemplateRows,overflow'});gsap.set(p.firstElementChild,{clearProps:'opacity,transform'});});clearTimeout(settle);clearTimeout(scrollEnd);document.removeEventListener('click',anchor,true);window.removeEventListener('hashchange',hashChange);window.removeEventListener('scroll',queue);window.removeEventListener('resize',queue);};
+    return()=>{cancelAnimationFrame(frame);transition.current?.kill();textEntrance.current?.revert();changing.current=false;scrolling.current=false;section.current?.querySelectorAll('[data-project-panel]').forEach(p=>{gsap.set(p,{clearProps:'height,gridTemplateRows,overflow'});gsap.set(p.firstElementChild,{clearProps:'opacity,transform'});});clearTimeout(settle);clearTimeout(scrollEnd);document.removeEventListener('click',anchor,true);window.removeEventListener('hashchange',hashChange);window.removeEventListener('scroll',queue);window.removeEventListener('resize',queue);};
   },[reduced]);
   return <section id="projetos" ref={section} className={s.projects} aria-labelledby="projects-title">
     <div className={s.projectsHeading} data-context="iniciativa"><div className={`${s.container} ${s.projectsIntro}`}><h2 id="projects-title">Cada ideia,<br/>um mundo para explorar.</h2></div></div>
@@ -195,7 +215,7 @@ function ProjectGallery({ onOpen, reduced }) {
         <div id={`project-gallery-${p.id}`} data-project-panel className={`${s.projectGallery} ${open===i?s.projectGalleryOpen:''}`} inert={open!==i?true:undefined} aria-hidden={open!==i}>
           <div className={s.galleryClip}><div className={s.projectContent}>
             <figure className={s.galleryScreenshot}><ProjectImage project={p} onOpen={onOpen}/><figcaption>{p.imageType}</figcaption></figure>
-            <div className={s.projectBuild}><p className={s.buildDescription}>{p.detail}</p><dl>{p.implementation.map(item=><div key={item.label}><dt>{item.label}</dt><dd>{item.text}</dd></div>)}</dl></div>
+            <div className={s.projectBuild}><p className={s.buildDescription} data-project-copy><TextReveal text={p.detail} curtain/></p><dl>{p.implementation.map(item=><div key={item.label} data-project-spec><dt>{item.label}</dt><dd><TextReveal text={item.text}/></dd></div>)}</dl></div>
           </div></div>
         </div>
       </div>
@@ -272,5 +292,5 @@ export default function App() {
   const [activeSection,setActiveSection]=useState('inicio');
   const [image,setImage]=useState(null);
   usePageMotion(root,reduced,setNavigationVisible,setActiveChapter,setContext,setActiveSection);
-  return <div ref={root} className={s.app} data-reduced-motion={reduced}><a className={s.skipLink} href="#sobre">Pular para informações pessoais</a><Navigation visible={navigationVisible} context={context} activeSection={activeSection}/><main><div className={s.opening} data-opening><KineticHero reduced={reduced}/><About/></div><div className={s.sectionTransition} data-section-transition aria-hidden="true"><svg viewBox="0 0 1440 200" preserveAspectRatio="none"><path data-transition-surface d="M0 160Q720 -100 1440 160V200H0Z"/></svg></div><ProjectGallery onOpen={setImage} reduced={reduced}/><Career reduced={reduced} onOpen={setImage} activeChapter={activeChapter} setActiveChapter={setActiveChapter}/><Certificates reduced={reduced} onOpen={setImage} modalOpen={!!image}/><PracticeLab reduced={reduced}/><Curriculum/><Contact reduced={reduced}/></main><ImageDialog value={image} onClose={()=>setImage(null)}/></div>;
+  return <div ref={root} className={s.app} data-reduced-motion={reduced}><a className={s.skipLink} href="#sobre">Pular para informações pessoais</a><Navigation visible={navigationVisible} context={context} activeSection={activeSection}/><main><div className={s.opening} data-opening><KineticHero reduced={reduced}/><About/></div><div className={s.sectionTransition} data-section-transition aria-hidden="true"><svg viewBox="0 0 1440 200" preserveAspectRatio="none"><path data-transition-surface d="M0 160Q720 -100 1440 160V200H0Z"/></svg></div><ProjectGallery onOpen={setImage} reduced={reduced}/><Career reduced={reduced} onOpen={setImage} activeChapter={activeChapter}/><Certificates reduced={reduced} onOpen={setImage} modalOpen={!!image}/><PracticeLab reduced={reduced}/><Curriculum/><Contact reduced={reduced}/></main><ImageDialog value={image} onClose={()=>setImage(null)}/></div>;
 }
