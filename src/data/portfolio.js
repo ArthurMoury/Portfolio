@@ -10,7 +10,7 @@ export const profile = {
 
 export const contexts = {
   "estudos": {
-    "label": "Estudos de engenharia",
+    "label": "Na prática",
     "verb": "Explorar"
   },
   "pessoa": {

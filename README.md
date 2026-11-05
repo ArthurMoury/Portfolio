@@ -8,7 +8,7 @@ Apresentação pessoal, projetos, trajetória, certificados e aplicações reais
 
 - Tema escuro em todo o site, com entrada tridimensional. O retrato aparece na seção seguinte, junto de uma breve apresentação.
 - Informações pessoais e contato antes dos sete projetos: Cortech, FreeSB, Betterway, Site de reservas, Site Construtor de Hotéis, Sollie e Dozão.
-- Projetos em faixas coloridas pela própria identidade, reveladas por rolagem, hover ou clique; captura, contexto e botões independentes para GitHub e deploy.
+- Projetos em faixas coloridas pela própria identidade, reveladas pela rolagem, com captura, contexto e botões independentes para GitHub e deploy.
 - Trajetória em CESAR School, Gaita Hero, Echo, Boop, Roomi e projetos autorais, com imagens sincronizadas à rolagem e Google Sites dos projetos acadêmicos de 2025.
 - Dois carrosséis em sentidos opostos com os 29 documentos da pasta fornecida pelo titular: movimento contínuo mesmo sob hover, expansão por Motion e ampliação em diálogo.
 - Navegação por teclado, arraste, foco estável e movimento reduzido.
@@ -46,7 +46,7 @@ Direção visual em `DESIGN.md`; verificações em `docs/QA.md`. Referências: [
 
 A revisão desktop remove controles do carrossel e os painéis decorativos dos projetos, exibe stacks verificadas e fecha a faixa anterior ao explorar outra. Card0 aparece apenas na trajetória acadêmica, com imagem e stack; o antigo deploy estava indisponível. Dozão possui deploy, mas não foi encontrado um repositório GitHub publicado.
 
-A seção **Na prática** percorre três estudos com fontes públicas: o circuito do Gaita Hero, as instruções de um processador em C e os filtros de um dashboard salarial. A rolagem vertical percorre o trilho horizontal, com uma escultura em Three.js e leitura em coluna para movimento reduzido. [Assets e prompts](docs/study-assets.md).
+A seção **Na prática** percorre três estudos com fontes públicas: o circuito do Gaita Hero, as instruções de um processador em C e os filtros de um dashboard salarial. A rolagem aciona as peças desenhadas em JavaScript e avança entre as cenas. A gaita reage ao fluxo de ar, o processador grava o valor 5 e a média acompanha os filtros de uma amostra de 16 salários do dataset do painel. A versão com movimento reduzido apresenta os resultados em coluna.
 
 O layout mobile mantém Three.js, GSAP e Motion. Projetos usam capturas amplas com stack abaixo; a trajetória vira uma sequência vertical de imagens animadas. Menu, diálogos, certificados e formulário se adaptam ao toque, com safe areas e alternativa para movimento reduzido. Validação de tamanhos e limites em `docs/QA.md`.
 

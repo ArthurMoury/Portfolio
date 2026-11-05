@@ -65,20 +65,8 @@ function About() {
   </div></section>);
 }
 
-function ProjectImage({ project, onOpen, reduced }) {
-  function tilt(event) {
-    if (reduced || event.pointerType === 'touch') return;
-    const node = event.currentTarget;
-    const bounds = node.getBoundingClientRect();
-    const x = (event.clientX - bounds.left) / bounds.width;
-    const y = (event.clientY - bounds.top) / bounds.height;
-    node.style.setProperty('--pitch', ((0.5 - y) * 5) + 'deg');
-    node.style.setProperty('--yaw', ((x - 0.5) * 6) + 'deg');
-    node.style.setProperty('--light-x', (x * 100) + '%');
-    node.style.setProperty('--light-y', (y * 100) + '%');
-  }
-
-  return localize(<button className={s.projectImage} onPointerMove={tilt}
+function ProjectImage({ project, onOpen }) {
+  return localize(<button className={s.projectImage}
     onClick={() => onOpen({ image: project.image, title: project.name, caption: `${project.imageType}, ${project.summary}` })}
     aria-label={`Ampliar imagem: ${project.name}`}>
     <img src={project.image} alt={`${project.imageType}: ${project.name}`} loading="lazy" width="1280" height="720"/>
@@ -112,7 +100,7 @@ function ProjectGallery({ onOpen, reduced }) {
   const initial=projects.findIndex(p=>window.location.hash===`#projeto-${p.id}`);
   const [open,setOpen]=useState(initial<0?null:initial);
   const current=useRef(initial<0?null:initial), section=useRef(null), changing=useRef(false), anchorLock=useRef(!!window.location.hash);
-  const transition=useRef(null), scrolling=useRef(false);
+  const transition=useRef(null);
   const switchTo=(index,preserve=true,instant=false)=>{
     if(index===current.current)return;
     const panels=[...section.current.querySelectorAll('[data-project-panel]')];
@@ -164,7 +152,7 @@ function ProjectGallery({ onOpen, reduced }) {
     });
   };
   useEffect(()=>{
-    let frame=0,settle,scrollEnd;
+    let frame=0,settle;
     const update=()=>{
       frame=0;
       if(changing.current||anchorLock.current||document.querySelector('dialog[open]'))return;
@@ -176,7 +164,6 @@ function ProjectGallery({ onOpen, reduced }) {
       if(index!==null)switchTo(index);
     };
     const queue=()=>{
-      scrolling.current=true;clearTimeout(scrollEnd);scrollEnd=setTimeout(()=>{scrolling.current=false;},180);
       if(anchorLock.current){clearTimeout(settle);settle=setTimeout(()=>{anchorLock.current=false;},220);return;}
       if(!frame)frame=requestAnimationFrame(update);
     };
@@ -199,16 +186,14 @@ function ProjectGallery({ onOpen, reduced }) {
     document.addEventListener('click',anchor,true);
     window.addEventListener('scroll',queue,{passive:true});
     window.addEventListener('resize',queue);
-    return()=>{cancelAnimationFrame(frame);transition.current?.kill();changing.current=false;scrolling.current=false;section.current?.querySelectorAll('[data-project-panel]').forEach(p=>{gsap.set(p,{clearProps:'height,gridTemplateRows,overflow'});gsap.set(p.firstElementChild,{clearProps:'opacity,transform'});});clearTimeout(settle);clearTimeout(scrollEnd);document.removeEventListener('click',anchor,true);window.removeEventListener('hashchange',hashChange);window.removeEventListener('scroll',queue);window.removeEventListener('resize',queue);};
+    return()=>{cancelAnimationFrame(frame);transition.current?.kill();changing.current=false;section.current?.querySelectorAll('[data-project-panel]').forEach(p=>{gsap.set(p,{clearProps:'height,gridTemplateRows,overflow'});gsap.set(p.firstElementChild,{clearProps:'opacity,transform'});});clearTimeout(settle);document.removeEventListener('click',anchor,true);window.removeEventListener('hashchange',hashChange);window.removeEventListener('scroll',queue);window.removeEventListener('resize',queue);};
   },[reduced]);
   return localize(<section id="projetos" ref={section} className={s.projects} aria-labelledby="projects-title">
     <div className={s.projectsHeading} data-context="iniciativa"><div className={`${s.container} ${s.projectsIntro}`}><h2 id="projects-title"><span data-project-heading-line>Cada ideia,</span><span data-project-heading-line>um mundo para explorar.</span></h2></div></div>
-    {projects.map((p,i)=>localize(<article id={`projeto-${p.id}`} key={p.id} className={s.projectBand} data-project={p.id} data-context={p.context} data-expanded={open===i}
-      onPointerEnter={e=>{if(e.pointerType==='mouse'&&!anchorLock.current&&!changing.current&&!scrolling.current)switchTo(i);}}
-      onKeyDown={e=>{if(e.key==='Escape'){switchTo(null);document.getElementById(`project-toggle-${p.id}`)?.focus({preventScroll:true});}}}>
+    {projects.map((p,i)=>localize(<article id={`projeto-${p.id}`} key={p.id} className={s.projectBand} data-project={p.id} data-context={p.context} data-expanded={open===i}>
       <div className={s.container}>
         <div className={s.projectBandTop} data-project-trigger={i}>
-          <div className={s.projectIdentity}><span className={s.projectTopic}>{p.topic}</span><h3><button id={`project-toggle-${p.id}`} aria-expanded={open===i} aria-controls={`project-gallery-${p.id}`} onClick={()=>switchTo(open===i?null:i)}>{p.name}</button></h3><span className={s.galleryHint}>{open===i?'Recolher projeto':'Explorar projeto'}</span></div>
+          <div className={s.projectIdentity}><span className={s.projectTopic}>{p.topic}</span><h3>{p.name}</h3></div>
           <div className={s.projectActions}>
             {p.repo?<a href={`https://github.com/${p.repo}`} {...external} aria-label={`GitHub de ${p.name}${p.private?' (repositório privado)':''}`}><Github size={18}/><span>GitHub{p.private&&<small>privado</small>}</span></a>:<span className={s.unavailable}><Github size={18}/><span>Código não publicado</span></span>}
             {p.id==='cortech'?null:p.live?<a href={p.live} {...external} aria-label={`Acessar ${p.name}`}>Acessar<ArrowUpRight size={19}/></a>:<span className={s.unavailable}>Acesso em atualização</span>}
@@ -216,7 +201,7 @@ function ProjectGallery({ onOpen, reduced }) {
         </div>
         <div id={`project-gallery-${p.id}`} data-project-panel className={`${s.projectGallery} ${open===i?s.projectGalleryOpen:''}`} inert={open!==i?true:undefined} aria-hidden={open!==i}>
           <div className={s.galleryClip}><div className={s.projectContent}>
-            <figure className={s.galleryScreenshot}><ProjectImage project={p} onOpen={onOpen} reduced={reduced}/><figcaption>{p.imageType}</figcaption></figure>
+            <figure className={s.galleryScreenshot}><ProjectImage project={p} onOpen={onOpen}/><figcaption>{p.imageType}</figcaption></figure>
             <ProjectNarrative project={p} open={open===i} reduced={reduced}/>
           </div></div>
         </div>

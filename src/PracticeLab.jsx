@@ -1,52 +1,29 @@
-import { useEffect, useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from './i18n';
 import { studies } from './studies';
+import { unit, blend } from './studyMechanics';
+import { useStudyInstruments } from './useStudyInstruments';
 import s from './PracticeLab.module.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const introduction = {
-  pt: { tab: 'Matéria', title: ['Matéria', 'de código.'], body: 'Acompanhe um sopro pelo circuito, uma instrução pela memória e um salário até a média.', nav: 'Percorrer os estudos', label: 'Estudos de engenharia' },
-  en: { tab: 'Material', title: ['Code,', 'in material.'], body: 'Follow a breath through a circuit, an instruction through memory and a salary into an average.', nav: 'Explore the studies', label: 'Engineering studies' },
+  pt: { title: ['Matéria', 'de código.'], body: 'Acompanhe um sopro pelo circuito, uma instrução pela memória e um salário até a média.' },
+  en: { title: ['Code,', 'in material.'], body: 'Follow a breath through a circuit, an instruction through memory and a salary into an average.' },
 };
 
-function Signature({ reduced, travel }) {
-  const host = useRef(null);
-  useEffect(() => {
-    if (reduced) return;
-    let released = false;
-    let dispose;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (!entry.isIntersecting) return;
-      observer.disconnect();
-      import('./studySculpture').then(({ mountSculpture }) => {
-        if (!released) dispose = mountSculpture(host.current, travel);
-      }).catch(() => { /* The material study remains visible when WebGL is unavailable. */ });
-    }, { rootMargin: '350px' });
-    observer.observe(host.current);
-    return () => {
-      released = true;
-      observer.disconnect();
-      dispose?.();
-    };
-  }, [reduced, travel]);
-
-  return <div ref={host} className={s.signature} aria-hidden="true">
-    <img src="/studies/signature.webp" width="800" height="800" alt="" loading="lazy" />
-  </div>;
-}
+// Give each mechanism time to operate in place before moving to the next.
+const work = 0.78, crossing = 0.58, stride = work + crossing;
 
 export default function PracticeLab({ reduced }) {
   const language = useLanguage();
   const intro = introduction[language];
-  const root = useRef(null);
-  const track = useRef(null);
-  const travel = useRef(0);
-  const jump = useRef(null);
-  const tabs = [intro.tab, ...studies.map(study => study[language].tab)];
+  const root = useRef(null), viewport = useRef(null), track = useRef(null);
+  const motion = useRef({ horizontal: false, progress: new Array(studies.length + 1).fill(0), invalidate: null });
+  useStudyInstruments(viewport, motion, reduced);
 
   useLayoutEffect(() => {
     if (reduced) return;
@@ -54,84 +31,69 @@ export default function PracticeLab({ reduced }) {
     media.add('(min-height: 510px), (min-width: 650px) and (min-height: 350px)', () => {
       const section = root.current;
       const panels = [...track.current.children];
-      const controls = [...section.querySelectorAll('[data-study-nav]')];
-      const header = document.querySelector('header nav')?.closest('header');
-      const position = { value: 0 };
-      const hold = 0.21;
-      const length = panels.length - 1 + hold * 2;
-      let width, distance, topInset, selected = -1;
+      const playhead = { time: 0 };
+      const duration = stride * (panels.length - 1) + work;
       const setTrack = gsap.quickSetter(track.current, 'x', 'px');
-      const drawings = panels.map(panel => panel.querySelector('[data-study-art]'));
+      let width, distance, inset;
+      motion.current.horizontal = true;
+
       function measure() {
-        topInset = header?.offsetHeight ?? 0;
-        const available = Math.max(1, window.innerHeight - topInset);
+        inset = document.querySelector('header nav')?.closest('header')?.offsetHeight ?? 0;
+        const height = Math.max(1, window.innerHeight - inset);
         width = section.clientWidth;
-        distance = length * Math.min(width, available * 0.96);
-        section.style.setProperty('--nav-inset', topInset + 'px');
-        section.style.setProperty('--view-height', available + 'px');
+        distance = duration * Math.min(width * 1.22, height * 0.96);
+        section.style.setProperty('--nav-inset', inset + 'px');
+        section.style.setProperty('--view-height', height + 'px');
         section.style.setProperty('--travel-height', distance + 'px');
       }
       function render() {
-        const slide = gsap.utils.clamp(0, panels.length - 1, position.value - hold);
-        const active = Math.round(slide);
-        setTrack(-slide * width);
-        travel.current = Math.min(1, position.value * 1.2);
-        drawings.forEach((drawing, i) => {
-          if (!drawing) return;
-          const offset = gsap.utils.clamp(-1, 1, slide - i);
-          drawing.style.transform = 'translateX(' + offset * 13 + '%) rotate(' + offset * 7 + 'deg)';
-        });
-        if (selected === active) return;
-        selected = active;
-        panels.forEach((panel, i) => { panel.inert = i !== active; });
-        controls.forEach((control, i) => {
-          if (i === active) control.setAttribute('aria-current', 'step');
-          else control.removeAttribute('aria-current');
-        });
+        const station = Math.min(panels.length - 1, Math.floor(playhead.time / stride));
+        const local = playhead.time - station * stride;
+        const slide = Math.min(panels.length - 1, station + blend((local - work) / crossing));
+        setTrack(-width * slide);
+        for (let i = 0; i < panels.length; i++) {
+          motion.current.progress[i] = unit((playhead.time - i * stride) / work);
+        }
+        motion.current.invalidate?.();
       }
-
       measure();
       section.dataset.horizontal = 'true';
-      const animation = gsap.to(position, {
-        value: length, ease: 'none', onUpdate: render,
+      const animation = gsap.to(playhead, {
+        time: duration, ease: 'none', onUpdate: render,
         scrollTrigger: {
-          trigger: section,
-          start: () => 'top ' + topInset + 'px',
-          end: () => '+=' + distance,
-          scrub: 0.35, refreshPriority: -1,
-          onRefreshInit: measure, onRefresh: render,
+          trigger: section, start: () => 'top ' + inset + 'px', end: () => '+=' + distance,
+          scrub: 0.22, refreshPriority: -1, onRefreshInit: measure, onRefresh: render,
         },
       });
-      render();
-      jump.current = index => {
+      // Tab can reach each real source link, including links beyond the visible panel.
+      function followFocus(event) {
+        const panel = event.target.closest('[data-study]');
+        if (!panel || !event.target.matches(':focus-visible')) return;
+        if (Math.abs(panel.getBoundingClientRect().left) < 2) return;
+        const time = stride * panels.indexOf(panel) + work / 2;
         const trigger = animation.scrollTrigger;
-        const progress = (index + hold) / length;
-        window.scrollTo({ top: trigger.start + progress * (trigger.end - trigger.start), behavior: 'smooth' });
-      };
-      // Other page anchors depend on the space added by this sticky strip.
+        window.scrollTo({ top: trigger.start + distance * time / duration, behavior: 'instant' });
+        trigger.update();
+        trigger.getTween()?.progress(1);
+      }
+      track.current.addEventListener('focusin', followFocus);
+      const rail = track.current;
+      render();
       const refresh = requestAnimationFrame(() => ScrollTrigger.refresh());
       return () => {
         cancelAnimationFrame(refresh);
-        jump.current = null;
-        travel.current = 0;
+        rail.removeEventListener('focusin', followFocus);
         delete section.dataset.horizontal;
+        motion.current.horizontal = false;
         setTrack(0);
-        drawings.forEach(drawing => drawing?.style.removeProperty('transform'));
-        controls.forEach(control => control.removeAttribute('aria-current'));
-        panels.forEach(panel => { panel.inert = false; });
+        motion.current.invalidate?.();
       };
     }, root);
     return () => media.revert();
   }, [reduced]);
 
   return <section id="processo" className={s.section} ref={root} data-context="estudos" aria-labelledby="studies-title">
-    <div className={s.viewport}>
-      <div className={s.index}>
-        <span className={s.imprint}><img src="/studies/moury-mark.svg" width="38" height="24" alt=""/>{intro.label}</span>
-        <nav aria-label={intro.nav}>
-          {tabs.map((tab, i) => <button type="button" key={i} data-study-nav onClick={() => jump.current?.(i)}>{tab}</button>)}
-        </nav>
-      </div>
+    <div className={s.viewport} ref={viewport}>
       <div className={s.track} ref={track}>
         <div className={s.panel} data-study="signature">
           <div className={s.composition}>
@@ -139,7 +101,7 @@ export default function PracticeLab({ reduced }) {
               <h2 id="studies-title" className={s.title}>{intro.title[0]} <em>{intro.title[1]}</em></h2>
               <p>{intro.body}</p>
             </div>
-            <Signature reduced={reduced} travel={travel}/>
+            <div className={s.instrument} data-instrument="signature" aria-hidden="true"/>
           </div>
         </div>
         {studies.map(study => {
@@ -152,10 +114,7 @@ export default function PracticeLab({ reduced }) {
                 <p>{words.copy}</p>
                 <a className={s.source} href={study.source} target="_blank" rel="noopener noreferrer">{words.link}<ArrowUpRight size={17} aria-hidden="true"/></a>
               </div>
-              <figure className={s.artwork}>
-                <img data-study-art src={'/studies/' + study.image + '.webp'} alt="" width="1024" height="1024" loading="lazy"/>
-                <figcaption><i aria-hidden="true"/><code>{study.detail}</code></figcaption>
-              </figure>
+              <div className={s.instrument} data-instrument={study.id} aria-hidden="true"/>
             </div>
           </article>;
         })}

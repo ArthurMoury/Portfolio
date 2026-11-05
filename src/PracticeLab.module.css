@@ -6,28 +6,6 @@
   isolation: isolate;
 }
 .viewport { position: relative; }
-.index {
-  padding: 20px var(--inset) 4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 20px;
-  position: relative;
-  z-index: 2;
-}
-.imprint { display: inline-flex; align-items: center; gap: 14px; color: #dddcd5; font-size: .86rem; }
-.imprint img { width: 33px; }
-.index nav { display: none; align-items: center; gap: clamp(8px, 2vw, 32px); }
-.index button {
-  min-height: 42px; background: transparent; color: #b3b1ad; padding: 0 2px;
-  font: 500 .86rem Hanken, sans-serif; position: relative;
-}
-.index button::after {
-  content: ''; position: absolute; bottom: 4px; left: 0; right: 0; height: 2px;
-  background: currentColor; transform: scaleX(0); transform-origin: left; transition: transform .3s;
-}
-.index button[aria-current], .index button:hover { color: #fff9eb; }
-.index button[aria-current]::after { transform: scaleX(1); }
 .panel { position: relative; min-width: 0; overflow: clip; }
 .panel[data-study=breath] { background: #14100e; }
 .panel[data-study=cycle] { background: #121019; }
@@ -54,70 +32,49 @@
 .source { display: inline-flex; align-items: center; gap: 12px; border-bottom: 1px solid color-mix(in srgb, var(--tint) 55%, transparent); color: var(--tint); padding: 7px 0; margin-top: clamp(12px, 2.2vh, 25px); font-size: .96rem; }
 .source svg { transition: transform .2s; }
 .source:hover svg, .source:focus-visible svg { transform: translate(2px, -2px); }
-.artwork, .signature {
+.instrument {
   position: relative; width: 100%; min-width: 0;
-  height: clamp(280px, 38vw, 680px);
+  height: clamp(280px, 40vw, 680px);
 }
-.artwork { display: grid; place-items: center; }
-.artwork img {
-  height: calc(100% - 24px); width: 100%; object-fit: contain; mix-blend-mode: screen;
-  position: absolute; top: 0; left: 0;
+.viewport > canvas {
+  position: absolute; left: 0; top: 0; width: 100%; pointer-events: none;
 }
-.artwork figcaption { position: absolute; bottom: 0; display: flex; gap: 9px; align-items: center; color: var(--tint); }
-.artwork code { font: 400 .76rem/1.4 ui-monospace, monospace; }
-.artwork figcaption i { width: 14px; height: 1px; background: currentColor; }
-.signature img, .signature canvas { width: 100%; height: 100%; object-fit: contain; position: absolute; inset: 0; }
-.signature canvas { opacity: 0; transition: opacity .24s; }
-.signature[data-ready=true] canvas { opacity: 1; }
-.signature[data-ready=true] img { opacity: 0; }
-
 .section[data-horizontal] { height: calc(var(--view-height) + var(--travel-height)); }
 [data-horizontal] .viewport {
   position: sticky; top: var(--nav-inset); height: var(--view-height); overflow: clip;
 }
-[data-horizontal] .index { position: absolute; inset: 0 0 auto; pointer-events: none; }
-[data-horizontal] .index nav { display: flex; pointer-events: auto; }
 [data-horizontal] .track { height: 100%; display: flex; }
 [data-horizontal] .panel { flex: 0 0 100%; height: 100%; }
-[data-horizontal] .composition { height: 100%; padding-block: 80px 30px; }
-[data-horizontal] :is(.signature, .artwork) { height: min(100%, 44vw, 73svh); }
+[data-horizontal] .composition { height: 100%; padding-block: 36px; }
+[data-horizontal] .instrument { height: min(100%, 44vw, 73svh); }
 @media (max-width: 720px) {
   .section { --inset: max(20px, env(safe-area-inset-left)); }
-  .index { gap: 8px; padding-block: 8px 0; }
-  .imprint { gap: 7px; font-size: .73rem; }
-  .imprint img { width: 23px; }
-  [data-horizontal] .imprint { font-size: 0; gap: 0; }
-  .index nav { gap: clamp(9px, 3.6vw, 25px); }
-  .index button { font-size: .81rem; }
   .composition { grid-template-columns: 1fr; align-content: center; gap: 16px; padding-block: 36px; }
-  [data-horizontal] .composition { padding-block: 56px 16px; }
+  [data-horizontal] .composition { padding-block: 20px; }
   .title { font-size: clamp(2.7rem, 9.9vw, 4.1rem); line-height: .98; }
   .projectName { font-size: .8rem; margin-bottom: 8px; }
   .copy > p:not(.projectName) { margin-top: 14px; font-size: 1rem; line-height: 1.42; max-width: 47ch; }
   .source { margin-top: 8px; padding-block: 6px; font-size: .89rem; }
-  .artwork, .signature { height: min(65vw, 320px); }
-  [data-horizontal] :is(.signature, .artwork) { height: min(65vw, 33svh); }
-  .artwork code { font-size: .69rem; }
+  .instrument { height: min(65vw, 320px); }
+  [data-horizontal] .instrument { height: min(78vw, 38svh); }
 }
 @media (max-height: 710px) and (min-width: 721px) {
   .title { font-size: clamp(2.6rem, 5.8vw, 5.4rem); }
-  [data-horizontal] .composition { padding-block: 60px 14px; }
+  [data-horizontal] .composition { padding-block: 18px; }
   .projectName { margin-bottom: 8px; }
 }
 @media (max-height: 720px) and (max-width: 720px) {
-  [data-horizontal] .composition { gap: 6px; padding-block: 51px 6px; }
-  [data-horizontal] :is(.signature, .artwork) { height: min(44vw, 23svh); }
+  [data-horizontal] .composition { gap: 6px; padding-block: 14px; }
+  [data-horizontal] .instrument { height: min(44vw, 23svh); }
   .title { font-size: clamp(2rem, 8.4vw, 2.9rem); }
   .copy > p:not(.projectName) { margin-top: 8px; font-size: .95rem; }
 }
 @media (min-width: 650px) and (max-height: 509px) {
-  .index { padding: 3px var(--inset) 0; }
-  .index button { min-height: 32px; }
   [data-horizontal] .composition {
     grid-template-columns: 1.1fr .9fr; align-content: stretch;
-    gap: 15px; padding-block: 39px 8px;
+    gap: 15px; padding-block: 10px;
   }
-  [data-horizontal] :is(.signature, .artwork) { height: 100%; min-height: 0; }
+  [data-horizontal] .instrument { height: 100%; min-height: 0; }
   .title { font-size: clamp(1.76rem, 3.9vw, 2.7rem); }
   .projectName { margin-bottom: 4px; font-size: .69rem; }
   .copy > p:not(.projectName) { margin-top: 7px; font-size: .87rem; line-height: 1.32; max-width: 54ch; }

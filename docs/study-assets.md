@@ -2,7 +2,7 @@
 
 As três ilustrações conceituais foram criadas com a ferramenta integrada de geração de imagens. Cada seção do site leva à documentação ou ao código público do trabalho representado.
 
-Os arquivos prontos para a web estão em [public/studies](../public/studies/). O símbolo original está em `moury-mark.svg`. `signature.webp` é uma renderização da escultura usada como alternativa estática. Os três mapas em `materials` controlam o relevo e a rugosidade das peças em Three.js.
+As artes desta primeira versão estão em [public/studies](../public/studies/). A seção atual desenha as peças, as texturas e a alternativa para movimento reduzido em JavaScript.
 
 ## diaphragm.webp
 
