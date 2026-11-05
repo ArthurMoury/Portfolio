@@ -1,4 +1,4 @@
-import { options, leafPositions, blend } from './studyMechanics';
+import { options, blend } from './studyMechanics';
 
 function path(ctx, points) {
   ctx.beginPath();
@@ -38,18 +38,16 @@ function python(ctx,p) {
     ctx.fillStyle='#dedede';ctx.fillText(p<.27+i*.09?word:'recife',x,y);
   });
 }
-function react(ctx,p) {
-  const selected=Math.min(3,Math.floor(p*4));
-  leafPositions.forEach((x,i)=>{
-    const parent=i<2?-51:51;
-    path(ctx,[[0,-57],[parent,0],[x*86,57]]);
-    ctx.fillStyle=i===selected?'#ededed':'#68696c';ctx.fillRect(x*86-15,48,30,18);
+function promptLayers(ctx,p) {
+  const k=blend(p);
+  ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='15px monospace';
+  ['<...>','>_','{ }'].forEach((mark,i)=>{
+    const x=(i-1)*50*(1-k),y=(i-1)*(48-23*k);
+    ctx.fillStyle='#232426';ctx.fillRect(x-51,y-17,102,34);ctx.strokeRect(x-51,y-17,102,34);
+    ctx.fillStyle='#dedede';ctx.fillText(mark,x,y);
   });
-  ctx.fillStyle='#bcbdbf';
-  for(const x of [-51,51])ctx.fillRect(x-14,-9,28,18);
-  ctx.fillRect(-21,-66,42,18);
 }
-const diagrams=[weave,generation,python,react];
+const diagrams=[weave,generation,python,promptLayers];
 
 export function blueprintRenderer(canvas) {
   const ctx = canvas.getContext('2d');

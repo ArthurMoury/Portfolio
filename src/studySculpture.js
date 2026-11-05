@@ -1,7 +1,7 @@
 import * as T from 'three';
 import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
-import { blend, options, leafPositions } from './studyMechanics';
+import { blend, options } from './studyMechanics';
 
 const TAU = Math.PI * 2;
 function toolmarks(mode) {
@@ -124,25 +124,22 @@ function normalization(group, m) {
   };
 }
 
-function componentTree(group, m) {
-  const tiers = [[0],[-0.83,0.83],leafPositions];
-  const tree = tiers.map((xs, level) => xs.map((x,i) => {
-    const y = (1-level)*0.92;
-    if(level) {
-      const parent = tiers[level-1][Math.floor(i/2)];
-      curve(group, [[parent,y+0.78,0],[parent,y+0.53,0],[x,y+0.34,0],[x,y+0.16,0]], m.steel, 0.023);
-    }
-    return plate(group, m.carbon, level===0?1.24:0.64, 0.37, 0.21, x, y, 0);
-  }));
+// Context, instruction and output schema slide together into one prompt.
+function promptLayers(group, m) {
+  const sheets = ['<...>', '>_', '{ }'].map(mark => {
+    const sheet = new T.Group();
+    group.add(sheet);
+    plate(sheet, m.ink, 1.84, .7, .18, 0, 0, 0);
+    inscription(sheet, mark, m.maps);
+    return sheet;
+  });
   return p => {
-    const selected = Math.min(3, Math.floor(p*4));
-    tree[0][0].material = m.steel;
-    tree[1].forEach((node,i)=>{ node.material = i === Math.floor(selected/2) ? m.steel : m.carbon; });
-    tree[2].forEach((node,i)=>{
-      node.material = i === selected ? m.pearl : m.carbon;
-      node.position.z = i === selected ? 0.15 + Math.sin((p*4 % 1)*Math.PI)*0.25 : 0;
+    const k = blend(p);
+    sheets.forEach((sheet,i) => {
+      sheet.position.set((i-1)*.85*(1-k), (.83-i)*(.82-.43*k), i*.16);
+      sheet.rotation.z = (i-1)*.18*(1-k);
     });
-    group.rotation.set(-0.2, -0.42 + p*0.72, 0.03);
+    group.rotation.set(-.18,-.35+.52*k,.06);
   };
 }
 
@@ -172,7 +169,7 @@ export function createStudyRenderer(canvas) {
   scene.add(key, rim);
   const camera = new T.OrthographicCamera(-2, 2, 2, -2, 0.1, 25);
   camera.position.z = 8;
-  const groups = [weave, nextToken, normalization, componentTree].map(build => {
+  const groups = [weave, nextToken, normalization, promptLayers].map(build => {
     const group = new T.Group();
     const animate = build(group, palette);
     group.visible = false; scene.add(group);

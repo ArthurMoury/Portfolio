@@ -10,8 +10,8 @@ import s from './PracticeLab.module.css';
 gsap.registerPlugin(ScrollTrigger);
 
 const introduction = {
-  pt: { title: ['Matéria', 'de código'], body: 'Uma interação pode começar com uma pergunta, passar por uma transformação de dados e terminar em uma mudança na tela.' },
-  en: { title: ['Code,', 'in material'], body: 'An interaction can start with a question, pass through a data transformation and end with a change on screen.' },
+  pt: ['Automação', 'de processos'],
+  en: ['Process', 'automation'],
 };
 
 export default function PracticeLab({ reduced }) {
@@ -80,8 +80,7 @@ export default function PracticeLab({ reduced }) {
         <div className={s.panel} data-study="signature">
           <div className={s.composition}>
             <div className={s.copy}>
-              <h2 id="studies-title" className={s.title}>{intro.title[0]} <em>{intro.title[1]}</em></h2>
-              <p>{intro.body}</p>
+              <h2 id="studies-title" className={s.title}>{intro[0]} <em>{intro[1]}</em></h2>
             </div>
             <div className={s.instrument} data-instrument="signature" aria-hidden="true"/>
           </div>
@@ -92,7 +91,6 @@ export default function PracticeLab({ reduced }) {
             <div className={s.composition}>
               <div className={s.copy}>
                 <h3 className={s.title} id={'study-' + study.id}>{words.title[0]} <em>{words.title[1]}</em></h3>
-                <p>{words.copy}</p>
               </div>
               <div className={s.instrument} data-instrument={study.id} aria-hidden="true"/>
             </div>

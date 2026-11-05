@@ -1,3 +1,4 @@
+import { paintThread } from './studyThread';
 import { useEffect } from 'react';
 import { blueprintRenderer } from './studyBlueprints';
 import { unit } from './studyMechanics';
@@ -6,9 +7,11 @@ export function useStudyInstruments(viewport, motion, reduced) {
   useEffect(() => {
     const view = viewport.current;
     const instruments = [...view.querySelectorAll('[data-instrument]')];
+    const thread = document.createElement('canvas');
+    view.prepend(thread);
     const blueprint = document.createElement('canvas');
     const surface = document.createElement('canvas');
-    for (const canvas of [blueprint, surface]) canvas.setAttribute('aria-hidden', 'true');
+    for (const canvas of [thread, blueprint, surface]) canvas.setAttribute('aria-hidden', 'true');
     const flat = blueprintRenderer(blueprint);
     view.appendChild(blueprint);
     let frame = 0, disposed = false, healthy = true, loading = false;
@@ -40,8 +43,10 @@ export function useStudyInstruments(viewport, motion, reduced) {
       const offset = Math.min(view.clientHeight - height, Math.max(0, -bounds.top));
       const top = bounds.top + offset;
       const slots = [];
+      const anchors = [];
       instruments.forEach((slot, index) => {
         const box = slot.getBoundingClientRect();
+        anchors.push([box.left - bounds.left + box.width/2, box.top - top + box.height/2]);
         if (box.right <= bounds.left || box.left >= bounds.right ||
             box.bottom <= Math.max(0, top) || box.top >= Math.min(innerHeight, top + height)) return;
         let progress = unit((innerHeight * 0.88 - box.top) / (innerHeight * 0.52 + box.height * 0.38));
@@ -49,6 +54,11 @@ export function useStudyInstruments(viewport, motion, reduced) {
         if (motion.current.horizontal) progress = motion.current.progress[index];
         slots.push({index, progress, x: box.left - bounds.left, y: box.top - top, width: box.width, height: box.height});
       });
+      thread.style.height = height + 'px';
+      thread.style.transform = 'translateY(' + offset + 'px)';
+      paintThread(thread, width, height, anchors, motion.current.horizontal,
+        motion.current.horizontal ? -anchors[0][0]/width : 0,
+        motion.current.horizontal && width <= 720 && height > 420 ? Math.abs(anchors[0][1] - (instruments[0].previousElementSibling.getBoundingClientRect().bottom - top - 20)) : 0);
       const useGL = healthy && gl;
       const canvas = useGL ? surface : blueprint;
       canvas.style.height = height + 'px';
@@ -84,7 +94,7 @@ export function useStudyInstruments(viewport, motion, reduced) {
       surface.removeEventListener('webglcontextlost', contextLost);
       surface.removeEventListener('webglcontextrestored', contextRestored);
       gl?.dispose();
-      surface.remove(); blueprint.remove();
+      thread.remove(); surface.remove(); blueprint.remove();
     };
   }, [viewport, motion, reduced]);
 }
