@@ -46,7 +46,7 @@ Direção visual em `DESIGN.md`; verificações em `docs/QA.md`. Referências: [
 
 A revisão desktop remove controles do carrossel e os painéis decorativos dos projetos, exibe stacks verificadas e fecha a faixa anterior ao explorar outra. Card0 aparece apenas na trajetória acadêmica, com imagem e stack; o antigo deploy estava indisponível. Dozão possui deploy, mas não foi encontrado um repositório GitHub publicado.
 
-A seção **Na prática** percorre três estudos com fontes públicas: o circuito do Gaita Hero, as instruções de um processador em C e os filtros de um dashboard salarial. A rolagem aciona as peças desenhadas em JavaScript e avança entre as cenas. A gaita reage ao fluxo de ar, o processador grava o valor 5 e a média acompanha os filtros de uma amostra de 16 salários do dataset do painel. A versão com movimento reduzido apresenta os resultados em coluna.
+Em **Matéria de código**, texto e formas tridimensionais percorrem o trilho horizontal com a rolagem. As cenas ilustram geração de tokens, normalização de dados com Python e atualização de estado em React. Com movimento reduzido, a leitura passa para uma coluna.
 
 O layout mobile mantém Three.js, GSAP e Motion. Projetos usam capturas amplas com stack abaixo; a trajetória vira uma sequência vertical de imagens animadas. Menu, diálogos, certificados e formulário se adaptam ao toque, com safe areas e alternativa para movimento reduzido. Validação de tamanhos e limites em `docs/QA.md`.
 

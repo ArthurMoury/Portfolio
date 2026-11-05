@@ -93,8 +93,8 @@ export const dataMessages={
 '2026, em construção':'2026, work in progress',
 'Projetos autorais':'Independent projects',
 'Desenvolvimento de produtos':'Product development',
-'Tirar ideias do papel.':'Bringing ideas to life.',
-'Exploro problemas diferentes construindo ferramentas: colaboração visual no FreeSB, cuidado no Cortech, decisões financeiras no Betterway e gestão agrícola na Sollie. No Dozão, levo essa exploração para games, visualização 3D e partidas multiplayer.':'I explore different problems by building tools: visual collaboration with FreeSB, care with Cortech, financial decisions with Betterway and farm management with Sollie. With Dozão, I take that exploration into games, 3D visualization and multiplayer matches.',
-'Com a Sollie, participei da pré-incubação 2026.1 do Porto Digital. Uma oportunidade de olhar para o produto além do código e amadurecer sua proposta.':'With Sollie, I joined Porto Digital’s 2026.1 pre-incubation program. It was an opportunity to look beyond the code and refine the product’s value proposition.',
+'Ideação de startups':'Startup ideation',
+'No Cortech, exploro como acompanhar um tratamento. No Betterway, como apoiar decisões financeiras. Na Sollie, como ajudar o produtor a planejar a safra.':'With Cortech, I explore how people keep track of treatment. With Betterway, how they make financial decisions. With Sollie, how growers plan a season.',
+'A Sollie, por exemplo, participou da pré-incubação 2026.1 do Porto Digital, onde trabalhamos a proposta de valor com a equipe.':'Sollie, for example, took part in Porto Digital’s 2026.1 pre-incubation program, where our team refined its value proposition.',
 'Sollie, gestão inteligente no campo':'Sollie, intelligent farm management'
 };

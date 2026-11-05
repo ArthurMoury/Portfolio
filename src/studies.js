@@ -1,48 +1,17 @@
-// Source permalinks keep the public evidence tied to the implementation described here.
 export const studies = [
   {
-    id: 'breath',
-    tint: '#ecc09e',
-    source: 'https://sites.google.com/cesar.school/g3-acessibilidade-motora/status-report-2',
-    pt: {
-      name: 'Gaita Hero', title: ['Jogar com', 'um sopro.'],
-      copy: 'Na nossa gaita adaptada, sensores BMP180 medem a pressão do ar. Com um sopro, a pessoa toca a nota que o jogo pede. O relatório da equipe mostra como montamos o circuito no Arduino.',
-      link: 'Ver o circuito da gaita',
-    },
-    en: {
-      name: 'Gaita Hero', title: ['A game played', 'by breath.'],
-      copy: 'In our adapted harmonica, BMP180 sensors measure air pressure. Players blow to hit the note the game calls for. Our team report shows how we wired the sensors to the Arduino.',
-      link: 'See the harmonica circuit',
-    },
+    id: 'generation',
+    pt: { title: ['IA', 'generativa'], copy: 'Um modelo de linguagem gera a resposta um token por vez. A cada passo, o contexto muda a probabilidade das próximas opções. Uma continuação provável ainda pode conter um erro factual.' },
+    en: { title: ['Generative', 'AI'], copy: 'A language model generates a response one token at a time. At each step, the context shapes the probabilities of the next options. A likely continuation can still contain a factual error.' },
   },
   {
-    id: 'cycle',
-    tint: '#c0b6ec',
-    source: 'https://github.com/Amfgs/F-D-E-Project/blob/1aca95ad9f35b130c96311997c1e03c5e0e9c55c/structure.c#L9-L39',
-    pt: {
-      name: 'Processador em C', title: ['Dentro de', '256 bytes.'],
-      copy: 'Cada instrução do nosso simulador ocupa três bytes. Aqui, o processador lê a operação MOV, o registrador de destino e o valor 5. Duas luzes acesas no primeiro registrador mostram esse valor em binário.',
-      link: 'Ler o ciclo de execução',
-    },
-    en: {
-      name: 'Processor in C', title: ['Inside', '256 bytes.'],
-      copy: 'Each instruction in our simulator takes three bytes. Here the processor reads the MOV operation, its destination register and the value 5. Two lights in the first register show that value in binary.',
-      link: 'Read the execution cycle',
-    },
+    id: 'python',
+    pt: { title: ['Dados com', 'Python'], copy: '“Recife”, “recife” e “ Recife ” podem virar três grupos em uma contagem. Em Python, strip() remove os espaços nas pontas e casefold() uniformiza a caixa. Assim, as três entradas passam a contar para a mesma cidade.' },
+    en: { title: ['Data with', 'Python'], copy: '“Recife”, “recife” and “ Recife ” can end up in three groups in a count. In Python, strip() trims surrounding whitespace and casefold() removes case distinctions. All three entries then count toward the same city.' },
   },
   {
-    id: 'sample',
-    tint: '#9ad8cc',
-    source: 'https://github.com/Amfgs/dashboard-dados-python/blob/6b8d2d8ce8cd276ac396a5c3f6d96a59990bb365/app.py#L24-L64',
-    pt: {
-      name: 'Dashboard de salários', title: ['Quem entra', 'na média?'],
-      copy: 'Cada coluna representa um salário anual do conjunto usado no painel. A rolagem aplica quatro filtros: ano, senioridade, contrato e porte da empresa. A linha acompanha a média dos salários que ficam.',
-      link: 'Ver como a média é calculada',
-    },
-    en: {
-      name: 'Salary dashboard', title: ['Who counts', 'in the average?'],
-      copy: 'Each column represents one annual salary from the dataset used in my dashboard. Scrolling filters by year, seniority, contract type and company size. The line follows the average of the salaries that remain.',
-      link: 'See how the average is calculated',
-    },
+    id: 'react',
+    pt: { title: ['Estado com', 'React'], copy: 'Selecionar um item muda o estado da interface. O React calcula a próxima árvore de componentes, compara o resultado com o anterior e aplica ao DOM as mudanças necessárias. A seleção muda de lugar sem reconstruir a página inteira.' },
+    en: { title: ['State with', 'React'], copy: 'Selecting an item changes the interface state. React renders the next component tree, compares the result with the previous one and commits the necessary changes to the DOM. The selection moves without rebuilding the whole page.' },
   },
 ];
