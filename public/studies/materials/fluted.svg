@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <linearGradient id="cut"><stop stop-color="#525252"/><stop offset=".2" stop-color="#bcbcbc"/><stop offset=".5" stop-color="#ddd"/><stop offset=".96" stop-color="#999"/></linearGradient>
+    <pattern id="ribs" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(22)"><rect width="8" height="8" fill="url(#cut)"/></pattern>
+  </defs>
+  <rect width="512" height="512" fill="url(#ribs)"/>
+</svg>

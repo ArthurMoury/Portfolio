@@ -1,97 +1,165 @@
-import { localize, t } from './i18n';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useLayoutEffect, useRef } from 'react';
+import { ArrowUpRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowUpRight, Copy, Check, X, FileText, Database, FolderOpen, Calculator, RefreshCw, Layers, MessageSquare, SlidersHorizontal, GitCommitHorizontal } from 'lucide-react';
-import { examplePrompt } from './data/practice';
+import { useLanguage } from './i18n';
+import { studies } from './studies';
 import s from './PracticeLab.module.css';
 
 gsap.registerPlugin(ScrollTrigger);
-const operations = [
-  {icon:FileText, name:'Extração de dados', result:'Informação estruturada'},
-  {icon:FolderOpen, name:'Manuseio de arquivos', result:'Arquivos organizados'},
-  {icon:Calculator, name:'Cálculos matemáticos', result:'Valores processados'},
-  {icon:RefreshCw, name:'Atualização de status', result:'Sistemas sincronizados'},
-];
-const releases = [
-  ['Definir','Um problema claro.'],
-  ['Testar','Uma mudança verificável.'],
-  ['Publicar','Uma solução em uso.'],
-  ['Evoluir','O próximo ajuste.'],
-];
 
-function PromptDocument(){return localize(<dl className={s.promptText}>{examplePrompt.map(([label,text])=>localize(<div key={label}><dt>{label}</dt><dd>{text}</dd></div>))}</dl>);}
+const introduction = {
+  pt: { tab: 'Matéria', title: ['Matéria', 'de código.'], body: 'Acompanhe um sopro pelo circuito, uma instrução pela memória e um salário até a média.', nav: 'Percorrer os estudos', label: 'Estudos de engenharia' },
+  en: { tab: 'Material', title: ['Code,', 'in material.'], body: 'Follow a breath through a circuit, an instruction through memory and a salary into an average.', nav: 'Explore the studies', label: 'Engineering studies' },
+};
+
+function Signature({ reduced, travel }) {
+  const host = useRef(null);
+  useEffect(() => {
+    if (reduced) return;
+    let released = false;
+    let dispose;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (!entry.isIntersecting) return;
+      observer.disconnect();
+      import('./studySculpture').then(({ mountSculpture }) => {
+        if (!released) dispose = mountSculpture(host.current, travel);
+      }).catch(() => { /* The material study remains visible when WebGL is unavailable. */ });
+    }, { rootMargin: '350px' });
+    observer.observe(host.current);
+    return () => {
+      released = true;
+      observer.disconnect();
+      dispose?.();
+    };
+  }, [reduced, travel]);
+
+  return <div ref={host} className={s.signature} aria-hidden="true">
+    <img src="/studies/signature.webp" width="800" height="800" alt="" loading="lazy" />
+  </div>;
+}
 
 export default function PracticeLab({ reduced }) {
-  const root=useRef(null), dialog=useRef(null);
-  const [expanded,setExpanded]=useState(false),[copied,setCopied]=useState(false);
-  useEffect(()=>{
-    if(reduced)return;
-    const ctx=gsap.context(()=>{
-      const q=gsap.utils.selector(root);
-      q('[data-work-reveal]').forEach(el=>gsap.from(el,{y:32,opacity:.25,duration:.85,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 92%',once:true},clearProps:'transform,opacity'}));
-      const entrance=gsap.timeline({scrollTrigger:{trigger:root.current,start:'top 95%',end:'top 22%',scrub:.7}});
-      entrance.fromTo(q('[data-work-shutter]'),{x:0,xPercent:0},{xPercent:i=>i%2?105:-105,stagger:.07,ease:'power2.inOut'},0)
-        .fromTo(q('[data-work-title]'),{y:45,clipPath:'inset(0 0 100% 0)'},{y:0,clipPath:'inset(0 0 0% 0)',ease:'power3.out'},.2);
-      const flow=q('[data-operation-flow]')[0];
-      gsap.fromTo(q('[data-operation]'),{'--fill':0},{'--fill':1,stagger:.22,ease:'none',scrollTrigger:{trigger:flow,start:'top 85%',end:'bottom 50%',scrub:.6}});
-      const context=q('[data-shared-context]')[0];
-      gsap.fromTo(q('[data-connection]'),{strokeDashoffset:1},{strokeDashoffset:0,stagger:.25,ease:'none',scrollTrigger:{trigger:context,start:'top 85%',end:'bottom 50%',scrub:.6}});
-      gsap.fromTo(q('[data-context-tag]'),{y:14,opacity:.7},{y:0,opacity:1,stagger:.12,ease:'none',scrollTrigger:{trigger:context,start:'top 80%',end:'bottom 55%',scrub:.6}});
-      const release=q('[data-release]')[0];
-      gsap.fromTo(q('[data-release-line]'),{scaleY:0},{scaleY:1,ease:'none',scrollTrigger:{trigger:release,start:'top 75%',end:'bottom 65%',scrub:.6}});
-      gsap.from(q('[data-release-step]'),{x:18,opacity:.7,stagger:.18,ease:'none',scrollTrigger:{trigger:release,start:'top 80%',end:'bottom 65%',scrub:.6}});
-    },root);
-    return()=>ctx.revert();
-  },[reduced]);
-  useEffect(()=>{
-    if(!expanded)return;
-    const previous=document.activeElement, old=document.body.style.overflow,node=dialog.current;
-    document.body.style.overflow='hidden';node.showModal();
-    return()=>{node.close();document.body.style.overflow=old;previous?.focus({preventScroll:true});};
-  },[expanded]);
-  const copy=async()=>{try{await navigator.clipboard.writeText(examplePrompt.map(([label,text])=>`${t(label)}\n${t(text)}`).join('\n\n'));setCopied(true);}catch{setCopied('error');}};
-  const focus=e=>{
-    if(e.key!=='Tab')return;
-    const items=[...dialog.current.querySelectorAll('button')],first=items[0],last=items.at(-1);
-    if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
-    else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
-  };
-  return localize(<section ref={root} id="processo" className={s.lab} data-context="trabalho" data-reduced={reduced} aria-labelledby="practice-title">
-    <div className={s.workEntrance} aria-hidden="true">{Array.from({length:5},(_,i)=>localize(<i key={i} data-work-shutter/>))}</div>
-    <div className={s.container}>
-      <header className={s.intro}><h2 id="practice-title" data-work-title>O trabalho<br/><em>por dentro.</em></h2></header>
+  const language = useLanguage();
+  const intro = introduction[language];
+  const root = useRef(null);
+  const track = useRef(null);
+  const travel = useRef(0);
+  const jump = useRef(null);
+  const tabs = [intro.tab, ...studies.map(study => study[language].tab)];
 
-      <article className={`${s.chapter} ${s.promptChapter}`} aria-labelledby="prompt-title">
-        <div className={s.story} data-work-reveal><h3 id="prompt-title">A pergunta<br/><em>muda tudo.</em></h3><p>Contexto antes do comando. Evidência antes da resposta.</p><button className={s.textButton} onClick={()=>setExpanded(true)}>Ler o prompt completo<ArrowUpRight size={18}/></button></div>
-        <div className={s.promptComposition} data-work-reveal>
-          <div className={s.document}><div className={s.documentHeader}><span><FileText size={17}/>Uma decisão de produto</span><button onClick={copy} aria-label="Copiar prompt de exemplo">{copied===true?<Check size={17}/>:<Copy size={17}/>}<span>{copied===true?'Copiado':'Copiar'}</span></button></div><blockquote className={s.promptExcerpt}><span data-work-reveal>Me ajude a escolher a próxima melhoria de um produto.</span><span data-work-reveal>Quero uma recomendação pequena, bem justificada e que dê para testar.</span><span data-work-reveal>Separe o que foi observado do que ainda é hipótese. Se faltar evidência, diga o que precisa ser validado.</span></blockquote><div className={s.documentFooter} aria-live="polite">{copied==='error'?'Selecione o texto no prompt completo para copiar.':'Contexto / Evidências / Critérios / Entrega'}</div></div>
+  useLayoutEffect(() => {
+    if (reduced) return;
+    const media = gsap.matchMedia();
+    media.add('(min-height: 510px), (min-width: 650px) and (min-height: 350px)', () => {
+      const section = root.current;
+      const panels = [...track.current.children];
+      const controls = [...section.querySelectorAll('[data-study-nav]')];
+      const header = document.querySelector('header nav')?.closest('header');
+      const position = { value: 0 };
+      const hold = 0.21;
+      const length = panels.length - 1 + hold * 2;
+      let width, distance, topInset, selected = -1;
+      const setTrack = gsap.quickSetter(track.current, 'x', 'px');
+      const drawings = panels.map(panel => panel.querySelector('[data-study-art]'));
+      function measure() {
+        topInset = header?.offsetHeight ?? 0;
+        const available = Math.max(1, window.innerHeight - topInset);
+        width = section.clientWidth;
+        distance = length * Math.min(width, available * 0.96);
+        section.style.setProperty('--nav-inset', topInset + 'px');
+        section.style.setProperty('--view-height', available + 'px');
+        section.style.setProperty('--travel-height', distance + 'px');
+      }
+      function render() {
+        const slide = gsap.utils.clamp(0, panels.length - 1, position.value - hold);
+        const active = Math.round(slide);
+        setTrack(-slide * width);
+        travel.current = Math.min(1, position.value * 1.2);
+        drawings.forEach((drawing, i) => {
+          if (!drawing) return;
+          const offset = gsap.utils.clamp(-1, 1, slide - i);
+          drawing.style.transform = 'translateX(' + offset * 13 + '%) rotate(' + offset * 7 + 'deg)';
+        });
+        if (selected === active) return;
+        selected = active;
+        panels.forEach((panel, i) => { panel.inert = i !== active; });
+        controls.forEach((control, i) => {
+          if (i === active) control.setAttribute('aria-current', 'step');
+          else control.removeAttribute('aria-current');
+        });
+      }
+
+      measure();
+      section.dataset.horizontal = 'true';
+      const animation = gsap.to(position, {
+        value: length, ease: 'none', onUpdate: render,
+        scrollTrigger: {
+          trigger: section,
+          start: () => 'top ' + topInset + 'px',
+          end: () => '+=' + distance,
+          scrub: 0.35, refreshPriority: -1,
+          onRefreshInit: measure, onRefresh: render,
+        },
+      });
+      render();
+      jump.current = index => {
+        const trigger = animation.scrollTrigger;
+        const progress = (index + hold) / length;
+        window.scrollTo({ top: trigger.start + progress * (trigger.end - trigger.start), behavior: 'smooth' });
+      };
+      // Other page anchors depend on the space added by this sticky strip.
+      const refresh = requestAnimationFrame(() => ScrollTrigger.refresh());
+      return () => {
+        cancelAnimationFrame(refresh);
+        jump.current = null;
+        travel.current = 0;
+        delete section.dataset.horizontal;
+        setTrack(0);
+        drawings.forEach(drawing => drawing?.style.removeProperty('transform'));
+        controls.forEach(control => control.removeAttribute('aria-current'));
+        panels.forEach(panel => { panel.inert = false; });
+      };
+    }, root);
+    return () => media.revert();
+  }, [reduced]);
+
+  return <section id="processo" className={s.section} ref={root} data-context="estudos" aria-labelledby="studies-title">
+    <div className={s.viewport}>
+      <div className={s.index}>
+        <span className={s.imprint}><img src="/studies/moury-mark.svg" width="38" height="24" alt=""/>{intro.label}</span>
+        <nav aria-label={intro.nav}>
+          {tabs.map((tab, i) => <button type="button" key={i} data-study-nav onClick={() => jump.current?.(i)}>{tab}</button>)}
+        </nav>
+      </div>
+      <div className={s.track} ref={track}>
+        <div className={s.panel} data-study="signature">
+          <div className={s.composition}>
+            <div className={s.copy}>
+              <h2 id="studies-title" className={s.title}>{intro.title[0]} <em>{intro.title[1]}</em></h2>
+              <p>{intro.body}</p>
+            </div>
+            <Signature reduced={reduced} travel={travel}/>
+          </div>
         </div>
-      </article>
-
-      <article className={`${s.chapter} ${s.automationChapter}`} aria-labelledby="automation-title">
-        <div className={s.operationVisual} data-operation-flow data-work-reveal>
-          <div className={s.operationTop}><span>ENTRADA</span><span>TRATAMENTO</span><span>DESTINO</span></div>
-          <div className={s.operations}>{operations.map(({icon:Icon,name,result})=>localize(<div className={s.operation} data-operation key={name}><div className={s.source}><Icon size={20}/><span>{name}</span></div><span className={s.transfer} aria-hidden="true"><i/><b/></span><div className={s.destination}><Check size={16}/><span>{result}</span></div></div>))}</div>
-          <div className={s.operationBottom}><span>Processos manuais conectados</span><Layers size={20}/><span>Uma rotina que continua</span></div>
-        </div>
-        <div className={s.story} data-work-reveal><h3 id="automation-title">Repetir menos.<br/><em>Criar mais.</em></h3><p>Dados, arquivos, cálculos e status conectados. Da rotina manual ao fluxo que funciona.</p><div className={s.tools}><span>n8n</span><span>Make</span><span>Zapier</span><span>APIs</span></div></div>
-      </article>
-
-      <article className={`${s.chapter} ${s.toolsChapter}`} aria-labelledby="tools-title">
-        <div className={s.story} data-work-reveal><h3 id="tools-title">O dado é um só.<br/><em>A conversa<br/>vai além.</em></h3><p>Na Roomi, painel e copiloto consultam o mesmo recorte. Uma pergunta, com o contexto certo.</p><div className={s.fact}><strong>7</strong><span>verificações de regressão</span></div></div>
-        <div className={s.contextVisual} data-shared-context data-work-reveal>
-          <div className={s.contextSource}><Database size={22}/><div><span>CONTEXTO COMPARTILHADO</span><strong>Dados do filtro ativo</strong></div><SlidersHorizontal size={19}/></div>
-          <svg className={s.connections} viewBox="0 0 600 110" preserveAspectRatio="none" aria-hidden="true"><path d="M300 0V40Q300 60 280 60H170Q150 60 150 80V110"/><path d="M300 0V40Q300 60 320 60H430Q450 60 450 80V110"/><path data-connection pathLength="1" d="M300 0V40Q300 60 280 60H170Q150 60 150 80V110"/><path data-connection pathLength="1" d="M300 0V40Q300 60 320 60H430Q450 60 450 80V110"/></svg>
-          <div className={s.contextOutputs}><div><Layers size={21}/><h4>No painel</h4><p>Indicadores e comparações.</p><span data-context-tag>Mesmo período</span></div><div><MessageSquare size={21}/><h4>Na conversa</h4><p>Perguntas sobre os dados.</p><span data-context-tag>Mesmo recorte</span></div></div>
-        </div>
-      </article>
-
-      <article className={`${s.chapter} ${s.releaseChapter}`} aria-labelledby="release-title">
-        <div className={s.story} data-work-reveal><h3 id="release-title">No ar.<br/><em>Em evolução.</em></h3><p>Na Roomi, ampliei a previsão diária para 90 dias, com intervalos de confiança e validações.</p><div className={s.forecast}><strong>90</strong><span>dias de horizonte</span><svg viewBox="0 0 300 50" aria-hidden="true"><path d="M0 45C50 42 60 18 110 28S190 2 230 15S270 5 300 2"/></svg></div></div>
-        <div className={s.releaseVisual} data-release data-work-reveal><div className={s.releaseHeader}><GitCommitHorizontal size={22}/><span>O que acompanha uma entrega</span></div><div className={s.releaseSteps}><i className={s.releaseLine} data-release-line aria-hidden="true"/>{releases.map(([title,text],i)=>localize(<div key={title} className={s.releaseStep} data-release-step><span className={s.releaseDot} aria-hidden="true"/><span className={s.releaseIndex}>{String(i+1).padStart(2,'0')}</span><div><h4>{title}</h4><p>{text}</p></div></div>))}</div></div>
-      </article>
+        {studies.map(study => {
+          const words = study[language];
+          return <article key={study.id} className={s.panel} data-study={study.id} style={{ '--tint': study.tint }} aria-labelledby={'study-' + study.id}>
+            <div className={s.composition}>
+              <div className={s.copy}>
+                <p className={s.projectName}>{words.name}</p>
+                <h3 className={s.title} id={'study-' + study.id}>{words.title[0]} <em>{words.title[1]}</em></h3>
+                <p>{words.copy}</p>
+                <a className={s.source} href={study.source} target="_blank" rel="noopener noreferrer">{words.link}<ArrowUpRight size={17} aria-hidden="true"/></a>
+              </div>
+              <figure className={s.artwork}>
+                <img data-study-art src={'/studies/' + study.image + '.webp'} alt="" width="1024" height="1024" loading="lazy"/>
+                <figcaption><i aria-hidden="true"/><code>{study.detail}</code></figcaption>
+              </figure>
+            </div>
+          </article>;
+        })}
+      </div>
     </div>
-    <dialog ref={dialog} className={s.dialog} aria-labelledby="prompt-dialog-title" onKeyDown={focus} onCancel={e=>{e.preventDefault();setExpanded(false);}} onClick={e=>{if(e.target===e.currentTarget)setExpanded(false);}}><div className={s.dialogHeader}><div><span>EXEMPLO DE PROMPT</span><h2 id="prompt-dialog-title">Uma decisão de produto</h2></div><button autoFocus aria-label="Fechar prompt" onClick={()=>setExpanded(false)}><X/></button></div><div className={s.dialogContent}><p className={s.dialogIntro}>Cenário fictício. Você pode copiar a instrução completa e experimentar em um LLM.</p><PromptDocument/><button className={s.copyButton} onClick={copy}>{copied===true?<Check size={18}/>:<Copy size={18}/>} {copied===true?'Prompt copiado':'Copiar prompt completo'}</button><span className={s.copyStatus} aria-live="polite">{copied==='error'?'Não foi possível copiar. Selecione o texto acima.':''}</span></div></dialog>
-  </section>);
+  </section>;
 }

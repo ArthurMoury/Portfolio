@@ -1,0 +1,15 @@
+.signature {
+  display: inline-grid;
+  position: relative;
+  align-items: center;
+  width: min(100%, 8.7em);
+  min-width: 0;
+  height: 1.9em;
+  font: 520 clamp(1.7rem, 4vw, 3.65rem)/1 Sora, sans-serif;
+  letter-spacing: -.052em;
+}
+.signature span { padding-left: 4px; white-space: nowrap; }
+.signature canvas { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.signature[data-drawn] span { opacity: 0; }
+.signature:focus-visible span { opacity: 1; }
+.signature:focus-visible canvas { opacity: 0; }

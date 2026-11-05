@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <pattern id="etch" width="64" height="64" patternUnits="userSpaceOnUse">
+      <rect width="64" height="64" fill="#a4a4a4"/>
+      <path d="M-16 0 0 16h20l16 16v32M-16 8 0 24h17l11 11v29M32 0v8l18 18h14M40 0v5l14 14h10" fill="none" stroke="#646464" stroke-width="2"/>
+      <circle cx="36" cy="44" r="3" fill="#d0d0d0"/>
+    </pattern>
+  </defs>
+  <rect width="512" height="512" fill="url(#etch)"/>
+</svg>

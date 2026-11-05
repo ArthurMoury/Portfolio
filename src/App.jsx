@@ -10,6 +10,7 @@ import s from './App.module.css';
 import KineticHero from './KineticHero';
 import Certificates from './Certificates';
 import PracticeLab from './PracticeLab';
+import FooterSignature from './FooterSignature';
 import SubjectSelect from './SubjectSelect';
 import TextReveal from './TextReveal';
 import ProjectNarrative from './ProjectNarrative';
@@ -64,8 +65,25 @@ function About() {
   </div></section>);
 }
 
-function ProjectImage({ project, onOpen, className='' }) {
-  return localize(<button className={`${s.projectImage} ${className}`} onClick={()=>onOpen({image:project.image,title:project.name,caption:`${project.imageType}, ${project.summary}`})} aria-label={`Ampliar imagem: ${project.name}`}><img src={project.image} alt={`${project.imageType}: ${project.name}`} loading="lazy" width="1280" height="720"/><span className={s.imageExpand}><ScanLine size={17}/><span>Ampliar</span></span></button>);
+function ProjectImage({ project, onOpen, reduced }) {
+  function tilt(event) {
+    if (reduced || event.pointerType === 'touch') return;
+    const node = event.currentTarget;
+    const bounds = node.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / bounds.width;
+    const y = (event.clientY - bounds.top) / bounds.height;
+    node.style.setProperty('--pitch', ((0.5 - y) * 5) + 'deg');
+    node.style.setProperty('--yaw', ((x - 0.5) * 6) + 'deg');
+    node.style.setProperty('--light-x', (x * 100) + '%');
+    node.style.setProperty('--light-y', (y * 100) + '%');
+  }
+
+  return localize(<button className={s.projectImage} onPointerMove={tilt}
+    onClick={() => onOpen({ image: project.image, title: project.name, caption: `${project.imageType}, ${project.summary}` })}
+    aria-label={`Ampliar imagem: ${project.name}`}>
+    <img src={project.image} alt={`${project.imageType}: ${project.name}`} loading="lazy" width="1280" height="720"/>
+    <span className={s.imageExpand}><ScanLine size={17}/><span>Ampliar</span></span>
+  </button>);
 }
 
 function Career({ onOpen, activeChapter, reduced }) {
@@ -198,7 +216,7 @@ function ProjectGallery({ onOpen, reduced }) {
         </div>
         <div id={`project-gallery-${p.id}`} data-project-panel className={`${s.projectGallery} ${open===i?s.projectGalleryOpen:''}`} inert={open!==i?true:undefined} aria-hidden={open!==i}>
           <div className={s.galleryClip}><div className={s.projectContent}>
-            <figure className={s.galleryScreenshot}><ProjectImage project={p} onOpen={onOpen}/><figcaption>{p.imageType}</figcaption></figure>
+            <figure className={s.galleryScreenshot}><ProjectImage project={p} onOpen={onOpen} reduced={reduced}/><figcaption>{p.imageType}</figcaption></figure>
             <ProjectNarrative project={p} open={open===i} reduced={reduced}/>
           </div></div>
         </div>
@@ -240,7 +258,7 @@ function Contact({ reduced }) {
       <button className={s.button} type="submit">Preparar e-mail<ArrowUpRight size={19} /></button>
       <div className={s.formStatus} aria-live="polite">{Object.values(errors).some(Boolean) && <p>Confira os campos indicados para continuar.</p>}{draft && <div className={s.draft}><strong><Check size={17} /> Mensagem pronta para revisar.</strong><p>Abra seu aplicativo e envie quando estiver tudo certo.</p><div><a href={`mailto:${profile.email}?subject=${encodeURIComponent(`[${t('Portfólio')}] ${draft.subject}`)}&body=${encodeURIComponent(draft.body)}`} className={s.textLink}>Abrir meu e-mail<ArrowUpRight size={16} /></a><button type="button" onClick={copy}><Copy size={15} /> Copiar mensagem</button></div></div>}{copyStatus && <p>{copyStatus}</p>}</div>
     </form></div>
-    <footer className={`${s.container} ${s.footer}`}><div className={s.footerTop}><a href="#inicio" className={s.footerName}>Arthur Moury</a><nav aria-label="Navegação do rodapé"><a href="#sobre">Quem sou</a><a href="#trajetoria">Trajetória</a><a href="#projetos">Projetos</a><a href={reduced?'/?motion=full':'/?motion=reduce'}>{reduced?'Versão com animações':'Reduzir animações'}</a></nav></div><div className={s.footerBottom}><span>© 2026 Arthur Moury</span><a href="#inicio">Voltar ao início <ArrowUpRight size={14}/></a></div></footer>
+    <footer className={`${s.container} ${s.footer}`}><div className={s.footerTop}><FooterSignature reduced={reduced}/><nav aria-label="Navegação do rodapé"><a href="#sobre">Quem sou</a><a href="#trajetoria">Trajetória</a><a href="#projetos">Projetos</a><a href={reduced?'/?motion=full':'/?motion=reduce'}>{reduced?'Versão com animações':'Reduzir animações'}</a></nav></div><div className={s.footerBottom}><span>© 2026 Arthur Moury</span><a href="#inicio">Voltar ao início <ArrowUpRight size={14}/></a></div></footer>
   </section>);
 }
 

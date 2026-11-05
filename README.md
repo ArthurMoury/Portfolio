@@ -46,8 +46,8 @@ Direção visual em `DESIGN.md`; verificações em `docs/QA.md`. Referências: [
 
 A revisão desktop remove controles do carrossel e os painéis decorativos dos projetos, exibe stacks verificadas e fecha a faixa anterior ao explorar outra. Card0 aparece apenas na trajetória acadêmica, com imagem e stack; o antigo deploy estava indisponível. Dozão possui deploy, mas não foi encontrado um repositório GitHub publicado.
 
-A seção **Na prática** reúne um prompt estruturado, extração de dados, arquivos, status, cálculos, validações de um copiloto e evolução de um dashboard em produção. A apresentação é uma timeline GSAP ligada à rolagem, com conexões, cápsula e etapas visuais; possui pausa e reprodução explícitas. As métricas de economia de tempo aguardam medição do titular.
+A seção **Na prática** percorre três estudos com fontes públicas: o circuito do Gaita Hero, as instruções de um processador em C e os filtros de um dashboard salarial. A rolagem vertical percorre o trilho horizontal, com uma escultura em Three.js e leitura em coluna para movimento reduzido. [Assets e prompts](docs/study-assets.md).
 
 O layout mobile mantém Three.js, GSAP e Motion. Projetos usam capturas amplas com stack abaixo; a trajetória vira uma sequência vertical de imagens animadas. Menu, diálogos, certificados e formulário se adaptam ao toque, com safe areas e alternativa para movimento reduzido. Validação de tamanhos e limites em `docs/QA.md`.
 
-A revisão de movimento centraliza a abertura mobile e retira seu CTA. Os projetos fecham e abrem em uma timeline coordenada, preservando a posição durante o recolhimento. A trajetória mobile usa um painel fixo com imagens que mudam pelos capítulos. A seção Da integração à entrega permite acompanhar o fluxo pela rolagem, pausar ou reproduzir a animação; o prompt completo e os contextos continuam disponíveis em diálogo.
+A revisão de movimento centraliza a abertura mobile e retira seu CTA. Os projetos fecham e abrem em uma timeline coordenada, preservando a posição durante o recolhimento. A trajetória mobile usa um painel fixo com imagens que mudam pelos capítulos.

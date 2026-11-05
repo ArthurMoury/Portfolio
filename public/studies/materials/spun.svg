@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <defs>
+    <pattern id="lathe" width="32" height="8" patternUnits="userSpaceOnUse">
+      <rect width="32" height="8" fill="#9d9d9d"/>
+      <path d="M0 1h32 M0 5h32" stroke="#636363"/>
+      <path d="M0 2h32 M0 6h32" stroke="#c5c5c5" stroke-width=".65"/>
+    </pattern>
+  </defs>
+  <rect width="512" height="512" fill="url(#lathe)"/>
+</svg>

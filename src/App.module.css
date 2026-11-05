@@ -161,3 +161,25 @@
 .chapterStack>[data-text-reveal]{font-size:inherit;color:inherit;margin:0}.projectBuild{--reveal-surface:var(--project-surface)}.projectBuild dl>[data-project-spec]{position:relative;border-top-color:transparent;--spec-progress:1}.projectBuild dl>[data-project-spec]::before{content:'';position:absolute;inset:0 0 auto;height:1px;background:var(--band-line);transform:scaleX(var(--spec-progress));transform-origin:left}.careerStage{padding-bottom:0}
 
 .projectsIntro [data-project-heading-line]{display:block}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-reduced-motion=false] .projectImage:hover > img {
+    transform: perspective(850px) rotateX(var(--pitch, 0deg)) rotateY(var(--yaw, 0deg)) scale(1.04);
+    transition: transform 180ms ease-out;
+  }
+  [data-reduced-motion=false] .projectImage::after {
+    content: ''; position: absolute; inset: 0; pointer-events: none; opacity: 0;
+    background: radial-gradient(ellipse at var(--light-x, 50%) var(--light-y, 50%), #fff2, transparent 49%);
+    transition: opacity 250ms;
+  }
+  [data-reduced-motion=false] .projectImage:hover::after { opacity: 1; }
+}
+@media (hover: none) {
+  [data-reduced-motion=false] [data-expanded=true] .projectImage img {
+    animation: inspect-print 650ms cubic-bezier(.2,.7,.2,1) both;
+  }
+  @keyframes inspect-print {
+    from { transform: perspective(800px) rotateX(4deg) scale(1.025); }
+    to { transform: none; }
+  }
+}
