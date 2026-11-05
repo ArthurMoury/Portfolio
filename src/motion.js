@@ -35,6 +35,10 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
       const chapterLine=innerWidth<900?Math.min(innerHeight-50,stageBottom+(innerHeight-stageBottom)*.3):innerHeight*.55;
       chapterElements.forEach((chapter,i)=>{if(chapter.getBoundingClientRect().top<=chapterLine)chapterIndex=i;});
       setChapter(chapterIndex);
+      const careerProgress=root.current.querySelector('[data-career-progress]');
+      const activeBounds=chapterElements[chapterIndex]?.getBoundingClientRect();
+      const local=activeBounds?Math.min(1,Math.max(0,(chapterLine-activeBounds.top)/activeBounds.height)):0;
+      if(careerProgress)careerProgress.style.transform=`scaleX(${(chapterIndex+local)/chapterElements.length})`;
       const max=document.documentElement.scrollHeight-window.innerHeight;
       if(progress)progress.style.transform=`scaleX(${max>0?Math.min(1,Math.max(0,window.scrollY/max)):0})`;
     };
@@ -61,9 +65,11 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
       q('[data-project]').forEach(band => {
         gsap.from(band.querySelector('h3'), { x: -30, duration: .85, ease: 'power3.out', clearProps: 'all', scrollTrigger: { trigger: band, start: 'top 90%', once: true } });
       });
-      q('[data-chapter-visual]').forEach((visual,i)=>{
-        const show=direction=>gsap.fromTo(visual,{y:direction*18,scale:.96,clipPath:direction>0?'inset(0 0 12% 0)':'inset(12% 0 0 0)'},{y:0,scale:1,clipPath:'inset(0 0 0% 0)',duration:.7,ease:'power3.out',overwrite:true});
-        ScrollTrigger.create({trigger:q('[data-chapter]')[i],start:()=>`top ${innerWidth<900?'58%':'55%'}`,onEnter:()=>show(1),onEnterBack:()=>show(-1)});
+      q('[data-chapter]').forEach((chapter,i)=>{
+        const visual=q('[data-chapter-visual]')[i];
+        const pieces=[...chapter.children].filter(el=>!el.hasAttribute('data-chapter-mobile'));
+        gsap.from(pieces,{y:24,opacity:.25,stagger:.085,duration:.75,ease:'power3.out',clearProps:'transform,opacity',scrollTrigger:{trigger:chapter,start:()=>`top ${innerWidth<900?'78%':'82%'}`,once:true}});
+        gsap.fromTo(visual.querySelector('img'),{scale:1.035,yPercent:1.2},{scale:1,yPercent:-1.2,ease:'none',scrollTrigger:{trigger:chapter,start:'top 65%',end:'bottom 30%',scrub:.8}});
       });
     },root);
     const refresh=()=>{if(!disposed){ScrollTrigger.refresh();queue();}};

@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import gsap from 'gsap';
-import { ArrowUpRight, ArrowDown, BriefcaseBusiness, GraduationCap, Check, X, Menu, Mail, Copy, MapPin, ScanLine, FileDown } from 'lucide-react';
+import { ArrowUpRight, BriefcaseBusiness, GraduationCap, Check, X, Menu, Mail, Copy, MapPin, ScanLine, FileDown } from 'lucide-react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { projects, chapters, contexts, profile } from './data/portfolio';
 import { usePageMotion, useReducedMotion } from './motion';
@@ -9,6 +9,7 @@ import s from './App.module.css';
 import KineticHero from './KineticHero';
 import Certificates from './Certificates';
 import PracticeLab from './PracticeLab';
+import SubjectSelect from './SubjectSelect';
 
 const external = { target: '_blank', rel: 'noreferrer noopener' };
 
@@ -64,13 +65,25 @@ function ProjectImage({ project, onOpen, className='' }) {
   return <button className={`${s.projectImage} ${className}`} onClick={()=>onOpen({image:project.image,title:project.name,caption:`${project.imageType}, ${project.summary}`})} aria-label={`Ampliar imagem: ${project.name}`}><img src={project.image} alt={`${project.imageType}: ${project.name}`} loading="lazy" width="1280" height="720"/><span className={s.imageExpand}><ScanLine size={17}/><span>Ampliar</span></span></button>;
 }
 
-function Career({ onOpen, activeChapter, setActiveChapter }) {
+function Career({ onOpen, activeChapter, setActiveChapter, reduced }) {
+  const stage=useRef(null), previous=useRef(activeChapter);
+  useEffect(()=>{
+    if(reduced){previous.current=activeChapter;return;}
+    const images=[...stage.current.querySelectorAll('[data-chapter-visual]')];
+    const old=previous.current, direction=activeChapter>=old?1:-1;
+    previous.current=activeChapter;
+    const ctx=gsap.context(()=>{
+      if(old!==activeChapter)gsap.to(images[old],{y:-direction*24,scale:.94,rotateY:-direction*5,duration:.65,ease:'power3.out',overwrite:true});
+      gsap.fromTo(images[activeChapter],{y:direction*32,scale:1.045,rotateY:direction*7,clipPath:direction>0?'inset(0 0 100% 0)':'inset(100% 0 0 0)'},{y:0,scale:1,rotateY:0,clipPath:'inset(0 0 0% 0)',duration:.95,ease:'power3.inOut',overwrite:true});
+    },stage);
+    return()=>ctx.revert();
+  },[activeChapter,reduced]);
   return <section id="trajetoria" data-career-story className={s.career} aria-labelledby="career-title"><div className={s.container}>
     <div className={s.careerIntro}><h2 id="career-title">O que me trouxe<br />até aqui.</h2></div>
     <div className={s.careerGrid}><div className={s.chapterList}>{chapters.map((c,i)=><article id={`capitulo-${c.id}`} key={c.id} className={`${s.chapter} ${i===activeChapter?s.chapterActive:''}`} data-chapter={i} data-context={c.context}>
-      <span className={s.chapterMarker}>{c.marker}</span><p className={s.organization}>{c.organization}</p><h3>{c.title}</h3><p className={s.chapterRole}>{c.role}</p><p className={s.chapterText}>{c.text} {c.proof}</p>{c.client&&<div className={s.chapterClient}><span>Cliente</span><img src={c.clientLogo} alt={`Logo de ${c.client}`} width="100" height="50" loading="lazy"/><strong>{c.client}</strong></div>}{c.stack&&<p className={s.chapterStack}><span>Tecnologias</span>{c.stack}</p>}{c.site&&<a className={s.textLink} href={c.site} {...external}>Documentação no Google Sites<ArrowUpRight size={16}/></a>}
+      <span className={s.chapterMarker}>{c.marker}</span><p className={s.organization}>{c.organization}</p><h3>{c.title}</h3><p className={s.chapterRole}>{c.role}</p><p className={s.chapterText}>{c.text} {c.proof}</p>{c.client&&<div className={s.chapterClient}><span>Cliente</span><img src={c.clientLogo} alt={`Logo de ${c.client}`} width="100" height="50" loading="lazy"/></div>}{c.stack&&<p className={s.chapterStack}><span>Tecnologias</span>{c.stack}</p>}{c.site&&<a className={s.textLink} href={c.site} {...external}>Documentação no Google Sites<ArrowUpRight size={16}/></a>}
       <div className={s.chapterMobile} data-chapter-mobile data-image-fit={c.fit} style={{'--chapter-bg':c.background}}><button onClick={()=>onOpen({image:c.image,title:c.organization,caption:''})} aria-label={`Ampliar imagem de ${c.organization}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/>{c.brandImage&&<img className={s.chapterBrand} src={c.brandImage} alt="CESAR School" width="70" height="70"/>}<ScanLine size={20}/></button></div>
-    </article>)}</div><aside className={s.careerStage} aria-label="Visuais da trajetória"><div className={s.chapterImages}>{chapters.map((c,i)=><button key={c.id} className={s.chapterVisual} data-image-fit={c.fit} style={{'--chapter-bg':c.background}} data-chapter-visual={i} data-active={activeChapter===i} onClick={()=>onOpen({image:c.image,title:c.organization,caption:''})} tabIndex={activeChapter===i?0:-1} aria-hidden={activeChapter!==i} aria-label={`Ampliar imagem: ${c.caption}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/>{c.brandImage&&<img className={s.chapterBrand} src={c.brandImage} alt="CESAR School" width="70" height="70"/>}</button>)}</div><div className={s.stageFooter}><nav className={s.chapterNav} aria-label="Capítulos da trajetória">{chapters.map((c,i)=><a key={c.id} href={`#capitulo-${c.id}`} aria-label={c.organization} aria-current={i===activeChapter?'step':undefined} onClick={()=>setActiveChapter(i)}><span/></a>)}</nav></div></aside></div>
+    </article>)}</div><aside ref={stage} className={s.careerStage} aria-label="Visuais da trajetória"><div className={s.chapterImages}>{chapters.map((c,i)=><button key={c.id} className={s.chapterVisual} data-image-fit={c.fit} style={{'--chapter-bg':c.background}} data-chapter-visual={i} data-active={activeChapter===i} onClick={()=>onOpen({image:c.image,title:c.organization,caption:''})} tabIndex={activeChapter===i?0:-1} aria-hidden={activeChapter!==i} aria-label={`Ampliar imagem: ${c.caption}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/>{c.brandImage&&<img className={s.chapterBrand} src={c.brandImage} alt="CESAR School" width="70" height="70"/>}</button>)}</div><div className={s.stageFooter}><div className={s.careerProgress} aria-hidden="true"><i data-career-progress/></div><nav className={s.chapterNav} aria-label="Capítulos da trajetória">{chapters.map((c,i)=><a key={c.id} href={`#capitulo-${c.id}`} aria-label={c.organization} aria-current={i===activeChapter?'step':undefined} onClick={()=>setActiveChapter(i)}><span/></a>)}</nav></div></aside></div>
   </div></section>;
 }
 
@@ -87,22 +100,29 @@ function ProjectGallery({ onOpen, reduced }) {
     transition.current?.kill();
     const heights=panels.map(panel=>panel.getBoundingClientRect().height);
     const target=index??current.current;
-    const compensate=preserve&&row&&before>100&&before<innerHeight;
+    const compensate=preserve&&row&&before>0&&before<innerHeight;
+    let centered=0;
+    const contentHeight=index===null?0:panels[index].firstElementChild.firstElementChild.getBoundingClientRect().height;
+    const bandHeight=(row?.offsetHeight||0)+contentHeight;
+    const navHeight=document.querySelector('header')?.offsetHeight||108;
+    const desiredTop=Math.max(navHeight+16,navHeight+(innerHeight-navHeight-bandHeight)/2);
+    const centerDistance=compensate&&index!==null?before-desiredTop:0;
     let prefix=heights.slice(0,target).reduce((a,b)=>a+b,0);
     current.current=index;changing.current=true;
     flushSync(()=>setOpen(index));
     if(reduced||instant){
       gsap.set(panels,{clearProps:'height,gridTemplateRows,overflow'});
       panels.forEach(p=>gsap.set(p.firstElementChild,{clearProps:'opacity,transform'}));
-      if(compensate)window.scrollBy({top:row.getBoundingClientRect().top-before,behavior:'instant'});
+      if(compensate)window.scrollBy({top:row.getBoundingClientRect().top-before+centerDistance,behavior:'instant'});
       changing.current=false;ScrollTrigger.refresh(true);return;
     }
-    // Only the accordion's height change is compensated. Native wheel/touch input stays free.
+    // Align the opening band while compensating outgoing height. Wheel/touch deltas remain native.
     gsap.set(panels,{height:i=>heights[i],gridTemplateRows:'1fr',overflow:'hidden'});
     const timeline=gsap.timeline({onUpdate:()=>{
       if(!compensate)return;
       const next=panels.slice(0,target).reduce((sum,p)=>sum+p.getBoundingClientRect().height,0);
-      const delta=next-prefix;prefix=next;
+      const centerNow=centerDistance*gsap.parseEase('power2.inOut')(timeline.progress());
+      const delta=next-prefix+centerNow-centered;prefix=next;centered=centerNow;
       if(Math.abs(delta)>.01)window.scrollBy({top:delta,behavior:'instant'});
     },onComplete:()=>{
       gsap.set(panels,{clearProps:'height,gridTemplateRows,overflow'});
@@ -166,7 +186,7 @@ function ProjectGallery({ onOpen, reduced }) {
       onKeyDown={e=>{if(e.key==='Escape'){switchTo(null);document.getElementById(`project-toggle-${p.id}`)?.focus({preventScroll:true});}}}>
       <div className={s.container}>
         <div className={s.projectBandTop} data-project-trigger={i}>
-          <div className={s.projectIdentity}><span className={s.projectTopic}>{p.topic}</span><h3><button id={`project-toggle-${p.id}`} aria-expanded={open===i} aria-controls={`project-gallery-${p.id}`} onClick={()=>{const opening=open!==i;switchTo(opening?i:null);if(opening){setTimeout(()=>document.querySelector(`[data-project-trigger=\"${i}\"]`)?.scrollIntoView({behavior:reduced?'instant':'smooth',block:'center'}),580);}}}>{p.name}</button></h3><span className={s.galleryHint}>{open===i?'Recolher projeto':'Explorar projeto'}</span></div>
+          <div className={s.projectIdentity}><span className={s.projectTopic}>{p.topic}</span><h3><button id={`project-toggle-${p.id}`} aria-expanded={open===i} aria-controls={`project-gallery-${p.id}`} onClick={()=>switchTo(open===i?null:i)}>{p.name}</button></h3><span className={s.galleryHint}>{open===i?'Recolher projeto':'Explorar projeto'}</span></div>
           <div className={s.projectActions}>
             {p.repo?<a href={`https://github.com/${p.repo}`} {...external} aria-label={`GitHub de ${p.name}${p.private?' (repositório privado)':''}`}><Github size={18}/><span>GitHub{p.private&&<small>privado</small>}</span></a>:<span className={s.unavailable}><Github size={18}/><span>Código não publicado</span></span>}
             {p.id==='cortech'?null:p.live?<a href={p.live} {...external} aria-label={`Acessar ${p.name}`}>Acessar<ArrowUpRight size={19}/></a>:<span className={s.unavailable}>Acesso em atualização</span>}
@@ -191,6 +211,7 @@ function Contact({ reduced }) {
   const form = useRef(null);
   const [errors,setErrors] = useState({});
   const [draft,setDraft] = useState(null);
+  const [subject,setSubject] = useState('');
   const [copyStatus,setCopyStatus] = useState('');
   const submit = e => {
     e.preventDefault();
@@ -201,7 +222,7 @@ function Contact({ reduced }) {
     if(!values.subject) next.subject = 'Escolha o assunto da conversa.';
     if(values.message.trim().length < 10) next.message = 'Conte um pouco mais: use pelo menos 10 caracteres.';
     setErrors(next); setCopyStatus('');
-    if(Object.keys(next).length) { setDraft(null); form.current.elements[Object.keys(next)[0]]?.focus(); return; }
+    if(Object.keys(next).length) { setDraft(null); document.getElementById(`contact-${Object.keys(next)[0]}`)?.focus(); return; }
     setDraft({ ...values, body:`Olá, Arthur!\n\n${values.message.trim()}\n\n${values.name.trim()}\n${values.email.trim()}` });
   };
   const copy = async () => { try { await navigator.clipboard.writeText(`Para: ${profile.email}\nAssunto: ${draft.subject}\n\n${draft.body}`); setCopyStatus('Mensagem copiada. Cole no seu e-mail para enviar.'); } catch { setCopyStatus('Não foi possível copiar. Use o link para abrir seu e-mail.'); } };
@@ -210,7 +231,7 @@ function Contact({ reduced }) {
       <p>Comece por aqui.<span>O formulário prepara a mensagem no seu aplicativo de e-mail.</span></p>
       <div className={s.formField}><label htmlFor="contact-name">Seu nome <span>(obrigatório)</span></label><input {...props('name')} autoComplete="name" maxLength={100} required placeholder="Como posso te chamar?" />{errors.name && <span className={s.fieldError} id="error-name">{errors.name}</span>}</div>
       <div className={s.formField}><label htmlFor="contact-email">Seu e-mail <span>(obrigatório)</span></label><input {...props('email')} type="email" autoComplete="email" maxLength={150} required placeholder="voce@exemplo.com" />{errors.email && <span className={s.fieldError} id="error-email">{errors.email}</span>}</div>
-      <div className={s.formField}><label htmlFor="contact-subject">Sobre o que vamos conversar?</label><div className={s.selectWrap}><select {...props('subject')} required defaultValue=""><option value="" disabled>Escolha um assunto</option><option>Uma oportunidade profissional</option><option>Uma ideia de projeto</option><option>Uma colaboração</option><option>Uma conversa sobre tecnologia</option><option>Outro motivo</option></select><ArrowDown size={17} aria-hidden="true" /></div>{errors.subject && <span className={s.fieldError} id="error-subject">{errors.subject}</span>}</div>
+      <div className={s.formField}><label id="subject-label" htmlFor="contact-subject">Sobre o que vamos conversar?</label><SubjectSelect value={subject} onChange={value=>{setSubject(value);setDraft(null);setErrors(previous=>({...previous,subject:undefined}));}} invalid={!!errors.subject} describedBy={errors.subject?'error-subject':undefined}/>{errors.subject && <span className={s.fieldError} id="error-subject">{errors.subject}</span>}</div>
       <div className={s.formField}><label htmlFor="contact-message">Conte um pouco <span>(obrigatório)</span></label><textarea {...props('message')} required rows={3} maxLength={1800} placeholder="O que você tem em mente?" />{errors.message && <span className={s.fieldError} id="error-message">{errors.message}</span>}</div>
       <button className={s.button} type="submit">Preparar e-mail<ArrowUpRight size={19} /></button>
       <div className={s.formStatus} aria-live="polite">{Object.values(errors).some(Boolean) && <p>Confira os campos indicados para continuar.</p>}{draft && <div className={s.draft}><strong><Check size={17} /> Mensagem pronta para revisar.</strong><p>Abra seu aplicativo e envie quando estiver tudo certo.</p><div><a href={`mailto:${profile.email}?subject=${encodeURIComponent(`[Portfólio] ${draft.subject}`)}&body=${encodeURIComponent(draft.body)}`} className={s.textLink}>Abrir meu e-mail<ArrowUpRight size={16} /></a><button type="button" onClick={copy}><Copy size={15} /> Copiar mensagem</button></div></div>}{copyStatus && <p>{copyStatus}</p>}</div>
@@ -251,5 +272,5 @@ export default function App() {
   const [activeSection,setActiveSection]=useState('inicio');
   const [image,setImage]=useState(null);
   usePageMotion(root,reduced,setNavigationVisible,setActiveChapter,setContext,setActiveSection);
-  return <div ref={root} className={s.app} data-reduced-motion={reduced}><a className={s.skipLink} href="#sobre">Pular para informações pessoais</a><Navigation visible={navigationVisible} context={context} activeSection={activeSection}/><main><div className={s.opening} data-opening><KineticHero reduced={reduced}/><About/></div><div className={s.sectionTransition} data-section-transition aria-hidden="true"><svg viewBox="0 0 1440 200" preserveAspectRatio="none"><path data-transition-surface d="M0 160Q720 -100 1440 160V200H0Z"/></svg></div><ProjectGallery onOpen={setImage} reduced={reduced}/><Career onOpen={setImage} activeChapter={activeChapter} setActiveChapter={setActiveChapter}/><Certificates reduced={reduced} onOpen={setImage} modalOpen={!!image}/><PracticeLab reduced={reduced}/><Curriculum/><Contact reduced={reduced}/></main><ImageDialog value={image} onClose={()=>setImage(null)}/></div>;
+  return <div ref={root} className={s.app} data-reduced-motion={reduced}><a className={s.skipLink} href="#sobre">Pular para informações pessoais</a><Navigation visible={navigationVisible} context={context} activeSection={activeSection}/><main><div className={s.opening} data-opening><KineticHero reduced={reduced}/><About/></div><div className={s.sectionTransition} data-section-transition aria-hidden="true"><svg viewBox="0 0 1440 200" preserveAspectRatio="none"><path data-transition-surface d="M0 160Q720 -100 1440 160V200H0Z"/></svg></div><ProjectGallery onOpen={setImage} reduced={reduced}/><Career reduced={reduced} onOpen={setImage} activeChapter={activeChapter} setActiveChapter={setActiveChapter}/><Certificates reduced={reduced} onOpen={setImage} modalOpen={!!image}/><PracticeLab reduced={reduced}/><Curriculum/><Contact reduced={reduced}/></main><ImageDialog value={image} onClose={()=>setImage(null)}/></div>;
 }

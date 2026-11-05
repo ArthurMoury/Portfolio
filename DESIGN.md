@@ -57,3 +57,6 @@ Da integração à entrega torna-se uma cena conduzida pela rolagem: um circuito
 
 ## Prompt visível — 02/11/2026
 O painel Prompts & LLMs exibe o texto de um exemplo completo, com leitura vertical dentro da cena. Os quatro blocos usam linguagem de uma conversa de trabalho: Contexto, O que preciso, Cuidados e Como responder. A ampliação e a cópia usam esse mesmo texto. O cenário é identificado como fictício.
+
+## Leitura mais curta e movimento contínuo — 04/11/2026
+Na seção de trabalho, retirar as superfícies azuladas, cobre e verde em favor de carvão #101112, painéis #191b1e, prata #c9cccf e texto #f1f1ef. Cada tema se reconhece pela composição: trecho de prompt, fluxos conectados, contexto compartilhado e etapas de evolução. Prompt integral sob demanda, sem bloco extenso na leitura principal. A chegada dos certificados abre cinco faixas em sentidos alternados. Apresentação com sequência espaçada; trajetória com revelação por máscara e profundidade, texto em cascata e linha de progresso. Projetos centralizados na área livre abaixo da navegação, inclusive no hover. Seletor de assunto em camada própria, com foco no campo, setas, Enter, Escape, busca por digitação e seleção por toque.

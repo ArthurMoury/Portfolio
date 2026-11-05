@@ -150,13 +150,17 @@ export default function KineticHero({ reduced }) {
       const photo=about.querySelector('[data-about-photo]');
       gsap.set(about,{autoAlpha:0});
       const travel={progress:0};
-      const flight=gsap.timeline({scrollTrigger:{id:'opening-flight',trigger:opening,start:'top top',end:'+=150%',pin:true,scrub:.65,invalidateOnRefresh:true}});
+      const flight=gsap.timeline({scrollTrigger:{id:'opening-flight',trigger:opening,start:'top top',end:'+=200%',pin:true,scrub:.65,invalidateOnRefresh:true}});
       flight.to(q('[data-intro-copy], [data-name-line], [data-horizon]'),{opacity:0,duration:.2,ease:'none'},0)
         .to(travel,{progress:1,duration:.7,ease:'none',onUpdate:()=>{flightRef.progress=travel.progress;flightRef.current?.(travel.progress);}},0)
         .to(root.current,{autoAlpha:0,duration:.06},.68)
-        .to(about,{autoAlpha:1,duration:.24,ease:'power2.out'},.75)
-        .fromTo(about.querySelectorAll('[data-about-piece]'),{opacity:0},{opacity:1,duration:.22,stagger:.008},.77)
-        .fromTo(photo,{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:.24,ease:'power3.out'},.77);
+        .set(about,{autoAlpha:1},.75)
+        .fromTo(about.querySelector('h2'),{autoAlpha:0,y:25,clipPath:'inset(0 0 100% 0)'},{autoAlpha:1,y:0,clipPath:'inset(0 0 0% 0)',duration:.24,ease:'power3.out'},.76)
+        .fromTo(photo,{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:.28,ease:'power3.out'},.95)
+        .fromTo(photo.querySelector('img'),{scale:1.12,x:16},{scale:1,x:0,duration:.32,ease:'power3.out'},.95)
+        .fromTo(about.querySelectorAll('p[data-about-piece]'),{autoAlpha:0,y:22},{autoAlpha:1,y:0,duration:.23,stagger:.16,ease:'power3.out'},1.12)
+        .fromTo(about.querySelectorAll('a[data-about-piece]'),{autoAlpha:0,y:14},{autoAlpha:1,y:0,duration:.18,stagger:.075,ease:'power3.out'},1.43)
+        .fromTo(about.querySelectorAll('dl [data-about-piece]'),{autoAlpha:0,y:18},{autoAlpha:1,y:0,duration:.22,stagger:.09,ease:'power3.out'},1.56);
 
     }, root);
     return () => ctx.revert();
