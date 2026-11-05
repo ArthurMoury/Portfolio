@@ -1,3 +1,4 @@
+import { localize, t } from './i18n';
 import { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Check, ChevronDown } from 'lucide-react';
@@ -41,13 +42,13 @@ export default function SubjectSelect({ value, onChange, invalid, describedBy })
     } else if (key.length === 1 && !event.ctrlKey && !event.metaKey && !event.altKey) {
       event.preventDefault(); const now = Date.now();
       search.current.text = (now - search.current.time < 650 ? search.current.text : '') + key.toLocaleLowerCase('pt-BR'); search.current.time = now;
-      const match = options.findIndex(option => option.toLocaleLowerCase('pt-BR').startsWith(search.current.text));
+      const match = options.findIndex(option => t(option).toLocaleLowerCase().startsWith(search.current.text));
       if (!open) setOpen(true); if (match >= 0) setActive(match);
     }
   };
-  return <>
+  return localize(<>
     <input type="hidden" name="subject" value={value}/>
     <button ref={trigger} type="button" id="contact-subject" className={s.trigger} role="combobox" aria-labelledby="subject-label" aria-expanded={open} aria-haspopup="listbox" aria-controls="subject-options" aria-activedescendant={open ? `subject-option-${active}` : undefined} aria-required="true" aria-invalid={invalid} aria-describedby={describedBy} data-placeholder={!value} onKeyDown={keys} onBlur={close} onClick={() => open ? close() : show()}><span>{value || 'Escolha um assunto'}</span><ChevronDown size={18}/></button>
-    {open && createPortal(<div ref={list} id="subject-options" role="listbox" aria-labelledby="subject-label" className={s.options} style={position} onPointerDown={e => e.preventDefault()}>{options.map((option, i) => <div key={option} id={`subject-option-${i}`} role="option" aria-selected={value === option} data-active={i === active} className={s.option} onPointerMove={() => setActive(i)} onClick={() => choose(i)}><span>{option}</span>{value === option && <Check size={17}/>}</div>)}</div>, document.body)}
-  </>;
+    {open && createPortal(<div ref={list} id="subject-options" role="listbox" aria-labelledby="subject-label" className={s.options} style={position} onPointerDown={e => e.preventDefault()}>{options.map((option, i) => localize(<div key={option} id={`subject-option-${i}`} role="option" aria-selected={value === option} data-active={i === active} className={s.option} onPointerMove={() => setActive(i)} onClick={() => choose(i)}><span>{option}</span>{value === option && <Check size={17}/>}</div>))}</div>, document.body)}
+  </>);
 }

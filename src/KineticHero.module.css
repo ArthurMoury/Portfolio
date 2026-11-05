@@ -47,3 +47,5 @@
 .fold{position:absolute;inset:0;border-radius:0;z-index:1}
 .stage{pointer-events:none;z-index:0}
 @media(max-width:899px){.fold{inset:0}}
+
+@media(max-width:640px){.hero{padding-top:86px}.stage{height:clamp(210px,29svh,290px)}}

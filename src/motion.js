@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { revealText } from './textMotion';
 gsap.registerPlugin(ScrollTrigger);
 
 export function useReducedMotion() {
@@ -54,7 +53,7 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
     const ctx=gsap.context(()=>{
       const q=gsap.utils.selector(root);
       if(reduced)return;
-      q('#projetos h2, #certificados h2').forEach(title => {
+      q('#certificados h2').forEach(title => {
         gsap.from(title, { y: 38, clipPath: 'inset(0 0 18% 0)', duration: 1.1, ease: 'power4.out', clearProps: 'all', scrollTrigger: { trigger: title, start: 'top 92%', once: true } });
       });
       const transition=q('[data-section-transition]')[0];
@@ -62,27 +61,26 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
       q('[data-project]').forEach(band => {
         gsap.from(band.querySelector('h3'), { x: -30, duration: .85, ease: 'power3.out', clearProps: 'all', scrollTrigger: { trigger: band, start: 'top 90%', once: true } });
       });
+      gsap.fromTo(q('[data-project-heading-line]'),{x:i=>i?55:-55,opacity:.15},{x:0,opacity:1,stagger:.12,duration:1,ease:'power3.out',scrollTrigger:{trigger:q('#projects-title')[0],start:'top 90%',end:'top 45%',scrub:.6}});
       const careerTitle=q('#career-title')[0];
-      const titleReveal=gsap.timeline({scrollTrigger:{trigger:careerTitle,start:'top 90%',end:'top 36%',scrub:.6}});
-      careerTitle.querySelectorAll('[data-text-reveal]').forEach((line,i)=>revealText(titleReveal,line,i*.16,i%2?-1:1));
-      q('[data-chapter]').forEach((chapter,i)=>{
+      gsap.fromTo(careerTitle.querySelectorAll('[data-reveal-word]'),{opacity:.12,filter:'blur(8px)',scale:1.12},{opacity:1,filter:'blur(0px)',scale:1,stagger:{each:.08,from:'center'},ease:'none',scrollTrigger:{trigger:careerTitle,start:'top 90%',end:'top 38%',scrub:.6}});
+      q('[data-chapter]').forEach(chapter=>{
         const find=selector=>chapter.querySelector(selector);
         const enter=(trigger,start='top 90%')=>({trigger,start,toggleActions:'play none none reverse'});
-        const metadata=gsap.timeline({scrollTrigger:enter(find('[data-career-date]'))});
-        metadata.fromTo(find('[data-career-date]'),{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:.6,ease:'power3.out'},0);
-        revealText(metadata,find('[data-career-org]'),.1);
-        const heading=gsap.timeline({scrollTrigger:enter(find('[data-career-title]'),'top 87%')});
-        revealText(heading,find('[data-career-title]'),0,i%2?-1:1);
-        const copy=gsap.timeline({scrollTrigger:enter(find('[data-career-role]'))});
-        copy.fromTo(find('[data-career-role]'),{opacity:0,x:-12},{opacity:1,x:0,duration:.5,ease:'power3.out'},0);
-        const description=gsap.timeline({scrollTrigger:enter(find('[data-career-copy]'))});
-        revealText(description,find('[data-career-copy]'),0);
+        gsap.fromTo(find('[data-career-date]'),{opacity:0,x:18},{opacity:1,x:0,duration:.55,ease:'power3.out',scrollTrigger:enter(find('[data-career-date]'))});
+        gsap.fromTo(find('[data-career-org]'),{opacity:0,filter:'blur(5px)'},{opacity:1,filter:'blur(0px)',duration:.65,scrollTrigger:enter(find('[data-career-org]'))});
+        const title=find('[data-career-title]');
+        gsap.fromTo(title.querySelectorAll('[data-reveal-word]'),{rotationX:-65,y:10,opacity:0},{rotationX:0,y:0,opacity:1,duration:.8,stagger:.045,ease:'power3.out',scrollTrigger:enter(title,'top 87%')});
+        const role=find('[data-career-role]');
+        gsap.fromTo(role,{opacity:.3,x:-10},{opacity:1,x:0,duration:.5,ease:'power3.out',scrollTrigger:enter(role)});
+        const copy=find('[data-career-copy]');
+        gsap.fromTo(copy.querySelectorAll('[data-reveal-word]'),{opacity:.22},{opacity:1,stagger:.03,ease:'none',scrollTrigger:{trigger:copy,start:'top 88%',end:'bottom 72%',scrub:.4}});
         const client=find('[data-career-client]');
-        if(client)gsap.fromTo(client,{clipPath:'inset(0 100% 0 0)',x:14},{clipPath:'inset(0 0% 0 0)',x:0,duration:.65,ease:'power3.out',scrollTrigger:enter(client)});
+        if(client)gsap.fromTo(client,{opacity:0,scale:.92},{opacity:1,scale:1,transformOrigin:'left center',duration:.65,ease:'power3.out',scrollTrigger:enter(client)});
         const stack=find('[data-career-stack]');
-        if(stack){const skills=gsap.timeline({scrollTrigger:enter(stack)});skills.fromTo(stack.firstElementChild,{opacity:0},{opacity:1,duration:.35},0);revealText(skills,stack,.1);}
+        if(stack)gsap.fromTo(stack.querySelectorAll('[data-reveal-word]'),{x:12,opacity:0},{x:0,opacity:1,duration:.45,stagger:.025,ease:'power3.out',scrollTrigger:enter(stack)});
         const link=find('[data-career-link]');
-        if(link)gsap.fromTo(link,{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0% 0 0)',duration:.5,ease:'power3.out',scrollTrigger:enter(link)});
+        if(link)gsap.fromTo(link,{y:8,opacity:0},{y:0,opacity:1,duration:.5,ease:'power3.out',scrollTrigger:enter(link)});
       });
     },root);
     const refresh=()=>{if(!disposed){ScrollTrigger.refresh();queue();}};

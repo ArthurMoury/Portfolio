@@ -1,7 +1,9 @@
+import { localize } from './i18n';
 import { useEffect, useRef } from 'react';
 import { ArrowUpRight } from 'lucide-react';
 import gsap from 'gsap';
 import s from './KineticHero.module.css';
+import LanguageSwitch from './LanguageSwitch';
 
 function Fold({ reduced, flightRef }) {
   const host = useRef(null);
@@ -127,9 +129,9 @@ function Fold({ reduced, flightRef }) {
       renderer?.domElement.remove(); delete node.dataset.ready;
     };
   }, [reduced, flightRef]);
-  return <div ref={host} className={s.fold} role={reduced?"img":"button"} tabIndex={reduced?undefined:0} aria-label={reduced?"Escultura abstrata":"Escultura interativa. Mova o cursor, toque ou pressione Enter para transformar."} data-fold>
-    <svg className={s.fallback} viewBox="0 0 600 600" fill="none"><g stroke="currentColor">{Array.from({length:14},(_,i)=><ellipse key={i} cx="300" cy="300" rx={190-i*5} ry={85+i*8} transform={`rotate(${i*7} 300 300)`} />)}</g></svg>
-  </div>;
+  return localize(<div ref={host} className={s.fold} role={reduced?"img":"button"} tabIndex={reduced?undefined:0} aria-label={reduced?"Escultura abstrata":"Escultura interativa. Mova o cursor, toque ou pressione Enter para transformar."} data-fold>
+    <svg className={s.fallback} viewBox="0 0 600 600" fill="none"><g stroke="currentColor">{Array.from({length:14},(_,i)=>localize(<ellipse key={i} cx="300" cy="300" rx={190-i*5} ry={85+i*8} transform={`rotate(${i*7} 300 300)`} />))}</g></svg>
+  </div>);
 }
 
 export default function KineticHero({ reduced }) {
@@ -167,12 +169,13 @@ export default function KineticHero({ reduced }) {
     }, root);
     return () => ctx.revert();
   }, [reduced]);
-  return <section ref={root} id="inicio" className={s.hero} aria-labelledby="hero-title" data-context="pessoa">
-    {!reduced&&<div className={s.entry} aria-hidden="true">{Array.from({length:6},(_,i)=><div key={i} data-entry-slice/>)}</div>}
+  return localize(<section ref={root} id="inicio" className={s.hero} aria-labelledby="hero-title" data-context="pessoa">
+    <LanguageSwitch/>
+    {!reduced&&<div className={s.entry} aria-hidden="true">{Array.from({length:6},(_,i)=>localize(<div key={i} data-entry-slice/>))}</div>}
     <div className={s.layout}>
       <div className={s.copy}>
         <p className={s.hello} data-intro-copy data-hero-greeting>Olá, sou</p>
-        <h1 id="hero-title" aria-label="Arthur Moury"><span className={s.nameMask}><span data-name-line aria-hidden="true">{[...'Arthur'].map((letter,i)=><span className={s.nameGlyph} data-hero-glyph key={i}>{letter}</span>)}</span></span><span className={s.nameMask}><span data-name-line aria-hidden="true">{[...'Moury.'].map((letter,i)=><span className={`${s.nameGlyph} ${letter==='.'?s.period:''}`} data-hero-glyph key={i}>{letter}</span>)}</span></span></h1>
+        <h1 id="hero-title" aria-label="Arthur Moury"><span className={s.nameMask}><span data-name-line aria-hidden="true">{[...'Arthur'].map((letter,i)=>localize(<span className={s.nameGlyph} data-hero-glyph key={i}>{letter}</span>))}</span></span><span className={s.nameMask}><span data-name-line aria-hidden="true">{[...'Moury.'].map((letter,i)=>localize(<span className={`${s.nameGlyph} ${letter==='.'?s.period:''}`} data-hero-glyph key={i}>{letter}</span>))}</span></span></h1>
         <p className={s.description} data-intro-copy><span className={s.descriptionMask}><span data-description-line>Entendo problemas.</span></span><span className={s.descriptionMask}><span data-description-line>Construo possibilidades.</span></span></p>
         <a href="#sobre" className={s.aboutLink} data-intro-copy data-hero-action>Conheça meu universo<ArrowUpRight size={18}/></a>
       </div>
@@ -180,5 +183,5 @@ export default function KineticHero({ reduced }) {
     </div>
     <Fold reduced={reduced} flightRef={flightRef}/>
     <div className={s.horizon} aria-hidden="true"><svg viewBox="0 0 1440 100" preserveAspectRatio="none"><path data-horizon d="M0 62C280 0 430 100 720 48S1160 0 1440 62V100H0Z"/></svg></div>
-  </section>;
+  </section>);
 }

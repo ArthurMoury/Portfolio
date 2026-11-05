@@ -159,3 +159,5 @@
 
 /* Text, metadata and technical detail have their own reveal rhythm. */
 .chapterStack>[data-text-reveal]{font-size:inherit;color:inherit;margin:0}.projectBuild{--reveal-surface:var(--project-surface)}.projectBuild dl>[data-project-spec]{position:relative;border-top-color:transparent;--spec-progress:1}.projectBuild dl>[data-project-spec]::before{content:'';position:absolute;inset:0 0 auto;height:1px;background:var(--band-line);transform:scaleX(var(--spec-progress));transform-origin:left}.careerStage{padding-bottom:0}
+
+.projectsIntro [data-project-heading-line]{display:block}

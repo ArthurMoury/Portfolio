@@ -1,2 +1,1 @@
-.text{display:block;position:relative;isolation:isolate}.mask{display:inline-block;vertical-align:bottom;max-width:100%;overflow:clip;padding-bottom:.12em;margin-bottom:-.12em}.mask>span{display:block;transform-origin:left bottom}.curtain{position:absolute;inset:-2px;display:flex;flex-direction:column;overflow:hidden;pointer-events:none}.curtain i{display:block;flex:1;margin-bottom:-1px;background:var(--reveal-surface,#202326);transform:translateX(-110%)}
-@media(prefers-reduced-motion:reduce){.curtain{display:none}}:global([data-reduced-motion=true]) .curtain{display:none}
+.text{display:block;position:relative;perspective:750px}.word{display:inline-block;vertical-align:baseline;max-width:100%;transform-origin:50% 80%}
