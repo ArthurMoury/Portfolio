@@ -116,12 +116,12 @@ function Fold({ reduced, flightRef }) {
       } catch { node.dataset.ready = 'false'; }
     }).catch(() => { node.dataset.ready = 'false'; });
     const visibility = () => sync();
-    interaction.addEventListener('pointermove', move); interaction.addEventListener('pointerleave', reset);
+    interaction.addEventListener('pointerdown', move); interaction.addEventListener('pointercancel', reset); interaction.addEventListener('pointermove', move); interaction.addEventListener('pointerleave', reset);
     node.addEventListener('click',changeShape);node.addEventListener('keydown',key);
     document.addEventListener('visibilitychange', visibility);
     return () => {
       disposed = true; cancelAnimationFrame(frame); observer?.disconnect(); resize?.disconnect();
-      interaction.removeEventListener('pointermove', move); interaction.removeEventListener('pointerleave', reset);
+      interaction.removeEventListener('pointerdown', move); interaction.removeEventListener('pointercancel', reset); interaction.removeEventListener('pointermove', move); interaction.removeEventListener('pointerleave', reset);
       node.removeEventListener('click',changeShape);node.removeEventListener('keydown',key);
       document.removeEventListener('visibilitychange', visibility);
       geometry?.dispose(); material?.dispose(); environment?.dispose(); renderer?.dispose();

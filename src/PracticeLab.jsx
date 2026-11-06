@@ -34,8 +34,7 @@ export default function PracticeLab({ reduced }) {
 
   useLayoutEffect(() => {
     if (reduced) return;
-    const media = gsap.matchMedia();
-    media.add('(min-height: 510px), (min-width: 650px) and (min-height: 350px)', () => {
+    const animation = gsap.context(() => {
       const section = root.current;
       const panels = [...track.current.children];
       const playhead = { time: 0 };
@@ -94,7 +93,7 @@ export default function PracticeLab({ reduced }) {
         motion.current.invalidate?.();
       };
     }, root);
-    return () => media.revert();
+    return () => animation.revert();
   }, [reduced, language]);
 
   return <section id="processo" className={s.section} ref={root} data-context="estudos" aria-labelledby="studies-title">

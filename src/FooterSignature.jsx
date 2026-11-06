@@ -86,7 +86,6 @@ export default function FooterSignature({ reduced }) {
       if (progress !== target || Math.abs(strength - pointer.strength) > 0.002) schedule();
     }
     function move(event) {
-      if (event.pointerType === 'touch') return;
       const box = node.getBoundingClientRect();
       pointer.x = event.clientX - box.left;
       pointer.y = event.clientY - box.top;
@@ -107,7 +106,10 @@ export default function FooterSignature({ reduced }) {
     });
     observer.observe(node);
     document.fonts.ready.then(() => { if (!disposed) measure(); });
+    node.addEventListener('pointerdown', move);
     node.addEventListener('pointermove', move);
+    node.addEventListener('pointerup', leave);
+    node.addEventListener('pointercancel', leave);
     node.addEventListener('pointerleave', leave);
     document.addEventListener('visibilitychange', schedule);
     return () => {
@@ -116,7 +118,10 @@ export default function FooterSignature({ reduced }) {
       size.disconnect();
       observer.disconnect();
       window.removeEventListener('scroll', updateScroll);
+      node.removeEventListener('pointerdown', move);
       node.removeEventListener('pointermove', move);
+      node.removeEventListener('pointerup', leave);
+      node.removeEventListener('pointercancel', leave);
       node.removeEventListener('pointerleave', leave);
       document.removeEventListener('visibilitychange', schedule);
       delete node.dataset.drawn;
