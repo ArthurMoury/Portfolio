@@ -101,24 +101,6 @@
 }
 .word { display: inline-block; transform-origin: center; }
 
-.shutters { display: none; }
-[data-horizontal] .shutters {
-  display: grid;
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  overflow: hidden;
-}
-.shutters i {
-  background: linear-gradient(90deg, var(--deepest) 35%, #27292b 99%, #787a7b);
-  transform-origin: left;
-}
-.shutters i:nth-child(even) {
-  transform-origin: right;
-  background: linear-gradient(270deg, var(--deepest) 35%, #27292b 99%, #787a7b);
-}
-
 /* Keep both instruments in the pinned viewport as the chapters move past. */
 .glyphField { position: absolute; inset: 0; pointer-events: none; }
 .glyphField canvas { position: absolute; height: auto; }
@@ -129,3 +111,7 @@
 }
 .section:not([data-horizontal]) .glyphField { position: relative; height: 110px; }
 .section:not([data-horizontal]) [data-instrument] { display: none; }
+
+.glyphField, .viewport > canvas { opacity: var(--shape-entrance, 0); }
+.glyphField { scale: calc(.94 + .06 * var(--shape-entrance, 0)); }
+.section:not([data-horizontal]) .glyphField { display: none; }

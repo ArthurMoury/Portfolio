@@ -38,7 +38,8 @@ export default function PracticeLab({ reduced }) {
     const animation = gsap.context(() => {
       const section = root.current;
       const panels = [...track.current.children];
-      const playhead = { time: 0 };
+      const readingInterval = .45;
+      const playhead = { time: -readingInterval };
       const duration = panels.length - 1;
       const setTrack = gsap.quickSetter(track.current, 'x', 'px');
       const reveals = panels.map((panel, index) => {
@@ -58,13 +59,15 @@ export default function PracticeLab({ reduced }) {
         inset = document.querySelector('header nav')?.closest('header')?.offsetHeight ?? 0;
         const height = Math.max(1, window.innerHeight - inset);
         width = section.clientWidth;
-        distance = duration * Math.min(width * 1.22, height * 0.96);
+        distance = (duration + readingInterval) * Math.min(width * 1.22, height * 0.96);
         section.style.setProperty('--nav-inset', inset + 'px');
         section.style.setProperty('--view-height', height + 'px');
         section.style.setProperty('--travel-height', distance + 'px');
       }
       function render() {
-        const slide = playhead.time;
+        const slide = Math.max(0, playhead.time);
+        const entrance = Math.min(1, slide / .48);
+        section.style.setProperty('--shape-entrance', entrance * entrance * (3 - 2 * entrance));
         setTrack(-width * slide);
         for (let index = 1; index < reveals.length; index++) {
           reveals[index].progress(gsap.utils.clamp(0, 1, (slide - index + .68) / .58));
@@ -74,17 +77,10 @@ export default function PracticeLab({ reduced }) {
       }
       measure();
       section.dataset.horizontal = 'true';
-      const threads = section.previousElementSibling.querySelectorAll('[data-certificate-thread]');
-      gsap.timeline({scrollTrigger: {
-        trigger: section, start: 'top 110%', end: 'top 35%', scrub: .25,
-      }})
-        .fromTo(threads, {strokeDashoffset: 1}, {strokeDashoffset: 0, stagger: .035, ease: 'sine.out'})
-        .to(threads, {strokeDashoffset: -1, stagger: .025, ease: 'sine.in'});
-      gsap.fromTo(section.querySelectorAll('[data-certificate-shutter]'), {
-        scaleX: 1,
-      }, {
-        scaleX: 0, stagger: .12, ease: 'sine.inOut',
-        scrollTrigger: { trigger: section, start: 'top 95%', end: 'top 28%', scrub: .25 },
+      const lastRow = section.previousElementSibling.querySelector('[data-certificate-row]:last-child');
+      if (lastRow) gsap.fromTo(lastRow, { scale: 1, opacity: 1 }, {
+        scale: .92, opacity: .38, transformOrigin: 'center bottom', ease: 'sine.inOut',
+        scrollTrigger: { trigger: section, start: 'top 75%', end: 'top 22%', scrub: .25 },
       });
       ScrollTrigger.create({
         trigger: section, start: () => 'top ' + (inset + (innerHeight - inset) * .36) + 'px',
@@ -102,6 +98,7 @@ export default function PracticeLab({ reduced }) {
       return () => {
         cancelAnimationFrame(refresh);
         delete section.dataset.horizontal;
+        section.style.removeProperty('--shape-entrance');
         motion.current.horizontal = false;
         setTrack(0);
         motion.current.invalidate?.();
@@ -113,9 +110,6 @@ export default function PracticeLab({ reduced }) {
   return <section id="processo" className={s.section} ref={root} data-context="estudos" aria-labelledby="studies-title">
     <div className={s.viewport} ref={viewport}>
       <KineticGlyphs motion={motion} reduced={reduced} />
-      <div className={s.shutters} aria-hidden="true">
-        {Array.from({ length: 5 }, (_, index) => <i key={index} data-certificate-shutter />)}
-      </div>
       <div className={s.track} ref={track}>
         <div className={s.panel} data-study="signature">
           <div className={s.composition}>

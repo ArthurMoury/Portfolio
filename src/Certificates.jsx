@@ -52,7 +52,7 @@ function CertificateRow({ items, reverse=false, label, reduced, onOpen, modalOpe
     <span className={s.document}><img src={certificate.thumbnail} alt={`Certificado de Arthur Moury: ${certificate.title}`} width={certificate.width} height={certificate.height} loading="lazy" draggable="false"/><span className={s.expand}><ScanLine size={17}/></span></span>
     <span className={s.caption}><strong>{certificate.title}</strong><span>{certificate.issuer}</span></span>
   </m.button>);
-  return localize(<div ref={root} className={s.row}>
+  return localize(<div ref={root} data-certificate-row className={s.row}>
     <div ref={viewport} className={`${s.viewport} ${reduced ? s.static : ''}`} aria-roledescription="carrossel" aria-label={`Certificados: ${label}`} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={endDrag} onPointerCancel={endDrag} onPointerLeave={endDrag}
       onClickCapture={e => { if (dragged.current) { e.preventDefault(); e.stopPropagation(); dragged.current = false; } }}
       onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false); }}>
@@ -83,9 +83,5 @@ export default function Certificates({ reduced, onOpen, modalOpen }) {
     <div className={s.heading}><h2 id="certificates-title" aria-label="Aprendizado contínuo"><span key={phrase} className={s.rotatingTitle} aria-hidden="true">{phrases[phrase][0]}<br/><span>{phrases[phrase][1]}</span></span></h2><a className={s.driveLink} href="https://drive.google.com/drive/folders/1XRFKKlfDYoGV3jMZjAE0DvzvVM1JhHvk" target="_blank" rel="noreferrer noopener">Ver pasta no Drive</a></div>
     <CertificateRow items={experiences} label="IA, nuvem e experiências" reduced={reduced} onOpen={onOpen} modalOpen={modalOpen}/>
     <CertificateRow items={development} reverse label="Programação e dados" reduced={reduced} onOpen={onOpen} modalOpen={modalOpen}/>
-    <svg className={s.seam} viewBox="0 0 1200 100" preserveAspectRatio="none" aria-hidden="true">
-      {[0, 1, 2, 3, 4, 5].map(i => <path key={i} data-certificate-thread pathLength="1"
-        d={`M -10 ${8+i*10} C 320 ${8+i*10}, 650 ${125-i*13}, 890 60 S 1110 ${20+i*4}, 1210 36`}/>)}
-    </svg>
   </section></LazyMotion>);
 }
