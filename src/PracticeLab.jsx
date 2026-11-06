@@ -43,6 +43,7 @@ export default function PracticeLab({ reduced }) {
       const duration = panels.length - 1;
       const setTrack = gsap.quickSetter(track.current, 'x', 'px');
       const reveals = panels.map((panel, index) => {
+        if (index === 0) return null; // The certificate particles reveal this heading.
         const words = panel.querySelectorAll('[data-study-word]');
         return gsap.timeline({ paused: true }).fromTo(words, {
           clipPath: index % 2 ? 'inset(-15% 0 -15% 100%)' : 'inset(-15% 100% -15% 0)',
@@ -77,10 +78,6 @@ export default function PracticeLab({ reduced }) {
       }
       measure();
       section.dataset.horizontal = 'true';
-      ScrollTrigger.create({
-        trigger: section, start: () => 'top ' + (inset + (innerHeight - inset) * .36) + 'px',
-        end: () => 'top ' + inset + 'px', animation: reveals[0], scrub: .2,
-      });
       gsap.to(playhead, {
         time: duration, ease: 'none', onUpdate: render,
         scrollTrigger: {
