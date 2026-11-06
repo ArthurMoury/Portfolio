@@ -61,11 +61,15 @@ export default function KineticGlyphs({ motion, reduced }) {
     const resize = new ResizeObserver(([entry]) => {
       width = entry.contentRect.width;
       height = entry.contentRect.height;
+      nodes.forEach(node => {
+        const resolution = Math.max(1, Math.min(384, Math.ceil(node.clientWidth * Math.min(devicePixelRatio, 1.5))));
+        if (node.width !== resolution) node.width = node.height = resolution;
+      });
     });
     resize.observe(field.current);
     function draw(now) {
       frame = 0;
-      if (!visible || document.hidden) return;
+      if (!visible || document.hidden || motion.current.slide <= 0) return;
       if (last && now - last < 32 && !reduced) { schedule(); return; }
       if (last) time += Math.min(now - last, 100) / 1000;
       last = now;

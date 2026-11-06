@@ -76,11 +76,24 @@ export default function CertificateMorph() {
     const heading = document.getElementById('studies-title');
     if (!ctx || !host || !heading) return;
     let points = [], letters = [], progress = 0;
+    let frame = 0, prepared = false, dotSize = 1;
+    const compact = matchMedia('(max-width: 899px)').matches;
+    const colors = Array.from({ length: 32 }, (_, i) => {
+      const shade = Math.round(i * 255 / 31);
+      return `rgb(${shade},${shade},${shade})`;
+    });
+    function schedule() {
+      if (!frame && !document.hidden) frame = requestAnimationFrame(() => {
+        frame = 0;
+        paint();
+      });
+    }
     function paint() {
       // No drawing or pixel sampling outside the handoff.
       if (progress <= 0 || progress >= 1) {
         canvas.hidden = true;
         points = [];
+        prepared = false;
         heading.style.removeProperty('opacity');
         host.style.removeProperty('--morph-ink');
         return;
@@ -91,12 +104,32 @@ export default function CertificateMorph() {
         canvas.width = Math.round(bounds.width);
         canvas.height = Math.round(bounds.height);
         points = [];
+        prepared = false;
       }
-      if (!points.length) points = sampleRow(host, bounds);
+      if (!points.length) {
+        points = sampleRow(host, bounds);
+        // Keep the title dense on phones while placing a fixed upper bound on work.
+        if (compact && points.length > 1400) {
+          const source = points;
+          points = Array.from({length: 1400}, (_, i) => source[Math.floor(i * source.length / 1400)]);
+        }
+        prepared = false;
+      }
       if (!letters.length) letters = sampleHeading(heading);
       if (!points.length || !letters.length) {
         heading.style.removeProperty('opacity');
         return;
+      }
+      if (!prepared) {
+        dotSize = Math.max(1, Math.sqrt(letters.length / points.length) * .83);
+        const arcSize = Math.min(48, canvas.width * .045);
+        points.forEach((point, i) => {
+          const letter = letters[Math.floor((i + .5) * letters.length / points.length)];
+          point.targetX = letter.x;
+          point.targetY = letter.y;
+          point.arc = Math.sin(i * 2.39996) * arcSize;
+        });
+        prepared = true;
       }
       const headingBox = heading.getBoundingClientRect();
       const lettering = smooth(clamp((progress - .04) / .81));
@@ -109,32 +142,33 @@ export default function CertificateMorph() {
       host.style.setProperty('--morph-ink', 1 - .8 * visibility);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const bend = Math.sin(lettering * Math.PI);
-      points.forEach((point, i) => {
-        const letter = letters[Math.floor((i + .5) * letters.length / points.length)];
-        const targetX = headingBox.left - bounds.left + letter.x;
-        const targetY = textY + letter.y;
+      points.forEach(point => {
+        const targetX = headingBox.left - bounds.left + point.targetX;
+        const targetY = textY + point.targetY;
         // Each pixel travels to its letter along a shallow arc. There is no
         // intermediate target, so the only shape that resolves is the title.
-        const arc = Math.sin(i * 2.39996) * Math.min(48, canvas.width * .045);
+        const arc = point.arc;
         const px = point.x + (targetX - point.x) * lettering + bend * arc;
         const py = point.y + (targetY - point.y) * lettering - bend * Math.abs(arc) * .6;
-        const letterSize = Math.max(1, Math.sqrt(letters.length / points.length) * .83);
-        const dot = point.size + (letterSize - point.size) * lettering;
+        const dot = point.size + (dotSize - point.size) * lettering;
         ctx.globalAlpha = visibility;
         const shade = Math.round(point.shade + (238 - point.shade) * lettering);
-        ctx.fillStyle = `rgb(${shade},${shade},${shade})`;
+        ctx.fillStyle = colors[Math.round(shade * 31 / 255)];
         ctx.fillRect(px - dot / 2, py - dot / 2, dot, dot);
       });
     }
     const trigger = ScrollTrigger.create({
       trigger: host, start: 'bottom 70%', endTrigger: heading.closest('section'),
       end: () => 'top ' + (document.querySelector('header')?.offsetHeight || 0) + 'px',
-      onUpdate: self => { progress = self.progress; paint(); },
-      onRefresh: self => { progress = self.progress; points = []; letters = []; paint(); },
+      onUpdate: self => { progress = self.progress; schedule(); },
+      onRefresh: self => { progress = self.progress; points = []; letters = []; prepared = false; schedule(); },
     });
-    host.addEventListener('load', paint, true);
+    host.addEventListener('load', schedule, true);
+    document.addEventListener('visibilitychange', schedule);
     return () => {
-      host.removeEventListener('load', paint, true);
+      cancelAnimationFrame(frame);
+      host.removeEventListener('load', schedule, true);
+      document.removeEventListener('visibilitychange', schedule);
       trigger.kill();
       heading.style.removeProperty('opacity');
       host.style.removeProperty('--morph-ink');
