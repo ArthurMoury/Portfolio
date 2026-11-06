@@ -171,3 +171,19 @@
     to { transform: none; }
   }
 }
+
+/* Carry the silver fold across the two existing section boundaries. */
+.curriculum, .contact { position: relative; }
+.curriculum::before, .contact::before {
+  content: "";
+  position: absolute;
+  inset: auto 0 100%;
+  height: clamp(20px, 5vw, 76px);
+  pointer-events: none;
+  transform-origin: bottom right;
+  transform: scaleY(var(--fold-height, 0));
+  clip-path: polygon(0 100%, 0 97%, 57% 82%, 100% 0, 100% 100%);
+  background: linear-gradient(169deg, transparent 54%, #747579 78%, var(--seam-color) 94%);
+}
+.curriculum { --seam-color: var(--secondary); }
+.contact { --seam-color: var(--deepest); }

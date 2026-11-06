@@ -53,6 +53,23 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setContext,s
     const ctx=gsap.context(()=>{
       const q=gsap.utils.selector(root);
       if(reduced)return;
+      // The résumé lies between the ribbon and contact. Let the same fold
+      // rise and settle at both boundaries as they pass through the viewport.
+      q('#curriculo, #contato').forEach(section => {
+        const sequence = gsap.timeline({
+          scrollTrigger: { trigger: section, start: 'top bottom', end: 'top 33%', scrub: .3 },
+        });
+        sequence.fromTo(section, { '--fold-height': 0 }, { '--fold-height': 1, duration: .42, ease: 'sine.out' })
+          .to(section, { '--fold-height': 0, duration: .58, ease: 'sine.inOut' })
+          .fromTo(section.querySelector('h2'), { y: 22, opacity: .35 }, {
+            y: 0, opacity: 1, duration: .65, ease: 'power2.out',
+          }, .22);
+      });
+      const formIntro = q('#contato form > p')[0];
+      gsap.from(formIntro, {
+        y: 14, duration: .6, ease: 'power2.out', clearProps: 'transform',
+        scrollTrigger: { trigger: formIntro, start: 'top 94%', once: true },
+      });
       q('#certificados h2').forEach(title => {
         gsap.from(title, { y: 38, clipPath: 'inset(0 0 18% 0)', duration: 1.1, ease: 'power4.out', clearProps: 'all', scrollTrigger: { trigger: title, start: 'top 92%', once: true } });
       });
