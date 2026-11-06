@@ -38,7 +38,7 @@ export default function PracticeLab({ reduced }) {
     const animation = gsap.context(() => {
       const section = root.current;
       const panels = [...track.current.children];
-      const readingInterval = .45;
+      const readingInterval = .12;
       const playhead = { time: -readingInterval };
       const duration = panels.length - 1;
       const setTrack = gsap.quickSetter(track.current, 'x', 'px');
@@ -66,7 +66,7 @@ export default function PracticeLab({ reduced }) {
       }
       function render() {
         const slide = Math.max(0, playhead.time);
-        const entrance = Math.min(1, slide / .48);
+        const entrance = Math.min(1, slide / .30);
         section.style.setProperty('--shape-entrance', entrance * entrance * (3 - 2 * entrance));
         setTrack(-width * slide);
         for (let index = 1; index < reveals.length; index++) {
@@ -77,11 +77,6 @@ export default function PracticeLab({ reduced }) {
       }
       measure();
       section.dataset.horizontal = 'true';
-      const lastRow = section.previousElementSibling.querySelector('[data-certificate-row]:last-child');
-      if (lastRow) gsap.fromTo(lastRow, { scale: 1, opacity: 1 }, {
-        scale: .92, opacity: .38, transformOrigin: 'center bottom', ease: 'sine.inOut',
-        scrollTrigger: { trigger: section, start: 'top 75%', end: 'top 22%', scrub: .25 },
-      });
       ScrollTrigger.create({
         trigger: section, start: () => 'top ' + (inset + (innerHeight - inset) * .36) + 'px',
         end: () => 'top ' + inset + 'px', animation: reveals[0], scrub: .2,

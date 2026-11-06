@@ -4,6 +4,7 @@ import { LazyMotion, domAnimation, m, useAnimationFrame, useMotionValue } from '
 import { ScanLine } from 'lucide-react';
 import { certificates } from './data/certificates';
 import s from './Certificates.module.css';
+import CertificateMorph from './CertificateMorph';
 
 function CertificateRow({ items, reverse=false, label, reduced, onOpen, modalOpen }) {
   const root = useRef(null), viewport = useRef(null), group = useRef(null);
@@ -61,6 +62,7 @@ function CertificateRow({ items, reverse=false, label, reduced, onOpen, modalOpe
         {!reduced && <div className={s.group} aria-hidden="true">{items.map((certificate, index) => card(certificate, index, true))}</div>}
       </m.div>
     </div>
+    {reverse && !reduced && <CertificateMorph/>}
   </div>);
 }
 

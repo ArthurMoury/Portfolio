@@ -18,3 +18,8 @@
  .row .viewport{padding-top:30px;padding-bottom:14px}.section{padding-bottom:52px}
 }
 @media(hover:none){.expand{opacity:1}.card:active{filter:brightness(1.12)}}
+.row { position: relative; }
+.row .viewport { opacity: var(--morph-ink, 1); }
+.row:has(:focus-visible) .viewport { opacity: 1; }
+.morph { position: absolute; z-index: 2; inset: 0 0 auto; width: 100%; height: calc(100% + min(32svh, 260px)); pointer-events: none; }
+.row:has(:focus-visible) .morph { visibility: hidden; }
