@@ -119,8 +119,13 @@
   background: linear-gradient(270deg, var(--deepest) 35%, #27292b 99%, #787a7b);
 }
 
+/* Keep both instruments in the pinned viewport as the chapters move past. */
 .glyphField { position: absolute; inset: 0; pointer-events: none; }
-.glyphField svg { position: absolute; width: min(21vw, 23vh, 195px); stroke: #c2c4c6; stroke-width: 1.35; }
-.glyphField svg:first-child { left: 16%; top: 10%; }
-.glyphField svg:last-child { right: 12%; bottom: 11%; width: min(13vw, 17vh, 125px); stroke-width: 4; }
-[data-horizontal] [data-instrument="signature"] { position: absolute; inset: 0; height: 100%; }
+.glyphField canvas { position: absolute; height: auto; }
+.glyphField canvas:first-child { left: 3%; top: 4%; width: min(22vw, 25svh, 215px); }
+.glyphField canvas:last-child { right: 4%; bottom: 6%; width: min(12vw, 15svh, 115px); }
+@media (max-width: 720px) {
+  .glyphField canvas:first-child { width: min(16vw, 19svh); left: 2%; }
+}
+.section:not([data-horizontal]) .glyphField { position: relative; height: 110px; }
+.section:not([data-horizontal]) [data-instrument] { display: none; }

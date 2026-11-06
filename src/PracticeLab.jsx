@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from './i18n';
 import { studies } from './studies';
 import { useStudyInstruments } from './useStudyInstruments';
+import KineticGlyphs from './KineticGlyphs';
 import s from './PracticeLab.module.css';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -39,11 +40,6 @@ export default function PracticeLab({ reduced }) {
       const panels = [...track.current.children];
       const playhead = { time: 0 };
       const duration = panels.length - 1;
-      const glyphs = section.querySelectorAll('[data-opening-glyph]');
-      const opening = gsap.timeline({ paused: true }).to(glyphs, {
-        rotation: index => index ? -110 : 120, scale: .45, opacity: 0,
-        transformOrigin: '50% 50%', stagger: .12, ease: 'power1.inOut',
-      });
       const setTrack = gsap.quickSetter(track.current, 'x', 'px');
       const reveals = panels.map((panel, index) => {
         const words = panel.querySelectorAll('[data-study-word]');
@@ -69,7 +65,6 @@ export default function PracticeLab({ reduced }) {
       function render() {
         const slide = playhead.time;
         setTrack(-width * slide);
-        opening.progress(Math.min(1, slide / .8));
         for (let index = 1; index < reveals.length; index++) {
           reveals[index].progress(gsap.utils.clamp(0, 1, (slide - index + .68) / .58));
         }
@@ -110,6 +105,7 @@ export default function PracticeLab({ reduced }) {
 
   return <section id="processo" className={s.section} ref={root} data-context="estudos" aria-labelledby="studies-title">
     <div className={s.viewport} ref={viewport}>
+      <KineticGlyphs motion={motion} reduced={reduced} />
       <div className={s.shutters} aria-hidden="true">
         {Array.from({ length: 5 }, (_, index) => <i key={index} data-certificate-shutter />)}
       </div>
@@ -120,14 +116,6 @@ export default function PracticeLab({ reduced }) {
               <StudyTitle as="h2" id="studies-title" lines={intro} />
             </div>
             <div className={s.instrument} data-instrument="signature" aria-hidden="true">
-              <div className={s.glyphField}>
-                <svg data-opening-glyph viewBox="-52 -52 104 104" fill="none">
-                  {Array.from({ length: 12 }, (_, i) => <ellipse key={i} cx="18" cy="0" rx="29" ry="9" transform={`rotate(${i * 30})`} />)}
-                </svg>
-                <svg data-opening-glyph viewBox="-52 -52 104 104" fill="none">
-                  {[16, 24, 32, 40].map(r => <path key={r} d={`M ${-r} 0 A ${r} ${r} 0 1 1 0 ${r}`} />)}
-                </svg>
-              </div>
             </div>
           </div>
         </div>
