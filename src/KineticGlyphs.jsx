@@ -3,16 +3,17 @@ import s from './PracticeLab.module.css';
 
 // Cross-sections of a moving surface. Scroll alters its number of folds,
 // while elapsed time keeps the surface turning even between scroll gestures.
-function drawSilk(ctx, size, time, slide) {
-  const rings = 29;
+function drawSilk(ctx, size, time, slide, compact) {
+  const rings = compact ? 17 : 29;
+  const steps = compact ? 48 : 96;
   const phase = time * .95 + slide * 2;
   for (let i = 0; i < rings; i++) {
     const band = i / (rings - 1);
     const tilt = phase * .53 + band * 2.2;
     const depth = (band - .5) * .76;
     ctx.beginPath();
-    for (let j = 0; j <= 96; j++) {
-      const angle = j / 96 * Math.PI * 2;
+    for (let j = 0; j <= steps; j++) {
+      const angle = j / steps * Math.PI * 2;
       const lobe = Math.sin(angle * 3 + band * 3 - phase);
       const pleat = Math.cos(angle * 5 - phase * .65);
       const mix = .5 + .5 * Math.cos(slide * Math.PI);
@@ -85,7 +86,7 @@ export default function KineticGlyphs({ motion, reduced }) {
         ctx.clearRect(0, 0, size, size);
         ctx.save();
         ctx.lineWidth = size / 230;
-        (index ? drawFan : drawSilk)(ctx, size, time, motion.current.slide);
+        (index ? drawFan : drawSilk)(ctx, size, time, motion.current.slide, width < 900);
         ctx.restore();
       });
       if (!reduced) schedule();

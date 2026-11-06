@@ -76,7 +76,7 @@ function ProjectImage({ project, onOpen }) {
 function Career({ onOpen, activeChapter, reduced }) {
   const stage=useRef(null), previous=useRef(activeChapter);
   useEffect(()=>{
-    if(reduced){previous.current=activeChapter;return;}
+    if(reduced || !stage.current.offsetHeight){previous.current=activeChapter;return;}
     const images=[...stage.current.querySelectorAll('[data-chapter-visual]')];
     const old=previous.current, direction=activeChapter>=old?1:-1;
     previous.current=activeChapter;

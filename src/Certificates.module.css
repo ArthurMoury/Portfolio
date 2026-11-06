@@ -18,3 +18,6 @@
  .row .viewport{padding-top:30px;padding-bottom:14px}.section{padding-bottom:52px}
 }
 @media(hover:none){.expand{opacity:1}.card:active{filter:brightness(1.12)}}
+.section { position: relative; }
+.seam { position: absolute; inset: auto 0 0; width: 100%; height: clamp(42px, 5vw, 68px); pointer-events: none; }
+.seam path { fill: none; stroke: #a4a7ab; stroke-width: 1.2px; vector-effect: non-scaling-stroke; stroke-dasharray: 1; stroke-dashoffset: 1; }

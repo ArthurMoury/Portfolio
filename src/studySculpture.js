@@ -4,7 +4,8 @@ import { ribbonPoint } from './studyMechanics';
 
 export function createStudyRenderer(canvas) {
   const renderer = new T.WebGLRenderer({canvas, alpha:true, antialias:true, powerPreference:'low-power'});
-  renderer.setPixelRatio(Math.min(devicePixelRatio || 1,1.5));
+  const compact = canvas.ownerDocument.documentElement.clientWidth < 900;
+  renderer.setPixelRatio(Math.min(devicePixelRatio || 1, compact ? 1 : 1.5));
   renderer.setClearColor(0,0);
   renderer.toneMapping = T.ACESFilmicToneMapping;
   const generator = new T.PMREMGenerator(renderer), studio = new RoomEnvironment();
@@ -14,7 +15,7 @@ export function createStudyRenderer(canvas) {
   scene.environment = env.texture;
   const camera = new T.OrthographicCamera(0,1,1,0,.1,6000);
   camera.position.z=3000;
-  const segments=180, profile=[[-1,-.025],[-.97,.015],[0,.09],[.97,.015],[1,-.025],[0,-.07]];
+  const segments=compact ? 96 : 180, profile=[[-1,-.025],[-.97,.015],[0,.09],[.97,.015],[1,-.025],[0,-.07]];
   const stride=profile.length;
   const geometry=new T.BufferGeometry(), indices=[];
   const pos=new T.Float32BufferAttribute(new Float32Array((segments+1)*stride*3),3);

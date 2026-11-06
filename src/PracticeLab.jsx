@@ -74,6 +74,12 @@ export default function PracticeLab({ reduced }) {
       }
       measure();
       section.dataset.horizontal = 'true';
+      const threads = section.previousElementSibling.querySelectorAll('[data-certificate-thread]');
+      gsap.timeline({scrollTrigger: {
+        trigger: section, start: 'top 110%', end: 'top 35%', scrub: .25,
+      }})
+        .fromTo(threads, {strokeDashoffset: 1}, {strokeDashoffset: 0, stagger: .035, ease: 'sine.out'})
+        .to(threads, {strokeDashoffset: -1, stagger: .025, ease: 'sine.in'});
       gsap.fromTo(section.querySelectorAll('[data-certificate-shutter]'), {
         scaleX: 1,
       }, {

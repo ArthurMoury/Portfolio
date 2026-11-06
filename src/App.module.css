@@ -187,3 +187,9 @@
 }
 .curriculum { --seam-color: var(--secondary); }
 .contact { --seam-color: var(--deepest); }
+@media (max-width: 899px) {
+  .careerGrid { display: block; }
+  .careerStage { display: none; }
+  .chapter { min-height: auto; scroll-margin-top: 16px; }
+  .chapterMobile { display: block; position: static; perspective: none; }
+}
