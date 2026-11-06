@@ -32,6 +32,11 @@ export function useStudyInstruments(viewport, motion, reduced) {
       if (disposed || document.hidden) return;
       const bounds = view.getBoundingClientRect();
       if (bounds.bottom < -240 || bounds.top > innerHeight + 240) return;
+      if (!motion.current.horizontal || motion.current.slide <= .001) {
+        surface.hidden = true;
+        blueprint.hidden = true;
+        return;
+      }
       loadRenderer();
       const height = Math.min(view.clientHeight, innerHeight);
       const width = view.clientWidth;

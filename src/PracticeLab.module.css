@@ -118,3 +118,9 @@
   transform-origin: right;
   background: linear-gradient(270deg, var(--deepest) 35%, #27292b 99%, #787a7b);
 }
+
+.glyphField { position: absolute; inset: 0; pointer-events: none; }
+.glyphField svg { position: absolute; width: min(21vw, 23vh, 195px); stroke: #c2c4c6; stroke-width: 1.35; }
+.glyphField svg:first-child { left: 16%; top: 10%; }
+.glyphField svg:last-child { right: 12%; bottom: 11%; width: min(13vw, 17vh, 125px); stroke-width: 4; }
+[data-horizontal] [data-instrument="signature"] { position: absolute; inset: 0; height: 100%; }

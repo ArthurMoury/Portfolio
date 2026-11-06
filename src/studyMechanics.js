@@ -5,7 +5,8 @@ export function ribbonFrame(width, height, slide, compact) {
   const lead = (mobile ? .78 : .86) - .14 * Math.sin(slide * Math.PI);
   const finish = Math.max(0, Math.min(1, slide - 2));
   const extension = finish * finish * (3 - 2 * finish);
-  const end = slide + lead + (1 - lead) * extension;
+  const growth = Math.min(1, slide / .7);
+  const end = slide + lead * growth * growth * (3 - 2 * growth) + (1 - lead) * extension;
   // Start just behind the camera: older folds still exist in world space.
   const start = Math.max(-.16, slide - .08);
   const scale = Math.min(height*(compact ? .28 : .15), width*(mobile ? .29 : .17));
