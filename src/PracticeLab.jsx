@@ -72,6 +72,12 @@ export default function PracticeLab({ reduced }) {
       }
       measure();
       section.dataset.horizontal = 'true';
+      gsap.fromTo(section.querySelectorAll('[data-certificate-shutter]'), {
+        scaleX: 1,
+      }, {
+        scaleX: 0, stagger: .12, ease: 'sine.inOut',
+        scrollTrigger: { trigger: section, start: 'top 95%', end: 'top 28%', scrub: .25 },
+      });
       ScrollTrigger.create({
         trigger: section, start: () => 'top ' + (inset + (innerHeight - inset) * .36) + 'px',
         end: () => 'top ' + inset + 'px', animation: reveals[0], scrub: .2,
@@ -98,6 +104,9 @@ export default function PracticeLab({ reduced }) {
 
   return <section id="processo" className={s.section} ref={root} data-context="estudos" aria-labelledby="studies-title">
     <div className={s.viewport} ref={viewport}>
+      <div className={s.shutters} aria-hidden="true">
+        {Array.from({ length: 5 }, (_, index) => <i key={index} data-certificate-shutter />)}
+      </div>
       <div className={s.track} ref={track}>
         <div className={s.panel} data-study="signature">
           <div className={s.composition}>

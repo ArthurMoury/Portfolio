@@ -100,3 +100,21 @@
   [data-horizontal] .title { font-size: min(10vw, calc(var(--view-height) * .105)); }
 }
 .word { display: inline-block; transform-origin: center; }
+
+.shutters { display: none; }
+[data-horizontal] .shutters {
+  display: grid;
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  overflow: hidden;
+}
+.shutters i {
+  background: linear-gradient(90deg, var(--deepest) 35%, #27292b 99%, #787a7b);
+  transform-origin: left;
+}
+.shutters i:nth-child(even) {
+  transform-origin: right;
+  background: linear-gradient(270deg, var(--deepest) 35%, #27292b 99%, #787a7b);
+}
