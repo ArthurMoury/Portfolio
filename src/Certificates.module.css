@@ -22,3 +22,9 @@
 .row .viewport { opacity: var(--morph-ink, 1); }
 .row:has(:focus-visible) .viewport { opacity: 1; }
 .morph { position: absolute; z-index: 2; inset: 0 0 auto; width: 100%; height: calc(100% + 100vh + 80px); pointer-events: none; }
+
+/* Match the rail's exact surface at the seam, with a long dark fade above it. */
+.section {
+  background: linear-gradient(to bottom, var(--deepest) 0%,
+    var(--deepest) calc(100% - clamp(200px, 30vh, 360px)), #0c0c0d 100%);
+}

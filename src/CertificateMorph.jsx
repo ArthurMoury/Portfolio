@@ -7,7 +7,6 @@ gsap.registerPlugin(ScrollTrigger);
 
 const clamp = value => Math.max(0, Math.min(1, value));
 const smooth = value => value * value * (3 - 2 * value);
-const goldenAngle = Math.PI * (3 - Math.sqrt(5));
 
 // Sample the same local thumbnails the visitor is looking at. Object-fit:
 // contain leaves margins, so project the pixels into the fitted image box.
@@ -34,7 +33,7 @@ function sampleRow(row, origin) {
       if (x < 0 || x > origin.width || data[i + 3] < 32) continue;
       const y = top + (Math.floor(pixel / columns) + .5) * height / sample.height;
       const shade = Math.round(50 + (data[i] * .3 + data[i + 1] * .6 + data[i + 2] * .1) * .76);
-      points.push({ x, y, color: `rgb(${shade},${shade},${shade})`, size: width / columns });
+      points.push({ x, y, shade, size: width / columns });
     }
   }
   return points;
@@ -100,36 +99,30 @@ export default function CertificateMorph() {
         return;
       }
       const headingBox = heading.getBoundingClientRect();
-      const lettering = smooth(clamp((progress - .46) / .39));
+      const lettering = smooth(clamp((progress - .04) / .81));
       const handoff = smooth(clamp((progress - .88) / .12));
       const settle = smooth(clamp((progress - .76) / .12));
       const readingY = Math.min(headingBox.top, innerHeight * .52);
       const textY = readingY + (headingBox.top - readingY) * settle - bounds.top;
       heading.style.opacity = String(handoff);
-      const gather = smooth(clamp((progress - .04) / .36));
       const visibility = smooth(clamp(progress / .18)) * (1 - handoff);
       host.style.setProperty('--morph-ink', 1 - .8 * visibility);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      const radius = Math.min(canvas.width * .19, innerHeight * .16, 136);
-      const cx = canvas.width / 2, cy = host.offsetHeight + radius * .72;
-      const swirl = 2.2 * progress, lift = Math.sin(gather * Math.PI);
+      const bend = Math.sin(lettering * Math.PI);
       points.forEach((point, i) => {
-        const latitude = 1 - 2 * (i + .5) / points.length;
-        const ring = Math.sqrt(1 - latitude * latitude);
-        const angle = i * goldenAngle + swirl;
-        const depth = ring * Math.sin(angle);
-        const zoom = 1 / (1 - .25 * depth);
-        const targetX = cx + radius * ring * Math.cos(angle) * zoom;
-        const targetY = cy + radius * latitude * zoom;
-        const x = point.x + (targetX - point.x) * gather + lift * radius * .25 * Math.sin(angle);
-        const y = point.y + (targetY - point.y) * gather - lift * radius * (.35 + depth * .4);
-        const size = point.size * (1 - gather) + (canvas.width < 700 ? 1.9 : 2.2) * zoom * gather;
-        ctx.globalAlpha = visibility * (1 - gather * (.36 - depth * .28));
-        ctx.fillStyle = point.color;
         const letter = letters[Math.floor((i + .5) * letters.length / points.length)];
-        const px = x + (headingBox.left - bounds.left + letter.x - x) * lettering;
-        const py = y + (textY + letter.y - y) * lettering;
-        const dot = size + (Math.max(1, Math.sqrt(letters.length / points.length) * .83) - size) * lettering;
+        const targetX = headingBox.left - bounds.left + letter.x;
+        const targetY = textY + letter.y;
+        // Each pixel travels to its letter along a shallow arc. There is no
+        // intermediate target, so the only shape that resolves is the title.
+        const arc = Math.sin(i * 2.39996) * Math.min(48, canvas.width * .045);
+        const px = point.x + (targetX - point.x) * lettering + bend * arc;
+        const py = point.y + (targetY - point.y) * lettering - bend * Math.abs(arc) * .6;
+        const letterSize = Math.max(1, Math.sqrt(letters.length / points.length) * .83);
+        const dot = point.size + (letterSize - point.size) * lettering;
+        ctx.globalAlpha = visibility;
+        const shade = Math.round(point.shade + (238 - point.shade) * lettering);
+        ctx.fillStyle = `rgb(${shade},${shade},${shade})`;
         ctx.fillRect(px - dot / 2, py - dot / 2, dot, dot);
       });
     }
