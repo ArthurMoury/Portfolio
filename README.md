@@ -46,7 +46,7 @@ Direção visual em `DESIGN.md`; verificações em `docs/QA.md`. Referências: [
 
 A revisão desktop remove controles do carrossel e os painéis decorativos dos projetos, exibe stacks verificadas e fecha a faixa anterior ao explorar outra. Card0 aparece apenas na trajetória acadêmica, com imagem e stack; o antigo deploy estava indisponível. Dozão possui deploy, mas não foi encontrado um repositório GitHub publicado.
 
-Em **Automação de processos**, texto e formas tridimensionais percorrem o trilho horizontal com a rolagem. As cenas ilustram geração de tokens, normalização de dados com Python e composição de um prompt. Com movimento reduzido, a leitura passa para uma coluna.
+Em **Automação de processos**, uma única fita metálica se desenrola por trás dos quatro títulos. A posição e a torção da malha acompanham a rolagem nos dois sentidos. Com movimento reduzido, a leitura passa para uma coluna.
 
 O layout mobile mantém Three.js, GSAP e Motion. Projetos usam capturas amplas com stack abaixo; a trajetória vira uma sequência vertical de imagens animadas. Menu, diálogos, certificados e formulário se adaptam ao toque, com safe areas e alternativa para movimento reduzido. Validação de tamanhos e limites em `docs/QA.md`.
 

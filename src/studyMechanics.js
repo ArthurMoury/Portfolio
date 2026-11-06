@@ -1,7 +1,23 @@
-export const unit = value => Math.max(0, Math.min(1, value));
-export function blend(value) {
-  const x = unit(value);
-  return x * x * (3 - 2 * x);
+// A single strip of folded metal. u is measured in panel widths in the
+// four-screen world; only its leading edge advances as the rail moves.
+export function ribbonFrame(width, height, slide, compact) {
+  const mobile = width <= 720 && height > 420;
+  const lead = (mobile ? .78 : .86) - .14 * Math.sin(slide * Math.PI);
+  const end = slide + lead;
+  // Start just behind the camera: older folds still exist in world space.
+  const start = Math.max(-.16, slide - .08);
+  const scale = Math.min(height*(mobile ? .17 : .28), width*(mobile ? .29 : .17));
+  return {width,height,slide,start,end,scale,base:height*(compact ? .5 : mobile ? .65 : .54)};
 }
-export const options = [1, 2, 0];
-export const leafPositions = [-1.25, -0.42, 0.42, 1.25];
+
+export function ribbonPoint(frame, u, side, out) {
+  const {width,slide,end,scale,base} = frame;
+  const phase = u*9.7 - slide*1.25;
+  const twist = u*7.3 + slide*.9;
+  const taper = Math.min(1, Math.max(.035,(end-u)*15), Math.max(.035,(u+.16)*12));
+  const breadth = scale*(.44+.14*Math.sin(u*5))*taper;
+  out[0] = (u-slide)*width + side*breadth*.25*Math.sin(twist);
+  out[1] = base + scale*(.51*Math.sin(phase)+.24*Math.cos(phase*.52)) + side*breadth*Math.cos(twist);
+  out[2] = scale*.56*Math.cos(phase) + side*breadth*Math.sin(twist);
+  return out;
+}

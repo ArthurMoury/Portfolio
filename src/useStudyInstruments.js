@@ -1,17 +1,14 @@
-import { paintThread } from './studyThread';
 import { useEffect } from 'react';
 import { blueprintRenderer } from './studyBlueprints';
-import { unit } from './studyMechanics';
+import { ribbonFrame } from './studyMechanics';
 
 export function useStudyInstruments(viewport, motion, reduced) {
   useEffect(() => {
     const view = viewport.current;
-    const instruments = [...view.querySelectorAll('[data-instrument]')];
-    const thread = document.createElement('canvas');
-    view.prepend(thread);
+    const firstSlot = view.querySelector('[data-instrument]');
     const blueprint = document.createElement('canvas');
     const surface = document.createElement('canvas');
-    for (const canvas of [thread, blueprint, surface]) canvas.setAttribute('aria-hidden', 'true');
+    for (const canvas of [blueprint, surface]) canvas.setAttribute('aria-hidden', 'true');
     const flat = blueprintRenderer(blueprint);
     view.appendChild(blueprint);
     let frame = 0, disposed = false, healthy = true, loading = false;
@@ -41,29 +38,17 @@ export function useStudyInstruments(viewport, motion, reduced) {
       if (!width || !height) return;
       // In the stacked layout the shared canvas covers just the visible slice.
       const offset = Math.min(view.clientHeight - height, Math.max(0, -bounds.top));
-      const top = bounds.top + offset;
-      const slots = [];
-      const anchors = [];
-      instruments.forEach((slot, index) => {
-        const box = slot.getBoundingClientRect();
-        anchors.push([box.left - bounds.left + box.width/2, box.top - top + box.height/2]);
-        if (box.right <= bounds.left || box.left >= bounds.right ||
-            box.bottom <= Math.max(0, top) || box.top >= Math.min(innerHeight, top + height)) return;
-        let progress = unit((innerHeight * 0.88 - box.top) / (innerHeight * 0.52 + box.height * 0.38));
-        if (reduced) progress = index === 1 ? 0.5 : 1;
-        if (motion.current.horizontal) progress = motion.current.progress[index];
-        slots.push({index, progress, x: box.left - bounds.left, y: box.top - top, width: box.width, height: box.height});
-      });
-      thread.style.height = height + 'px';
-      thread.style.transform = 'translateY(' + offset + 'px)';
-      paintThread(thread, width, height, anchors, motion.current.horizontal,
-        motion.current.horizontal ? -anchors[0][0]/width : 0,
-        motion.current.horizontal && width <= 720 && height > 420 ? Math.abs(anchors[0][1] - (instruments[0].previousElementSibling.getBoundingClientRect().bottom - top - 20)) : 0);
+      const horizontal = motion.current.horizontal;
+      const slot = horizontal ? null : firstSlot.getBoundingClientRect();
+      const frameData = horizontal
+        ? ribbonFrame(width,height,motion.current.slide,false)
+        : ribbonFrame(slot.width,slot.height,0,true);
       const useGL = healthy && gl;
       const canvas = useGL ? surface : blueprint;
-      canvas.style.height = height + 'px';
-      canvas.style.transform = 'translateY(' + offset + 'px)';
-      (useGL || flat)?.paint(width, height, slots);
+      canvas.style.height = frameData.height + 'px';
+      canvas.style.width = frameData.width + 'px';
+      canvas.style.transform = 'translate(' + (slot ? slot.left-bounds.left : 0) + 'px,' + (slot ? slot.top-bounds.top : offset) + 'px)';
+      (useGL || flat)?.paint(frameData);
       surface.hidden = !useGL;
       blueprint.hidden = !!useGL;
     }
@@ -77,7 +62,7 @@ export function useStudyInstruments(viewport, motion, reduced) {
     observer.observe(view);
     const resize = new ResizeObserver(invalidate);
     resize.observe(view);
-    instruments.forEach(slot => resize.observe(slot));
+    resize.observe(firstSlot);
     window.addEventListener('scroll', invalidate, { passive: true });
     window.addEventListener('pageshow', invalidate);
     document.addEventListener('visibilitychange', invalidate);
@@ -94,7 +79,7 @@ export function useStudyInstruments(viewport, motion, reduced) {
       surface.removeEventListener('webglcontextlost', contextLost);
       surface.removeEventListener('webglcontextrestored', contextRestored);
       gl?.dispose();
-      thread.remove(); surface.remove(); blueprint.remove();
+      surface.remove(); blueprint.remove();
     };
   }, [viewport, motion, reduced]);
 }

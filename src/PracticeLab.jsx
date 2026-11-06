@@ -3,7 +3,6 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from './i18n';
 import { studies } from './studies';
-import { unit } from './studyMechanics';
 import { useStudyInstruments } from './useStudyInstruments';
 import s from './PracticeLab.module.css';
 
@@ -18,7 +17,7 @@ export default function PracticeLab({ reduced }) {
   const language = useLanguage();
   const intro = introduction[language];
   const root = useRef(null), viewport = useRef(null), track = useRef(null);
-  const motion = useRef({ horizontal: false, progress: new Array(studies.length + 1).fill(0), invalidate: null });
+  const motion = useRef({ horizontal: false, slide: 0, invalidate: null });
   useStudyInstruments(viewport, motion, reduced);
 
   useLayoutEffect(() => {
@@ -45,11 +44,7 @@ export default function PracticeLab({ reduced }) {
       function render() {
         const slide = playhead.time;
         setTrack(-width * slide);
-        panels.forEach((_, i) => {
-          const start = Math.max(0, i - 1);
-          const end = Math.min(duration, i + 1);
-          motion.current.progress[i] = unit((slide - start) / (end - start));
-        });
+        motion.current.slide = slide;
         motion.current.invalidate?.();
       }
       measure();

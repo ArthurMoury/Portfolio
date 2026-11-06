@@ -77,3 +77,6 @@
   .copy > p { margin-top: 7px; font-size: .87rem; line-height: 1.32; max-width: 54ch; }
 
 }
+.track { position: relative; z-index: 1; }
+.title { text-shadow: 0 2px 12px #0c0c0d, 0 0 3px #0c0c0d; }
+.section:not([data-horizontal]) article .instrument { display: none; }

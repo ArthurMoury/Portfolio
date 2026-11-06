@@ -1,77 +1,22 @@
-import { options, blend } from './studyMechanics';
+import { ribbonPoint } from './studyMechanics';
 
-function path(ctx, points) {
-  ctx.beginPath();
-  points.forEach(([x,y],i) => i ? ctx.lineTo(x,y) : ctx.moveTo(x,y));
-  ctx.stroke();
-}
-function bead(ctx,x,y,r) {ctx.beginPath();ctx.arc(x,y,r,0,Math.PI*2);ctx.fill();}
-function weave(ctx,p) {
-  ctx.rotate(-0.23);
-  for(let strand=0;strand<3;strand++) {
-    ctx.lineWidth=5;
-    path(ctx,Array.from({length:90},(_,i)=>[i*2.6-117,Math.sin(i*.08+strand*2.09+p*2.5)*(17+19*Math.sin(i/89*Math.PI))]));
-  }
-}
-function generation(ctx,p) {
-  let x=-111,y=0;
-  options.forEach((chosen,n)=>{
-    for(let i=0;i<3;i++){
-      const yy=y+(1-i)*37;
-      ctx.globalAlpha=i===chosen&&n<=p*3?1:.4;
-      path(ctx,[[x,y],[x+26,y],[x+70,yy]]);
-      bead(ctx,x+70,yy,4+(i+n)%3);
-    }
-    if(n===Math.min(2,Math.floor(p*3))){
-      const t=Math.min(1,p*3-n);
-      ctx.globalAlpha=1;bead(ctx,x+70*t,y+(1-chosen)*37*Math.max(0,(t-.37)/.63),5);
-    }
-    x+=70;y+=(1-chosen)*37;
-  });
-}
-function python(ctx,p) {
-  const k=blend((p-.28)/.72);
-  ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='15px monospace';
-  ['“Recife”','“recife”','“ Recife ”'].forEach((word,i)=>{
-    const x=(i-1)*(16-8*k)+20*p,y=(i-1)*(54-43*k);
-    ctx.fillStyle='#252629';ctx.fillRect(x-49,y-14,98,28);ctx.strokeRect(x-49,y-14,98,28);
-    ctx.fillStyle='#dedede';ctx.fillText(p<.27+i*.09?word:'recife',x,y);
-  });
-}
-function promptLayers(ctx,p) {
-  const k=blend(p);
-  ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='15px monospace';
-  ['<...>','>_','{ }'].forEach((mark,i)=>{
-    const x=(i-1)*50*(1-k),y=(i-1)*(48-23*k);
-    ctx.fillStyle='#232426';ctx.fillRect(x-51,y-17,102,34);ctx.strokeRect(x-51,y-17,102,34);
-    ctx.fillStyle='#dedede';ctx.fillText(mark,x,y);
-  });
-}
-const diagrams=[weave,generation,python,promptLayers];
-
+// Software projection of the same ribbon for unavailable WebGL contexts.
 export function blueprintRenderer(canvas) {
-  const ctx = canvas.getContext('2d');
-  if (!ctx) return null;
-  return {
-    paint(width, height, slots) {
-      const ratio = Math.min(devicePixelRatio || 1, 1.5);
-      const w = Math.ceil(width * ratio), h = Math.ceil(height * ratio);
-      if (canvas.width !== w || canvas.height !== h) {
-        canvas.width = w; canvas.height = h;
-      }
-      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
-      ctx.clearRect(0, 0, width, height);
-      for (const {index, x, y, width: sw, height: sh, progress} of slots) {
-        ctx.save();
-        ctx.beginPath(); ctx.rect(x, y, sw, sh); ctx.clip();
-        ctx.translate(x + sw / 2, y + sh / 2);
-        const scale = Math.min(sw, sh) / 282;
-        ctx.scale(scale, scale);
-        ctx.strokeStyle = ctx.fillStyle = '#c8c9ca';
-        ctx.lineWidth = 1.25;
-        diagrams[index](ctx, progress);
-        ctx.restore();
-      }
-    },
-  };
+  const ctx=canvas.getContext('2d');
+  const a=[],b=[],c=[],d=[];
+  return { paint(frame){
+    if (!ctx) return;
+    const {width,height,start,end,slide}=frame,ratio=Math.min(devicePixelRatio||1,1.5);
+    const w=Math.round(width*ratio),h=Math.round(height*ratio);
+    if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h;}
+    ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,width,height);
+    for(let i=0;i<140;i++){
+      const u=start+(end-start)*i/140,v=start+(end-start)*(i+1)/140;
+      ribbonPoint(frame,u,-1,a);ribbonPoint(frame,u,1,b);
+      ribbonPoint(frame,v,1,c);ribbonPoint(frame,v,-1,d);
+      const shade=Math.round(61+132*Math.pow(Math.abs(Math.cos(u*7.3+slide*.9+.6)),4));
+      ctx.fillStyle=ctx.strokeStyle='rgb('+shade+','+shade+','+(shade+3)+')';
+      ctx.beginPath();ctx.moveTo(a[0],a[1]);ctx.lineTo(b[0],b[1]);ctx.lineTo(c[0],c[1]);ctx.lineTo(d[0],d[1]);ctx.closePath();ctx.fill();ctx.lineWidth=.6;ctx.stroke();
+    }
+  }};
 }
