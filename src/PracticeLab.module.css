@@ -99,3 +99,4 @@
   [data-horizontal] .panel:nth-child(even) .copy { inset-inline-start: 20vw; }
   [data-horizontal] .title { font-size: min(10vw, calc(var(--view-height) * .105)); }
 }
+.word { display: inline-block; transform-origin: center; }

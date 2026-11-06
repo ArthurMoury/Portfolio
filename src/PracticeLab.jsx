@@ -13,6 +13,18 @@ const introduction = {
   en: ['Process', 'automation'],
 };
 
+function StudyTitle({ as: Heading, id, lines }) {
+  function words(line) {
+    return line.split(' ').map((word, index) => (
+      <span key={index}>{index > 0 && ' '}<span className={s.word} data-study-word>{word}</span></span>
+    ));
+  }
+  return <Heading id={id} className={s.title} aria-label={lines.join(' ')}>
+    <span aria-hidden="true">{words(lines[0])}</span>{' '}
+    <em aria-hidden="true">{words(lines[1])}</em>
+  </Heading>;
+}
+
 export default function PracticeLab({ reduced }) {
   const language = useLanguage();
   const intro = introduction[language];
@@ -29,6 +41,15 @@ export default function PracticeLab({ reduced }) {
       const playhead = { time: 0 };
       const duration = panels.length - 1;
       const setTrack = gsap.quickSetter(track.current, 'x', 'px');
+      const reveals = panels.map((panel, index) => {
+        const words = panel.querySelectorAll('[data-study-word]');
+        return gsap.timeline({ paused: true }).fromTo(words, {
+          opacity: 0, yPercent: index % 2 ? 58 : -58, rotationX: index % 2 ? -52 : 52,
+        }, {
+          opacity: 1, yPercent: 0, rotationX: 0, duration: 1, stagger: .23,
+          ease: 'power2.out', transformPerspective: 480,
+        });
+      });
       let width, distance, inset;
       motion.current.horizontal = true;
 
@@ -44,11 +65,18 @@ export default function PracticeLab({ reduced }) {
       function render() {
         const slide = playhead.time;
         setTrack(-width * slide);
+        for (let index = 1; index < reveals.length; index++) {
+          reveals[index].progress(gsap.utils.clamp(0, 1, (slide - index + .68) / .58));
+        }
         motion.current.slide = slide;
         motion.current.invalidate?.();
       }
       measure();
       section.dataset.horizontal = 'true';
+      ScrollTrigger.create({
+        trigger: section, start: () => 'top ' + (inset + (innerHeight - inset) * .36) + 'px',
+        end: () => 'top ' + inset + 'px', animation: reveals[0], scrub: .2,
+      });
       gsap.to(playhead, {
         time: duration, ease: 'none', onUpdate: render,
         scrollTrigger: {
@@ -67,7 +95,7 @@ export default function PracticeLab({ reduced }) {
       };
     }, root);
     return () => media.revert();
-  }, [reduced]);
+  }, [reduced, language]);
 
   return <section id="processo" className={s.section} ref={root} data-context="estudos" aria-labelledby="studies-title">
     <div className={s.viewport} ref={viewport}>
@@ -75,7 +103,7 @@ export default function PracticeLab({ reduced }) {
         <div className={s.panel} data-study="signature">
           <div className={s.composition}>
             <div className={s.copy}>
-              <h2 id="studies-title" className={s.title}>{intro[0]} <em>{intro[1]}</em></h2>
+              <StudyTitle as="h2" id="studies-title" lines={intro} />
             </div>
             <div className={s.instrument} data-instrument="signature" aria-hidden="true"/>
           </div>
@@ -85,7 +113,7 @@ export default function PracticeLab({ reduced }) {
           return <article key={study.id} className={s.panel} data-study={study.id} aria-labelledby={'study-' + study.id}>
             <div className={s.composition}>
               <div className={s.copy}>
-                <h3 className={s.title} id={'study-' + study.id}>{words.title[0]} <em>{words.title[1]}</em></h3>
+                <StudyTitle as="h3" id={'study-' + study.id} lines={words.title} />
               </div>
               <div className={s.instrument} data-instrument={study.id} aria-hidden="true"/>
             </div>
