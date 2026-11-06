@@ -4,7 +4,7 @@ import { flushSync } from 'react-dom';
 import gsap from 'gsap';
 import { ArrowUpRight, BriefcaseBusiness, GraduationCap, Check, X, Menu, Mail, Copy, MapPin, ScanLine, FileDown } from 'lucide-react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { projects, chapters, contexts, profile } from './data/portfolio';
+import { projects, chapters, profile } from './data/portfolio';
 import { usePageMotion, useReducedMotion } from './motion';
 import s from './App.module.css';
 import KineticHero from './KineticHero';
@@ -24,7 +24,7 @@ function LinkButton({ href, children, secondary = false, ...props }) {
   return localize(<a href={href} className={`${s.button} ${secondary ? s.buttonSecondary : ''}`} {...props}>{children}<ArrowUpRight size={18} aria-hidden="true" /></a>);
 }
 
-function Navigation({ visible, context, activeSection }) {
+function Navigation({ visible, activeSection }) {
   const [open,setOpen] = useState(false);
   const menu = useRef(null);
   useEffect(()=>{if(!visible)setOpen(false);},[visible]);
@@ -52,7 +52,6 @@ function Navigation({ visible, context, activeSection }) {
       <nav id="site-menu" className={`${s.navLinks} ${open?s.navOpen:''}`} aria-label="Navegação principal">{[['sobre','Quem sou'],['projetos','Projetos'],['trajetoria','Trajetória'],['certificados','Certificados'],['processo','Na prática']].map(([id,label])=>localize(<a key={id} href={`#${id}`} onClick={close} aria-current={activeSection===id?'location':undefined}>{label}</a>))}</nav>
       <div className={s.navActions}><a href="#contato" onClick={close} className={s.navContact} aria-label="Vamos conversar" aria-current={activeSection==='contato'?'location':undefined}><span>Vamos conversar</span><ArrowUpRight size={16} /></a><button ref={menu} className={s.menuButton} aria-label={open?'Fechar menu':'Abrir menu'} aria-expanded={open} aria-controls="site-menu" onClick={()=>setOpen(!open)}>{open?<X/>:<Menu/>}</button></div>
     </div>
-    <div className={s.contextTrack} data-context-current={context}><div className={s.container}><span className={s.contextShape} aria-hidden="true"/><span key={context} className={s.contextText}>{contexts[context].verb}<span>{contexts[context].label}</span></span><div className={s.readingTrack} aria-hidden="true"><i data-reading-progress /></div></div></div>
   </header>);
 }
 
@@ -275,9 +274,8 @@ export default function App() {
   const reduced=useReducedMotion();
   const [navigationVisible,setNavigationVisible]=useState(false);
   const [activeChapter,setActiveChapter]=useState(0);
-  const [context,setContext]=useState('pessoa');
   const [activeSection,setActiveSection]=useState('inicio');
   const [image,setImage]=useState(null);
-  usePageMotion(root,reduced,setNavigationVisible,setActiveChapter,setContext,setActiveSection);
-  return localize(<div ref={root} className={s.app} data-reduced-motion={reduced}><a className={s.skipLink} href="#sobre">Pular para informações pessoais</a><Navigation visible={navigationVisible} context={context} activeSection={activeSection}/><main><div className={s.opening} data-opening><KineticHero reduced={reduced}/><About/></div><div className={s.sectionTransition} data-section-transition aria-hidden="true"><svg viewBox="0 0 1440 200" preserveAspectRatio="none"><path data-transition-surface d="M0 160Q720 -100 1440 160V200H0Z"/></svg></div><ProjectGallery onOpen={setImage} reduced={reduced}/><Career reduced={reduced} onOpen={setImage} activeChapter={activeChapter}/><Certificates reduced={reduced} onOpen={setImage} modalOpen={!!image}/><PracticeLab reduced={reduced}/><Curriculum/><Contact reduced={reduced}/></main><ImageDialog value={image} onClose={()=>setImage(null)}/></div>);
+  usePageMotion(root,reduced,setNavigationVisible,setActiveChapter,setActiveSection);
+  return localize(<div ref={root} className={s.app} data-reduced-motion={reduced}><a className={s.skipLink} href="#sobre">Pular para informações pessoais</a><Navigation visible={navigationVisible} activeSection={activeSection}/><main><div className={s.opening} data-opening><KineticHero reduced={reduced}/><About/></div><div className={s.sectionTransition} data-section-transition aria-hidden="true"><svg viewBox="0 0 1440 200" preserveAspectRatio="none"><path data-transition-surface d="M0 160Q720 -100 1440 160V200H0Z"/></svg></div><ProjectGallery onOpen={setImage} reduced={reduced}/><Career reduced={reduced} onOpen={setImage} activeChapter={activeChapter}/><Certificates reduced={reduced} onOpen={setImage} modalOpen={!!image}/><PracticeLab reduced={reduced}/><Curriculum/><Contact reduced={reduced}/></main><ImageDialog value={image} onClose={()=>setImage(null)}/></div>);
 }
