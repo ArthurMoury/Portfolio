@@ -3,11 +3,13 @@
 export function ribbonFrame(width, height, slide, compact) {
   const mobile = width <= 720 && height > 420;
   const lead = (mobile ? .78 : .86) - .14 * Math.sin(slide * Math.PI);
-  const end = slide + lead;
+  const finish = Math.max(0, Math.min(1, slide - 2));
+  const extension = finish * finish * (3 - 2 * finish);
+  const end = slide + lead + (1 - lead) * extension;
   // Start just behind the camera: older folds still exist in world space.
   const start = Math.max(-.16, slide - .08);
-  const scale = Math.min(height*(mobile ? .17 : .28), width*(mobile ? .29 : .17));
-  return {width,height,slide,start,end,scale,base:height*(compact ? .5 : mobile ? .65 : .54)};
+  const scale = Math.min(height*(compact ? .28 : .15), width*(mobile ? .29 : .17));
+  return {width,height,slide,start,end,scale,base:height*.5};
 }
 
 export function ribbonPoint(frame, u, side, out) {

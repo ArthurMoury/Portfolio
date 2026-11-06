@@ -80,3 +80,22 @@
 .track { position: relative; z-index: 1; }
 .title { text-shadow: 0 2px 12px #0c0c0d, 0 0 3px #0c0c0d; }
 .section:not([data-horizontal]) article .instrument { display: none; }
+
+/* Reserve the middle band for the metal, including during panel transitions. */
+[data-horizontal] .copy {
+  position: absolute;
+  inset-inline-start: clamp(22px, 12vw, 230px);
+  top: 72%;
+}
+[data-horizontal] .panel:nth-child(even) .copy {
+  top: auto;
+  bottom: 72%;
+  inset-inline-start: clamp(22px, 35vw, 700px);
+}
+[data-horizontal] .title {
+  font-size: min(clamp(2rem, 6.2vw, 7rem), calc(var(--view-height) * .105));
+}
+@media (max-width: 720px) {
+  [data-horizontal] .panel:nth-child(even) .copy { inset-inline-start: 20vw; }
+  [data-horizontal] .title { font-size: min(10vw, calc(var(--view-height) * .105)); }
+}

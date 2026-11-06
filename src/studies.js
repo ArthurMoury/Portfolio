@@ -1,8 +1,8 @@
 export const studies = [
   {
-    id: 'generation',
-    pt: { title: ['IA', 'generativa'] },
-    en: { title: ['Generative', 'AI'] },
+    id: 'software',
+    pt: { title: ['Engenharia', 'de software'] },
+    en: { title: ['Software', 'engineering'] },
   },
   {
     id: 'python',
