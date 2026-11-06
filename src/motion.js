@@ -16,6 +16,9 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setActiveSec
     let disposed=false;
     const hero=document.getElementById('inicio');
     const chapterElements=[...root.current.querySelectorAll('[data-chapter]')];
+    const stage=root.current.querySelector('[data-career-story] aside');
+    const lastChapter=chapterElements.at(-1);
+    let stageShift=0;
     const sections=[...root.current.querySelectorAll('main section[id]')];
     const update=()=>{
       frame=0;
@@ -25,8 +28,16 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setActiveSec
       for(const section of sections)if(section.getBoundingClientRect().top<=180)activeSection=section.id;
       setActiveSection(activeSection);
       let chapterIndex=0;
-      const stage=root.current.querySelector('[data-career-story] aside');
-      const stageBottom=stage?.getBoundingClientRect().bottom||0;
+      const stageBox=stage.getBoundingClientRect();
+      const stageBottom=stageBox.bottom-stageShift;
+      const lastBox=lastChapter.getBoundingClientRect();
+      const stacked=innerWidth<900 && !(innerWidth>innerHeight && innerHeight<=540);
+      // Release the sticky visual beside the final paragraph (above it on phones).
+      const stop=stacked
+        ? lastChapter.firstElementChild.getBoundingClientRect().top-20
+        : lastBox.top+(lastBox.height+stageBox.height)/2;
+      stageShift=Math.min(0,stop-stageBottom);
+      stage.style.translate='0 '+stageShift+'px';
       const chapterLine=innerWidth<900?Math.min(innerHeight-50,stageBottom+(innerHeight-stageBottom)*.3):innerHeight*.55;
       chapterElements.forEach((chapter,i)=>{if(chapter.getBoundingClientRect().top<=chapterLine)chapterIndex=i;});
       setChapter(chapterIndex);
@@ -107,6 +118,6 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setActiveSec
       queue();
     });
     window.addEventListener('load',refresh);
-    return()=>{disposed=true;document.removeEventListener('click',jumpToAbout);cancelAnimationFrame(frame);window.removeEventListener('scroll',queue);window.removeEventListener('resize',queue);window.removeEventListener('load',refresh);media.revert();ctx.revert();};
+    return()=>{disposed=true;stage.style.removeProperty('translate');document.removeEventListener('click',jumpToAbout);cancelAnimationFrame(frame);window.removeEventListener('scroll',queue);window.removeEventListener('resize',queue);window.removeEventListener('load',refresh);media.revert();ctx.revert();};
   },[root,reduced,setNavigation,setChapter,setActiveSection]);
 }

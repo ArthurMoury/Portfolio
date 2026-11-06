@@ -56,6 +56,12 @@ export default function KineticGlyphs({ motion, reduced }) {
     const surfaces = nodes.map(node => node.getContext('2d'));
     if (surfaces.some(ctx => !ctx)) return;
     let frame = 0, time = 0, last = 0, visible = false;
+    let width = 0, height = 0;
+    const resize = new ResizeObserver(([entry]) => {
+      width = entry.contentRect.width;
+      height = entry.contentRect.height;
+    });
+    resize.observe(field.current);
     function draw(now) {
       frame = 0;
       if (!visible || document.hidden) return;
@@ -64,6 +70,18 @@ export default function KineticGlyphs({ motion, reduced }) {
       last = now;
       nodes.forEach((node, index) => {
         const size = node.width, ctx = surfaces[index];
+        if (!reduced) {
+          // Opposed arcs carry the two silhouettes toward the fold during
+          // a handoff and back into the open space around the next title.
+          const phase = motion.current.slide * Math.PI;
+          const crossing = (1 - Math.cos(phase)) / 2;
+          const drift = Math.sin(time * .72 + index * 2);
+          const x = index ? -width * .61 * crossing : width * .58 * (1 - crossing);
+          const y = height * Math.sin(phase) ** 2 * (index ? -.17 : .16);
+          node.style.transform = `translate3d(${x + drift * width * .015}px, ${y + Math.cos(time * .85 + index) * height * .014}px, 0)`;
+        } else {
+          node.style.removeProperty('transform');
+        }
         ctx.clearRect(0, 0, size, size);
         ctx.save();
         ctx.lineWidth = size / 230;
@@ -89,6 +107,7 @@ export default function KineticGlyphs({ motion, reduced }) {
     window.addEventListener('resize', updateVisibility);
     document.addEventListener('visibilitychange', resume);
     return () => {
+      resize.disconnect();
       cancelAnimationFrame(frame);
       window.removeEventListener('scroll', updateVisibility);
       window.removeEventListener('resize', updateVisibility);

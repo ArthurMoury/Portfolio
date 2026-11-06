@@ -44,10 +44,11 @@ export default function PracticeLab({ reduced }) {
       const reveals = panels.map((panel, index) => {
         const words = panel.querySelectorAll('[data-study-word]');
         return gsap.timeline({ paused: true }).fromTo(words, {
-          opacity: 0, yPercent: index % 2 ? 58 : -58, rotationX: index % 2 ? -52 : 52,
+          clipPath: index % 2 ? 'inset(-15% 0 -15% 100%)' : 'inset(-15% 100% -15% 0)',
+          xPercent: index % 2 ? -18 : 18, skewX: index % 2 ? 8 : -8,
         }, {
-          opacity: 1, yPercent: 0, rotationX: 0, duration: 1, stagger: .23,
-          ease: 'power2.out', transformPerspective: 480,
+          clipPath: 'inset(-15% -8% -15% -8%)', xPercent: 0, skewX: 0, duration: 1, stagger: .19,
+          ease: 'power2.inOut',
         });
       });
       let width, distance, inset;

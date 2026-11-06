@@ -52,7 +52,7 @@ function CertificateRow({ items, reverse=false, label, reduced, onOpen, modalOpe
     <span className={s.document}><img src={certificate.thumbnail} alt={`Certificado de Arthur Moury: ${certificate.title}`} width={certificate.width} height={certificate.height} loading="lazy" draggable="false"/><span className={s.expand}><ScanLine size={17}/></span></span>
     <span className={s.caption}><strong>{certificate.title}</strong><span>{certificate.issuer}</span></span>
   </m.button>);
-  return localize(<div ref={root} className={s.row}><p className={s.rowLabel}>{label}</p>
+  return localize(<div ref={root} className={s.row}>
     <div ref={viewport} className={`${s.viewport} ${reduced ? s.static : ''}`} aria-roledescription="carrossel" aria-label={`Certificados: ${label}`} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={endDrag} onPointerCancel={endDrag} onPointerLeave={endDrag}
       onClickCapture={e => { if (dragged.current) { e.preventDefault(); e.stopPropagation(); dragged.current = false; } }}
       onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false); }}>
