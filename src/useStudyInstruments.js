@@ -5,14 +5,13 @@ import { ribbonFrame } from './studyMechanics';
 export function useStudyInstruments(viewport, motion, reduced) {
   useEffect(() => {
     const view = viewport.current;
-    const firstSlot = view.querySelector('[data-instrument]');
     const blueprint = document.createElement('canvas');
     const surface = document.createElement('canvas');
     for (const canvas of [blueprint, surface]) canvas.setAttribute('aria-hidden', 'true');
     const flat = blueprintRenderer(blueprint);
     view.appendChild(blueprint);
     let frame = 0, disposed = false, healthy = true, loading = false;
-    let gl = null;
+    let gl = null, lastDraw = 0;
 
     function invalidate() {
       if (!disposed && !frame && !document.hidden) frame = requestAnimationFrame(draw);
@@ -27,32 +26,33 @@ export function useStudyInstruments(viewport, motion, reduced) {
         invalidate();
       }).catch(invalidate);
     }
-    function draw() {
+    function draw(now) {
       frame = 0;
       if (disposed || document.hidden) return;
       const bounds = view.getBoundingClientRect();
       if (bounds.bottom < -240 || bounds.top > innerHeight + 240) return;
-      if (!motion.current.horizontal || motion.current.slide <= .001) {
+      if (!motion.current.axis || motion.current.slide <= .001) {
         surface.hidden = true;
         blueprint.hidden = true;
         return;
       }
+      if (motion.current.axis === 'vertical' && now - lastDraw < 32) {
+        frame = requestAnimationFrame(draw);
+        return;
+      }
+      lastDraw = now;
       loadRenderer();
       const height = Math.min(view.clientHeight, innerHeight);
       const width = view.clientWidth;
       if (!width || !height) return;
-      // In the stacked layout the shared canvas covers just the visible slice.
-      const offset = Math.min(view.clientHeight - height, Math.max(0, -bounds.top));
-      const horizontal = motion.current.horizontal;
-      const slot = horizontal ? null : firstSlot.getBoundingClientRect();
-      const frameData = horizontal
-        ? ribbonFrame(width,height,motion.current.slide,false)
-        : ribbonFrame(slot.width,slot.height,0,true);
+      const frameData = ribbonFrame(width, height, motion.current.slide, false);
+      frameData.vertical = motion.current.axis === 'vertical';
+      if (frameData.vertical) frameData.scale = Math.min(width * .23, height * .13);
       const useGL = healthy && gl;
       const canvas = useGL ? surface : blueprint;
       canvas.style.height = frameData.height + 'px';
       canvas.style.width = frameData.width + 'px';
-      canvas.style.transform = 'translate(' + (slot ? slot.left-bounds.left : 0) + 'px,' + (slot ? slot.top-bounds.top : offset) + 'px)';
+
       (useGL || flat)?.paint(frameData);
       surface.hidden = !useGL;
       blueprint.hidden = !!useGL;
@@ -67,7 +67,6 @@ export function useStudyInstruments(viewport, motion, reduced) {
     observer.observe(view);
     const resize = new ResizeObserver(invalidate);
     resize.observe(view);
-    resize.observe(firstSlot);
     window.addEventListener('scroll', invalidate, { passive: true });
     window.addEventListener('pageshow', invalidate);
     document.addEventListener('visibilitychange', invalidate);

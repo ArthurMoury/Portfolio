@@ -49,3 +49,16 @@
 @media(max-width:899px){.fold{inset:0}}
 
 @media(max-width:640px){.hero{padding-top:86px}.stage{height:clamp(210px,29svh,290px)}}
+
+@media (max-width: 899px) and (orientation: portrait) {
+  .hero { padding: max(88px, calc(env(safe-area-inset-top) + 72px)) 0 max(24px, env(safe-area-inset-bottom)); }
+  .layout {
+    display: grid; grid-template-columns: 1fr; grid-template-rows: auto minmax(0, 1fr);
+    width: calc(100% - 40px); height: 100%; margin: 0 auto; gap: 8px;
+  }
+  .copy h1 { font-size: clamp(3.7rem, 17.5vw, 6rem); line-height: 1.02; }
+  .hello { font-size: 20px; margin-bottom: 14px; gap: 14px; }
+  .hello::after { width: 55px; }
+  .description { margin-top: 20px; font-size: 18px; }
+  .stage { width: 100%; max-width: none; min-height: 0; height: 100%; margin: 0; }
+}

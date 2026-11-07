@@ -29,7 +29,7 @@ function Fold({ reduced, flightRef }) {
       if (disposed) return;
       try {
         renderer = new T.WebGLRenderer({ alpha: true, antialias: true, powerPreference: 'low-power' });
-        renderer.setPixelRatio(Math.min(devicePixelRatio, 1.6));
+        renderer.setPixelRatio(Math.min(devicePixelRatio, innerWidth < 900 ? 1.25 : 1.6));
         renderer.setClearColor(0x101112, 0);
         renderer.toneMapping = T.ACESFilmicToneMapping;
         renderer.toneMappingExposure = 1.1;
@@ -43,7 +43,7 @@ function Fold({ reduced, flightRef }) {
         scene.environment = environment.texture;
         room.dispose(); pmrem.dispose();
         // A continuous, folded strip: the surface itself carries the light.
-        const positions = [], indices = [], count = 200, across = 12;
+        const positions = [], indices = [], count = innerWidth < 900 ? 120 : 200, across = innerWidth < 900 ? 8 : 12;
         for (let i = 0; i <= count; i++) {
           const t = i / count * Math.PI * 2;
           for (let j = 0; j <= across; j++) {
@@ -74,7 +74,9 @@ function Fold({ reduced, flightRef }) {
           camera.aspect = width / height;
           const anchor = interaction.querySelector('[data-hero-stage]').getBoundingClientRect();
           const bounds = node.getBoundingClientRect();
-          cameraDistance = (innerWidth < 900 ? 8.6 : 7.4) * height / anchor.height;
+          const mobile = innerWidth < 900;
+          const fitHeight = mobile ? Math.min(anchor.height, anchor.width * 1.2) : anchor.height;
+          cameraDistance = (mobile ? 7.5 : 7.4) * height / fitHeight;
           const worldHeight = 2 * Math.tan(T.MathUtils.degToRad(camera.fov / 2)) * cameraDistance;
           target.set(((anchor.left + anchor.width / 2 - bounds.left) / width - .5) * worldHeight * camera.aspect, (.5 - (anchor.top + anchor.height / 2 - bounds.top) / height) * worldHeight, 0);
           fold.position.copy(target);
@@ -106,7 +108,7 @@ function Fold({ reduced, flightRef }) {
           fold.visible = flightProgress < 1;
           renderer.render(scene, camera);
           node.dataset.ready = 'true';
-          const moving = Math.abs(pointer.y * 1.1 - rx) + Math.abs(pointer.x * 1.7 - ry) > .0005;
+          const moving = Math.abs(pointer.y * 1.1 * interactionWeight - rx) + Math.abs(pointer.x * 1.7 * interactionWeight - ry) > .0005;
           frame = progress < 1 || moving || Math.abs(shape-morph)>.001 ? requestAnimationFrame(draw) : 0;
         };
         sync = () => { if (visible && !document.hidden && !frame) frame = requestAnimationFrame(draw); };

@@ -115,3 +115,21 @@
 .glyphField, .viewport > canvas { opacity: var(--shape-entrance, 0); }
 .glyphField { scale: calc(.94 + .06 * var(--shape-entrance, 0)); }
 .section:not([data-horizontal]) .glyphField { display: none; }
+
+/* Phone chapters travel in the same direction as the native scroll gesture. */
+.section[data-flow=vertical] { height: calc(var(--view-height) + var(--travel-height)); }
+[data-flow=vertical] .viewport { position: sticky; top: var(--nav-inset); height: calc(100svh - var(--nav-inset)); overflow: clip; }
+[data-flow=vertical] .track { display: block; height: 100%; }
+[data-flow=vertical] .panel { height: 100%; min-height: 0; }
+[data-flow=vertical] .composition { height: 100%; display: block; padding: 0; }
+[data-flow=vertical] .copy {
+  position: absolute; top: 12%; left: max(24px, env(safe-area-inset-left)); right: max(24px, env(safe-area-inset-right));
+}
+[data-flow=vertical] .title { font-size: clamp(2.45rem, 11.5vw, 5rem); line-height: 1.02; }
+.section[data-flow=vertical] .glyphField { position: absolute; inset: 0; display: block; height: auto; }
+[data-flow=vertical] .glyphField canvas:first-child { top: 45%; left: 5%; width: min(22vw, 110px); }
+[data-flow=vertical] .glyphField canvas:last-child { bottom: 6%; right: 7%; width: min(17vw, 90px); }
+@media (max-width: 899px) and (max-height: 540px) {
+  [data-flow=vertical] .copy { top: 10%; }
+  [data-flow=vertical] .title { font-size: clamp(2rem, 5vw, 2.9rem); }
+}

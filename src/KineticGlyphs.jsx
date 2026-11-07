@@ -70,7 +70,7 @@ export default function KineticGlyphs({ motion, reduced }) {
     function draw(now) {
       frame = 0;
       if (!visible || document.hidden || motion.current.slide <= 0) return;
-      if (last && now - last < 32 && !reduced) { schedule(); return; }
+      if (last && now - last < (width < 900 ? 40 : 32) && !reduced) { schedule(); return; }
       if (last) time += Math.min(now - last, 100) / 1000;
       last = now;
       nodes.forEach((node, index) => {
@@ -81,8 +81,11 @@ export default function KineticGlyphs({ motion, reduced }) {
           const phase = motion.current.slide * Math.PI;
           const crossing = (1 - Math.cos(phase)) / 2;
           const drift = Math.sin(time * .72 + index * 2);
-          const x = index ? -width * .61 * crossing : width * .58 * (1 - crossing);
-          const y = height * Math.sin(phase) ** 2 * (index ? -.17 : .16);
+          const vertical = motion.current.axis === 'vertical';
+          const x = vertical ? (index ? -width * .5 * crossing : width * .58 * crossing)
+            : index ? -width * .61 * crossing : width * .58 * (1 - crossing);
+          const y = vertical ? (index ? -height * .27 * crossing : height * .12 * crossing)
+            : height * Math.sin(phase) ** 2 * (index ? -.17 : .16);
           node.style.transform = `translate3d(${x + drift * width * .015}px, ${y + Math.cos(time * .85 + index) * height * .014}px, 0)`;
         } else {
           node.style.removeProperty('transform');

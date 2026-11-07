@@ -21,6 +21,10 @@ export function ribbonPoint(frame, u, side, out) {
   const breadth = scale*(.44+.14*Math.sin(u*5))*taper;
   out[0] = (u-slide)*width + side*breadth*.25*Math.sin(twist);
   out[1] = base + scale*(.51*Math.sin(phase)+.24*Math.cos(phase*.52)) + side*breadth*Math.cos(twist);
+  if (frame.vertical) {
+    out[0] = frame.width * (.55 + .20 * Math.sin(phase)) + side * breadth * Math.cos(twist);
+    out[1] = frame.height * (.43 + u - slide) + side * breadth * .25 * Math.sin(twist);
+  }
   out[2] = scale*.56*Math.cos(phase) + side*breadth*Math.sin(twist);
   return out;
 }
