@@ -25,7 +25,7 @@
 @media(max-width:899px){.chapterMobile img{height:auto}}
 
 /* Dark presentation: project imagery is the color in the page. */
-.career{border-top:1px solid var(--line)}.careerIntro{display:block}.projectsIntro{padding-top:35px;padding-bottom:75px}.projectBand{transition:background .45s var(--ease)}.projectBand[data-expanded=true]{background:var(--surface)}.projectGalleryOpen .galleryScreenshot{animation:galleryIn .6s var(--ease)}@keyframes galleryIn{from{transform:translateY(15px) scale(.98)}to{transform:none}}
+.career{background:linear-gradient(to bottom,#101214 0%,var(--deepest) min(32vh,320px))}.careerIntro{display:block}.projectsIntro{padding-top:35px;padding-bottom:75px}.projectBand{transition:background .45s var(--ease)}.projectBand[data-expanded=true]{background:var(--surface)}.projectGalleryOpen .galleryScreenshot{animation:galleryIn .6s var(--ease)}@keyframes galleryIn{from{transform:translateY(15px) scale(.98)}to{transform:none}}
 @media(max-width:640px){.projectsIntro{padding-top:10px;padding-bottom:45px}}
 
 /* The personal introduction is a separate editorial moment after the 3D opening. */
