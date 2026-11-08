@@ -66,15 +66,3 @@
   [data-showcase] .specs div { padding-block: 5px; }
   [data-showcase] .copy h3 { font-size: 1.65rem; }
 }
-
-.playback { display: none; }
-[data-showcase] .playback {
-  display: inline-flex; gap: 8px; align-items: center; min-height: 40px;
-  position: absolute; right: 24px; bottom: 16px; z-index: 40;
-  background: #15191de6; color: #c4c8cc; border: 1px solid #ffffff26;
-  border-radius: 30px; padding: 8px 14px; font-size: 11px;
-}
-@media (max-width: 899px) {
-  [data-showcase] .playback { min-height: 44px; min-width: 44px; right: 16px; bottom: 8px; padding: 10px; }
-  .playback span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
-}

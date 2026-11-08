@@ -1,7 +1,7 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowUpRight, ScanLine, Pause, Play } from 'lucide-react';
+import { ArrowUpRight, ScanLine } from 'lucide-react';
 import Github from './GithubIcon';
 import { projects } from './data/portfolio';
 import { localize, t } from './i18n';
@@ -19,13 +19,6 @@ const external = { target: '_blank', rel: 'noreferrer noopener' };
 
 export default function ProjectGallery({ reduced, onOpen }) {
   const root = useRef(null), stage = useRef(null), seek = useRef(null);
-  const pausedRef = useRef(false);
-  const [paused, setPaused] = useState(false);
-  function togglePlayback() {
-    pausedRef.current = !pausedRef.current;
-    setPaused(pausedRef.current);
-  }
-
   useLayoutEffect(() => {
     if (reduced) return;
     const media = gsap.matchMedia();
@@ -37,7 +30,10 @@ export default function ProjectGallery({ reduced, onOpen }) {
       const washes = cards.map(card => card.querySelector('[data-project-wash]'));
       const playhead = { position: 0 };
       let width, height, mobile, inset, distance, coverWidth, coverHeight, coverTop, coverLeft;
-      let lastFocused = -2, orbit = 0, currentFocus = 0;
+      let lastFocused = -2, orbit = 0, currentFocus = 0, lastDetailPosition = -1;
+      const arrival = { progress: 0 };
+      let entranceTween;
+      const ranks = new Array(cards.length).fill(-1);
       let visible = false, ticking = false, elapsed = 0;
       const setCovers = covers.map(cover => gsap.quickSetter(cover, 'css'));
       const setDetails = details.map(detail => gsap.quickSetter(detail, 'css'));
@@ -54,7 +50,7 @@ export default function ProjectGallery({ reduced, onOpen }) {
         coverHeight = mobile ? Math.min(coverWidth * .625, height * (height < 700 ? .24 : .30)) : Math.min(coverWidth * .625, height * .66);
         coverTop = mobile ? 20 : Math.max(24, (height * .84 - coverHeight) / 2);
         coverLeft = mobile ? 20 : width * .045;
-        distance = projects.length * height * (mobile ? 1.55 : 1.4);
+        distance = projects.length * height * (mobile ? 1.05 : .95);
         section.style.setProperty('--gallery-travel', distance + 'px');
         section.style.setProperty('--gallery-heading', section.querySelector('h2').parentElement.offsetHeight + 'px');
         section.style.setProperty('--gallery-height', height + 'px');
@@ -89,37 +85,51 @@ export default function ProjectGallery({ reduced, onOpen }) {
           lastFocused = focused;
         }
 
-        cards.forEach((card, i) => {
+        const radius = coverWidth / (2 * Math.sin(Math.PI / projects.length)) * 1.12;
+        const lens = coverWidth * 2.8;
+        const planes = cards.map((card, i) => {
           const zoom = i === index ? focus : 0;
           const angle = (i - travel) * Math.PI * 2 / projects.length + orbit;
           const depth = (Math.cos(angle) + 1) / 2;
+          const worldZ = radius * (Math.cos(angle) - 1);
+          const projection = lens / (lens - worldZ);
           const compression = 1 - focus * .76;
-          const scale = (.52 + depth * .48) * compression;
-          const radiusX = width * (mobile ? .57 : .51) * (1 - focus * .48);
-          const centerX = width * .5 + Math.sin(angle) * radiusX;
+          const birth = ease(arrival.progress * 1.6 - i * .10);
+          const scale = projection * compression;
+          const centerX = width * .5 + Math.sin(angle) * radius * projection * (1 - focus * .48);
           const restY = height * ((mobile ? .12 : .17) + depth * .23);
           const readingY = height * (mobile && height < 700 ? .89 : .84);
           const centerY = restY + (readingY - restY) * focus;
-          // A closed ellipse brings every cover forward and carries it back
-          // behind the next one. The selected cover lifts out of that same path.
           const carouselX = centerX - coverWidth / 2;
           const carouselY = centerY - coverHeight / 2;
-          const x = carouselX + (coverLeft - carouselX) * zoom;
-          const y = carouselY + (coverTop - carouselY) * zoom;
           setCovers[i]({
-            x, y, scale: scale + (1 - scale) * zoom,
+            x: carouselX + (coverLeft - carouselX) * zoom,
+            y: carouselY + (coverTop - carouselY) * zoom + (1 - birth) * 75,
+            scale: (scale + (1 - scale) * zoom) * (.84 + .16 * birth),
             rotationY: -Math.sin(angle) * 36 * (1 - zoom),
             rotationZ: -Math.sin(angle) * 5 * (1 - zoom),
-            opacity: 1 - .34 * (1 - depth) * (1 - zoom),
-            zIndex: zoom > .01 ? 30 : 2 + Math.round(depth * 20),
+            opacity: birth * (1 - .34 * (1 - depth) * (1 - zoom)),
           });
-          const visible = i === index ? read : 0;
-          setDetails[i]({ opacity: visible, y: (1 - visible) * 24 });
-          setWashes[i](zoom * .16);
+          // Occlusion follows continuous camera depth, including the lift
+          // toward the reader. Only equal-depth crossings change the order.
+          return { index: i, z: worldZ + (radius * .55 - worldZ) * zoom };
         });
+        planes.sort((a, b) => a.z - b.z).forEach((plane, rank) => {
+          if (ranks[plane.index] === rank) return;
+          ranks[plane.index] = rank;
+          covers[plane.index].style.zIndex = String(rank + 2);
+        });
+        // Text and surface only depend on scroll, never on the autoplay clock.
+        if (position !== lastDetailPosition) {
+          cards.forEach((card, i) => {
+            const visible = i === index ? read : 0;
+            setDetails[i]({ opacity: visible, y: (1 - visible) * 24 });
+            setWashes[i]((i === index ? focus : 0) * .16);
+          });
+          lastDetailPosition = position;
+        }
       }
       function tick(_time, delta) {
-        if (pausedRef.current) return;
         const step = Math.min(delta, 64);
         orbit -= step / 1000 * (Math.PI * 2 / 36) * (1 - currentFocus * .7);
         elapsed += step;
@@ -131,8 +141,16 @@ export default function ProjectGallery({ reduced, onOpen }) {
         const shouldPlay = visible && !document.hidden;
         if (shouldPlay === ticking) return;
         ticking = shouldPlay;
-        if (ticking) gsap.ticker.add(tick);
-        else gsap.ticker.remove(tick);
+        if (ticking) {
+          gsap.ticker.add(tick);
+          if (!entranceTween) {
+            entranceTween = gsap.to(arrival, { progress: 1, duration: 1.4, ease: 'power2.out', onUpdate: render });
+          } else entranceTween.resume();
+        }
+        else {
+          gsap.ticker.remove(tick);
+          entranceTween?.pause();
+        }
       }
       const visibility = new IntersectionObserver(entries => {
         visible = entries.at(-1).isIntersecting;
@@ -145,7 +163,7 @@ export default function ProjectGallery({ reduced, onOpen }) {
         position: projects.length, ease: 'none', onUpdate: render,
         scrollTrigger: {
           trigger: section, start: () => 'top ' + (inset - section.querySelector('h2').parentElement.offsetHeight) + 'px', end: () => '+=' + distance,
-          scrub: .18, refreshPriority: -1, onRefreshInit: measure, onRefresh: render,
+          scrub: .12, refreshPriority: -1, onRefreshInit: measure, onRefresh: render,
         },
       });
       function goTo(index) {
@@ -158,7 +176,11 @@ export default function ProjectGallery({ reduced, onOpen }) {
       seek.current = goTo;
       function fromHash() {
         const index = projects.findIndex(project => location.hash === '#projeto-' + project.id);
-        if (index >= 0) goTo(index);
+        if (index >= 0) {
+          arrival.progress = 1;
+          entranceTween?.kill();
+          goTo(index);
+        }
       }
       function anchor(event) {
         const link = event.target.closest('a[href^="#projeto-"]');
@@ -186,6 +208,7 @@ export default function ProjectGallery({ reduced, onOpen }) {
       return () => {
         disposed = true;
         visibility.disconnect();
+        entranceTween?.kill();
         gsap.ticker.remove(tick);
         document.removeEventListener('visibilitychange', syncPlayback);
         cancelAnimationFrame(refresh);
@@ -219,11 +242,6 @@ export default function ProjectGallery({ reduced, onOpen }) {
       <h2 id="projects-title"><span data-project-heading-line>Minha bagagem</span><span data-project-heading-line>em projetos.</span></h2>
     </div>
     <div className={s.stage} ref={stage}>
-      <button type="button" className={s.playback} onPointerDown={event => event.preventDefault()} onClick={togglePlayback}
-        aria-label={paused ? 'Reproduzir carrossel' : 'Pausar carrossel'}>
-        {paused ? <Play size={15}/> : <Pause size={15}/>}
-        <span>{paused ? 'Reproduzir carrossel' : 'Pausar carrossel'}</span>
-      </button>
       {projects.map((project, index) => <article key={project.id} id={'projeto-' + project.id}
         data-project={project.id} className={s.project} style={{ '--project-tint': themes[index] }}
         aria-labelledby={'project-title-' + project.id}>

@@ -8,6 +8,5 @@ export const extraMessages = {
   'Minha bagagem': 'My experience',
   'em projetos.': 'through projects.',
   'Ver projeto': 'View project',
-  'Pausar carrossel': 'Pause carousel',
-  'Reproduzir carrossel': 'Play carousel',
+  'Captura da landing page': 'Landing page screenshot',
 };

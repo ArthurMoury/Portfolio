@@ -207,8 +207,8 @@ export const projects = [
       "TypeScript",
       "Vite"
     ],
-    "image": "/projects/sollie.jpg",
-    "imageType": "Captura da tela pública de acesso",
+    "image": "/projects/sollie-landing.webp",
+    "imageType": "Captura da landing page",
     "implementation": [
       {
         "label": "Aplicação",
