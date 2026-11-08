@@ -8,5 +8,6 @@ export const extraMessages = {
   'Minha bagagem': 'My experience',
   'em projetos.': 'through projects.',
   'Ver projeto': 'View project',
+  'Arraste para os lados para girar os projetos. Use as setas do teclado para escolher.': 'Drag sideways to rotate the projects. Use the arrow keys to choose one.',
   'Captura da landing page': 'Landing page screenshot',
 };

@@ -20,3 +20,6 @@ html:has([data-reduced-motion=true]){scroll-behavior:auto}
 html{overflow-anchor:none}
 
 @media(max-width:899px){:root{--page-width:calc(100% - max(20px,env(safe-area-inset-left)) - max(20px,env(safe-area-inset-right)));--section-space:72px;--section-small:44px}html{scroll-padding-top:calc(118px + env(safe-area-inset-top))}}
+
+/* Images remain part of the page, rather than becoming native drag previews. */
+img{-webkit-user-drag:none;user-select:none}

@@ -1,7 +1,7 @@
 import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowUpRight, ScanLine } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import Github from './GithubIcon';
 import { projects } from './data/portfolio';
 import { localize, t } from './i18n';
@@ -17,8 +17,8 @@ const ease = value => {
 };
 const external = { target: '_blank', rel: 'noreferrer noopener' };
 
-export default function ProjectGallery({ reduced, onOpen }) {
-  const root = useRef(null), stage = useRef(null), seek = useRef(null);
+export default function ProjectGallery({ reduced }) {
+  const root = useRef(null), stage = useRef(null), seek = useRef(null), suppressClick = useRef(0);
   useLayoutEffect(() => {
     if (reduced) return;
     const media = gsap.matchMedia();
@@ -28,9 +28,12 @@ export default function ProjectGallery({ reduced, onOpen }) {
       const covers = cards.map(card => card.querySelector('[data-cover]'));
       const details = cards.map(card => card.querySelector('[data-project-detail]'));
       const washes = cards.map(card => card.querySelector('[data-project-wash]'));
+      const copyParts = details.map(detail => [...detail.querySelectorAll('[data-project-copy-part]')]);
       const playhead = { position: 0 };
       let width, height, mobile, inset, distance, coverWidth, coverHeight, coverTop, coverLeft;
-      let lastFocused = -2, orbit = 0, currentFocus = 0, lastDetailPosition = -1;
+      let detailHeights = [];
+      let lastFocused = -2, orbit = 0, currentFocus = 0, lastDetailKey = '';
+      let navigation = null, navigationTween, alignmentTween, pointer = null, angularVelocity = 0;
       const arrival = { progress: 0 };
       let entranceTween;
       const ranks = new Array(cards.length).fill(-1);
@@ -38,6 +41,7 @@ export default function ProjectGallery({ reduced, onOpen }) {
       const setCovers = covers.map(cover => gsap.quickSetter(cover, 'css'));
       const setDetails = details.map(detail => gsap.quickSetter(detail, 'css'));
       const setWashes = washes.map(wash => gsap.quickSetter(wash, 'opacity'));
+      const setCopyParts = copyParts.map(parts => parts.map(part => gsap.quickSetter(part, 'css')));
       section.dataset.showcase = 'true';
 
       function measure() {
@@ -58,9 +62,10 @@ export default function ProjectGallery({ reduced, onOpen }) {
         section.style.setProperty('--cover-height', coverHeight + 'px');
         section.style.setProperty('--cover-top', coverTop + 'px');
         section.style.setProperty('--cover-left', coverLeft + 'px');
+        detailHeights = details.map(detail => detail.offsetHeight);
       }
 
-      function render() {
+      function scrollScene() {
         const position = Math.min(projects.length - .00001, playhead.position);
         const index = Math.floor(position), phase = position - index;
         const approach = ease((phase - .07) / .23);
@@ -68,7 +73,29 @@ export default function ProjectGallery({ reduced, onOpen }) {
         const focus = approach * (1 - retreat);
         const read = ease((phase - .26) / .10) * (1 - ease((phase - .70) / .12));
         const travel = index + ease((phase - .92) / .08);
-        const focused = read > .65 ? index : -1;
+        return {
+          travel,
+          zooms: cards.map((_, i) => i === index ? focus : 0),
+          reads: cards.map((_, i) => i === index ? read : 0),
+        };
+      }
+
+      function scene() {
+        if (!navigation) return scrollScene();
+        const { from, index, progress, travel } = navigation;
+        const exit = 1 - ease(progress / .43);
+        const enter = ease((progress - .32) / .68);
+        return {
+          travel: from.travel + (travel - from.travel) * ease((progress - .10) / .70),
+          zooms: from.zooms.map((zoom, i) => zoom * exit + (i === index ? enter : 0)),
+          reads: from.reads.map((read, i) => read * (1 - ease(progress / .27)) + (i === index ? ease((progress - .58) / .42) : 0)),
+        };
+      }
+
+      function render() {
+        const { zooms, reads, travel } = scene();
+        const focus = Math.max(...zooms);
+        const focused = reads.findIndex(read => read > .65);
         currentFocus = focus;
 
         if (focused !== lastFocused) {
@@ -78,17 +105,16 @@ export default function ProjectGallery({ reduced, onOpen }) {
             details[i].inert = !active;
             details[i].setAttribute('aria-hidden', String(!active));
             covers[i].dataset.featured = String(active);
-            covers[i].setAttribute('aria-label', active
-              ? t('Ampliar imagem: ' + projects[i].name)
-              : t('Ver projeto') + ': ' + t(projects[i].name));
+            covers[i].setAttribute('aria-pressed', String(active));
           });
           lastFocused = focused;
         }
 
         const radius = coverWidth / (2 * Math.sin(Math.PI / projects.length)) * 1.12;
         const lens = coverWidth * 2.8;
+        const textFloor = mobile ? coverTop + coverHeight + 16 + Math.max(...detailHeights.map((size, j) => size * zooms[j])) : 0;
         const planes = cards.map((card, i) => {
-          const zoom = i === index ? focus : 0;
+          const zoom = zooms[i];
           const angle = (i - travel) * Math.PI * 2 / projects.length + orbit;
           const depth = (Math.cos(angle) + 1) / 2;
           const worldZ = radius * (Math.cos(angle) - 1);
@@ -98,7 +124,9 @@ export default function ProjectGallery({ reduced, onOpen }) {
           const scale = projection * compression;
           const centerX = width * .5 + Math.sin(angle) * radius * projection * (1 - focus * .48);
           const restY = height * ((mobile ? .12 : .17) + depth * .23);
-          const readingY = height * (mobile && height < 700 ? .89 : .84);
+          const readingY = mobile
+            ? Math.max(height * (height < 700 ? .89 : .84), textFloor + 18 + coverHeight * scale / 2)
+            : height * .84;
           const centerY = restY + (readingY - restY) * focus;
           const carouselX = centerX - coverWidth / 2;
           const carouselY = centerY - coverHeight / 2;
@@ -119,19 +147,28 @@ export default function ProjectGallery({ reduced, onOpen }) {
           ranks[plane.index] = rank;
           covers[plane.index].style.zIndex = String(rank + 2);
         });
-        // Text and surface only depend on scroll, never on the autoplay clock.
-        if (position !== lastDetailPosition) {
+        // Keep the autoplay/drag loop light: only update copy when its reveal changes.
+        const detailKey = reads.join(',') + '|' + zooms.join(',');
+        if (detailKey !== lastDetailKey) {
           cards.forEach((card, i) => {
-            const visible = i === index ? read : 0;
-            setDetails[i]({ opacity: visible, y: (1 - visible) * 24 });
-            setWashes[i]((i === index ? focus : 0) * .16);
+            const visible = reads[i];
+            setDetails[i]({ opacity: visible, y: (1 - visible) * 12 });
+            setCopyParts[i].forEach((set, part) => {
+              const reveal = ease((visible - part * .045) / (1 - part * .045));
+              set({ opacity: reveal, x: (1 - reveal) * (part % 2 ? 18 : -12), y: (1 - reveal) * 10 });
+            });
+            setWashes[i](zooms[i] * .16);
           });
-          lastDetailPosition = position;
+          lastDetailKey = detailKey;
         }
       }
       function tick(_time, delta) {
         const step = Math.min(delta, 64);
-        orbit -= step / 1000 * (Math.PI * 2 / 36) * (1 - currentFocus * .7);
+        if (!navigation && !pointer?.dragged) {
+          orbit += angularVelocity * step / 1000;
+          angularVelocity *= Math.exp(-step / 350);
+          orbit -= step / 1000 * (Math.PI * 2 / 36) * (1 - currentFocus * .7);
+        }
         elapsed += step;
         if (elapsed < (mobile ? 32 : 16)) return;
         elapsed = 0;
@@ -166,11 +203,44 @@ export default function ProjectGallery({ reduced, onOpen }) {
           scrub: .12, refreshPriority: -1, onRefreshInit: measure, onRefresh: render,
         },
       });
-      function goTo(index) {
+      function goTo(index, animated = true) {
+        if (animated && (navigation?.index === index || (!navigation && lastFocused === index))) return;
+        const from = scene();
+        navigationTween?.kill();
+        alignmentTween?.kill();
         const trigger = tween.scrollTrigger;
-        window.scrollTo({
-          top: trigger.start + (index + .49) / projects.length * (trigger.end - trigger.start),
-          behavior: 'instant',
+        if (animated) {
+          // Move through the shortest arc; a click never flashes the intervening projects.
+          const arc = gsap.utils.wrap(-projects.length / 2, projects.length / 2, index - from.travel);
+          navigation = { from, index, travel: from.travel + arc, progress: 0 };
+          section.dataset.switching = 'true';
+          angularVelocity = 0;
+        } else {
+          navigation = null;
+          delete section.dataset.switching;
+        }
+        const destination = trigger.start + (index + .49) / projects.length * (trigger.end - trigger.start);
+        const settleScroll = () => {
+          window.scrollTo({ top: destination, behavior: 'instant' });
+          trigger.update();
+          tween.progress((index + .49) / projects.length);
+        };
+        if (animated && viewport.getBoundingClientRect().top > inset + 2) {
+          const scroll = { y: window.scrollY };
+          // Bring an arriving gallery into view gently before changing its hidden scroll position.
+          alignmentTween = gsap.to(scroll, {
+            y: trigger.start, duration: .28, ease: 'power2.out',
+            onUpdate: () => window.scrollTo({ top: scroll.y, behavior: 'instant' }), onComplete: settleScroll,
+          });
+        } else settleScroll();
+        if (!animated) { render(); return; }
+        navigationTween = gsap.to(navigation, {
+          progress: 1, duration: .86, ease: 'none', onUpdate: render,
+          onComplete: () => {
+            navigation = null;
+            delete section.dataset.switching;
+            render();
+          },
         });
       }
       seek.current = goTo;
@@ -179,7 +249,7 @@ export default function ProjectGallery({ reduced, onOpen }) {
         if (index >= 0) {
           arrival.progress = 1;
           entranceTween?.kill();
-          goTo(index);
+          goTo(index, false);
         }
       }
       function anchor(event) {
@@ -191,11 +261,64 @@ export default function ProjectGallery({ reduced, onOpen }) {
       }
       function focus(event) {
         const index = covers.indexOf(event.target);
-        if (index >= 0 && covers[index].dataset.featured !== 'true') goTo(index);
+        if (!pointer && index >= 0 && event.target.matches(':focus-visible')) goTo(index);
+      }
+      function keyboard(event) {
+        const index = covers.indexOf(event.target);
+        if (index < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+        event.preventDefault();
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? cards.length - 1
+          : gsap.utils.wrap(0, cards.length, index + (event.key === 'ArrowRight' ? 1 : -1));
+        covers[next].focus({ preventScroll: true });
+        goTo(next);
+      }
+      function finishSwitch() {
+        alignmentTween?.progress(1);
+        navigationTween?.progress(1);
+      }
+      function pointerDown(event) {
+        if (!event.isPrimary || event.button !== 0 || event.target.closest('a, [data-project-detail]')) return;
+        finishSwitch();
+        pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, lastX: event.clientX, lastTime: event.timeStamp, dragged: false };
+        angularVelocity = 0;
+      }
+      function pointerMove(event) {
+        if (!pointer || event.pointerId !== pointer.id) return;
+        const dx = event.clientX - pointer.x, dy = event.clientY - pointer.y;
+        if (!pointer.dragged) {
+          if (Math.hypot(dx, dy) < 8) return;
+          // Vertical touch gestures stay with the browser's native page scroll.
+          if (Math.abs(dy) > Math.abs(dx)) { pointer = null; return; }
+          pointer.dragged = true;
+          viewport.setPointerCapture(event.pointerId);
+          viewport.dataset.dragging = 'true';
+        }
+        if (event.cancelable) event.preventDefault();
+        const delta = (event.clientX - pointer.lastX) / Math.max(width, 360) * Math.PI * 1.65;
+        const dt = Math.max(8, event.timeStamp - pointer.lastTime);
+        angularVelocity = gsap.utils.clamp(-4, 4, angularVelocity * .35 + delta / dt * 1000 * .65);
+        orbit += delta;
+        pointer.lastX = event.clientX;
+        pointer.lastTime = event.timeStamp;
+        render();
+      }
+      function pointerUp(event) {
+        if (!pointer || event.pointerId !== pointer.id) return;
+        if (pointer.dragged) suppressClick.current = performance.now() + 400;
+        pointer = null;
+        delete viewport.dataset.dragging;
+        if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
       }
       document.addEventListener('click', anchor);
       window.addEventListener('hashchange', fromHash);
       section.addEventListener('focusin', focus);
+      section.addEventListener('keydown', keyboard);
+      viewport.addEventListener('pointerdown', pointerDown);
+      viewport.addEventListener('pointermove', pointerMove, { passive: false });
+      viewport.addEventListener('pointerup', pointerUp);
+      viewport.addEventListener('pointercancel', pointerUp);
+      window.addEventListener('pointerup', pointerUp);
+      viewport.addEventListener('wheel', finishSwitch, { passive: true });
       render();
       let disposed = false, refresh = 0;
       document.fonts.ready.then(() => {
@@ -209,6 +332,8 @@ export default function ProjectGallery({ reduced, onOpen }) {
         disposed = true;
         visibility.disconnect();
         entranceTween?.kill();
+        navigationTween?.kill();
+        alignmentTween?.kill();
         gsap.ticker.remove(tick);
         document.removeEventListener('visibilitychange', syncPlayback);
         cancelAnimationFrame(refresh);
@@ -216,50 +341,59 @@ export default function ProjectGallery({ reduced, onOpen }) {
         document.removeEventListener('click', anchor);
         window.removeEventListener('hashchange', fromHash);
         section.removeEventListener('focusin', focus);
+        section.removeEventListener('keydown', keyboard);
+        viewport.removeEventListener('pointerdown', pointerDown);
+        viewport.removeEventListener('pointermove', pointerMove);
+        viewport.removeEventListener('pointerup', pointerUp);
+        viewport.removeEventListener('pointercancel', pointerUp);
+        window.removeEventListener('pointerup', pointerUp);
+        viewport.removeEventListener('wheel', finishSwitch);
+        delete viewport.dataset.dragging;
+        delete section.dataset.switching;
         delete section.dataset.showcase;
-        gsap.set([...covers, ...details, ...washes], { clearProps: 'transform,opacity,zIndex' });
+        gsap.set([...covers, ...details, ...washes, ...copyParts.flat()], { clearProps: 'transform,opacity,zIndex' });
         cards.forEach((card, i) => {
           delete card.dataset.active;
           details[i].inert = false;
           details[i].removeAttribute('aria-hidden');
           delete covers[i].dataset.featured;
+          covers[i].removeAttribute('aria-pressed');
         });
       };
     }, root);
     return () => media.revert();
   }, [reduced]);
 
-  function show(project, index, event) {
-    if (seek.current && event.currentTarget.dataset.featured !== 'true') {
-      seek.current(index);
-      return;
-    }
-    onOpen({ image: project.image, title: project.name, caption: project.imageType + ', ' + project.summary });
+  function show(index, event) {
+    if (performance.now() < suppressClick.current) return;
+    if (seek.current) seek.current(index);
+    else event.currentTarget.nextElementSibling.scrollIntoView({ block: 'center', behavior: reduced ? 'instant' : 'smooth' });
   }
 
   return localize(<section id="projetos" className={s.section} ref={root} aria-labelledby="projects-title">
     <div className={s.heading}>
       <h2 id="projects-title"><span data-project-heading-line>Minha bagagem</span><span data-project-heading-line>em projetos.</span></h2>
     </div>
-    <div className={s.stage} ref={stage}>
+    <p id="gallery-help" className={s.visuallyHidden}>Arraste para os lados para girar os projetos. Use as setas do teclado para escolher.</p>
+    <div className={s.stage} ref={stage} aria-describedby="gallery-help">
       {projects.map((project, index) => <article key={project.id} id={'projeto-' + project.id}
         data-project={project.id} className={s.project} style={{ '--project-tint': themes[index] }}
         aria-labelledby={'project-title-' + project.id}>
         <div className={s.wash} data-project-wash aria-hidden="true" />
         <button type="button" data-cover className={s.cover}
-          aria-label={'Ampliar imagem: ' + project.name} onClick={event => show(project, index, event)}>
-          <img src={project.image} alt={project.imageType + ': ' + project.name}
+          aria-label={t('Ver projeto') + ': ' + t(project.name)} onClick={event => show(index, event)}>
+          <img draggable={false} src={project.image} alt={project.imageType + ': ' + project.name}
             loading={index < 2 ? 'eager' : 'lazy'} width="1280" height="720" />
-          <span className={s.expand}><ScanLine size={16} /><span>Ampliar</span></span>
         </button>
         <div className={s.information}>
           <div className={s.copy} data-project-detail>
-            <p className={s.topic}>{project.topic}</p>
-            <h3 id={'project-title-' + project.id}>{project.name}</h3>
-            <p className={s.description}>{project.detail}</p>
+            <p className={s.topic} data-project-copy-part>{project.topic}</p>
+            <h3 id={'project-title-' + project.id} data-project-copy-part>{project.name}</h3>
+            <ul className={s.stack} aria-label="Tecnologias" data-project-copy-part>{project.tech.map(tech => <li key={tech}>{tech}</li>)}</ul>
+            <p className={s.description} data-project-copy-part>{project.detail}</p>
             <dl className={s.specs}>{project.implementation.map(item =>
-              <div key={item.label}><dt>{item.label}</dt><dd>{item.text}</dd></div>)}</dl>
-            <div className={s.actions}>
+              <div key={item.label} data-project-copy-part><dt>{item.label}</dt><dd>{item.text}</dd></div>)}</dl>
+            <div className={s.actions} data-project-copy-part>
               {project.repo ? <a href={'https://github.com/' + project.repo} {...external}
                 aria-label={'GitHub de ' + project.name + (project.private ? ' (repositório privado)' : '')}>
                 <Github size={18} /><span>GitHub{project.private && <small>privado</small>}</span>

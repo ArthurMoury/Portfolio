@@ -76,3 +76,6 @@ Seletor PT/EN no topo da abertura, com preferência persistida e links diretos p
 
 ## Seleção de projetos — 08/11/2026
 Substituir o Site de reservas na galeria por Nexo AI, com o repositório público ArthurMoury/nexo-suporte-ia, deploy na Netlify e captura real da aplicação. Apresentar JavaScript, Python, RAG e tool calling com base no código e na documentação, em português e inglês.
+
+## Interação da galeria — 08/11/2026
+Ao selecionar uma capa, recolher o projeto anterior, girar a galeria pelo arco mais curto e apresentar o escolhido com dados técnicos em sequência. Arraste horizontal com inércia e alternativa por teclado; preservar rolagem vertical nativa no toque. Mostrar a stack disponível, sem inventar resultados. Retirar o controle de ampliar e as molduras pretas da galeria. Impedir arraste nativo de todas as imagens. A onda entre apresentação e projetos passa por um degradê até a mesma tonalidade da galeria, sem corte de cor. Movimento reduzido mantém as apresentações estáticas e legíveis.
