@@ -219,7 +219,7 @@ export default function ProjectGallery({ reduced, onOpen }) {
       <h2 id="projects-title"><span data-project-heading-line>Minha bagagem</span><span data-project-heading-line>em projetos.</span></h2>
     </div>
     <div className={s.stage} ref={stage}>
-      <button type="button" className={s.playback} onClick={togglePlayback}
+      <button type="button" className={s.playback} onPointerDown={event => event.preventDefault()} onClick={togglePlayback}
         aria-label={paused ? 'Reproduzir carrossel' : 'Pausar carrossel'}>
         {paused ? <Play size={15}/> : <Pause size={15}/>}
         <span>{paused ? 'Reproduzir carrossel' : 'Pausar carrossel'}</span>
