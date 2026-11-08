@@ -152,6 +152,7 @@ export default function ProjectGallery({ reduced, onOpen }) {
         window.removeEventListener('hashchange', fromHash);
         section.removeEventListener('focusin', focus);
         delete section.dataset.showcase;
+        gsap.set([...covers, ...details, ...washes], { clearProps: 'transform,opacity,zIndex' });
         cards.forEach((card, i) => {
           delete card.dataset.active;
           details[i].inert = false;
