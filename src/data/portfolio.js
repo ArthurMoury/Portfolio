@@ -129,34 +129,35 @@ export const projects = [
     ]
   },
   {
-    "id": "roomi-reservas",
-    "name": "Site de reservas",
-    "repo": "AM-Roomi/roomi-reservas",
-    "private": true,
-    "live": "https://roomi-reservas.vercel.app/",
-    "topic": "Hotelaria e reservas",
-    "context": "trabalho",
-    "summary": "Encontrar um destino começa por boas respostas.",
-    "detail": "Experiência de descoberta dos hotéis da rede Roomi, com destinos, promoções e informações para escolher a hospedagem. Uma jornada que conecta inspiração e reserva.",
+    "id": "nexo-ai",
+    "name": "Nexo AI",
+    "repo": "ArthurMoury/nexo-suporte-ia",
+    "private": false,
+    "live": "https://nexo-suporte-arthurmoury.netlify.app/",
+    "topic": "Inteligência artificial e suporte",
+    "context": "iniciativa",
+    "summary": "Um agente que consulta antes de responder.",
+    "detail": "Assistente de suporte com LLMs, ferramentas em Python e RAG sobre documentos. Responde com fontes verificadas e permite acompanhar as consultas executadas. O cenário usa uma empresa fictícia e dados sintéticos.",
     "tech": [
+      "Python",
       "JavaScript",
-      "CSS",
-      "Serverless"
+      "RAG",
+      "Tool calling"
     ],
-    "image": "/projects/roomi-reservas-cover.webp",
-    "imageType": "Captura da página pública",
+    "image": "/projects/nexo-ai.webp",
+    "imageType": "Captura da aplicação",
     "implementation": [
       {
         "label": "Aplicação",
-        "text": "HTML, CSS e JavaScript."
+        "text": "HTML, CSS e JavaScript, sem dependências de runtime de terceiros."
       },
       {
-        "label": "Integrações",
-        "text": "Funções serverless para serviços da experiência de reservas."
+        "label": "Agente e recuperação",
+        "text": "Orquestração em Python, APIs Gemini e OpenAI, tool calling e busca lexical BM25 em documentos Markdown."
       },
       {
-        "label": "Construção",
-        "text": "Exploração de destinos, hotéis, ofertas e informações de hospedagem."
+        "label": "Entrega e qualidade",
+        "text": "Interface na Netlify e backend Python na Vercel, com testes automatizados e avaliação contínua."
       }
     ]
   },
