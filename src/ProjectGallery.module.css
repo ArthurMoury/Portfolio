@@ -1,0 +1,68 @@
+.section { background: #101214; color: var(--light); position: relative; }
+.heading { width: var(--page-width); margin-inline: auto; padding: clamp(60px, 8vw, 120px) 0 48px; }
+.heading h2 { font: 400 clamp(2.7rem, 5.7vw, 6rem)/1.07 Sora, sans-serif; letter-spacing: -.055em; }
+.heading h2 span { display: block; }
+.heading h2 span:last-child { color: #aeb3b9; }
+.stage { position: relative; }
+.project { padding: 40px max(24px, calc((100vw - 1280px)/2)) 64px; }
+.wash { display: none; }
+.cover {
+  display: block; padding: 0; position: relative; width: 100%; aspect-ratio: 16/10;
+  background: #090b0d; overflow: hidden; border-radius: 7px;
+}
+.cover img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.expand { position: absolute; bottom: 12px; right: 12px; display: flex; gap: 7px; align-items: center; background: #111519e6; padding: 8px 12px; border-radius: 30px; font-size: 11px; }
+.copy { padding-top: 24px; }
+.topic { color: var(--project-tint); font-size: 12px; margin-bottom: 14px; }
+.copy h3 { font: 450 clamp(2rem, 3.2vw, 3.3rem)/1.05 Sora, sans-serif; letter-spacing: -.045em; max-width: 16ch; }
+.description { color: #c4c8cc; font-size: clamp(14px, 1.05vw, 17px); line-height: 1.5; margin-top: 20px; }
+.specs { margin: 24px 0; }
+.specs div { padding-block: 10px; border-top: 1px solid #ffffff20; }
+.specs dt { font-size: 10px; color: var(--project-tint); margin-bottom: 4px; }
+.specs dd { margin: 0; font-size: 12px; line-height: 1.4; color: #d1d4d7; }
+.actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+.actions a { display: inline-flex; align-items: center; gap: 10px; padding: 10px 16px; min-height: 44px; border: 1px solid #ffffff4d; border-radius: 40px; font-size: 13px; }
+.actions a:hover { background: #ffffff12; border-color: var(--project-tint); }
+.actions small { display: block; font-size: 9px; color: #aeb3b9; margin-top: 1px; }
+.unavailable { font-size: 11px; color: #aeb3b9; }
+
+.section[data-showcase] { height: calc(var(--gallery-heading) + var(--gallery-height) + var(--gallery-travel)); }
+[data-showcase] .stage {
+  position: sticky; top: var(--gallery-inset); height: calc(100svh - var(--gallery-inset));
+  overflow: clip; isolation: isolate; perspective: 1200px;
+}
+[data-showcase] .project { position: absolute; inset: 0; padding: 0; pointer-events: none; }
+[data-showcase] .wash { display: block; position: absolute; inset: 0; background: radial-gradient(ellipse at 38% 36%, var(--project-tint), transparent 75%); opacity: 0; }
+[data-showcase] .cover {
+  position: absolute; top: 0; left: 0; width: var(--cover-width); height: var(--cover-height);
+  aspect-ratio: auto; transform-origin: center; pointer-events: auto; backface-visibility: hidden;
+}
+[data-showcase] .expand { opacity: 0; transition: opacity .2s; }
+[data-showcase] [data-featured=true] .expand { opacity: 1; }
+[data-showcase] .information { position: absolute; top: 5%; bottom: 20%; left: 65%; right: 5%; display: flex; align-items: center; }
+[data-showcase] .copy { padding: 0; opacity: 0; pointer-events: auto; width: 100%; }
+[data-showcase] .copy[inert] { pointer-events: none; }
+
+@media (max-width: 899px) {
+  .heading { padding-top: 60px; padding-bottom: 28px; }
+  .heading h2 { font-size: clamp(2.4rem, 9.5vw, 4rem); }
+  .project { padding: 24px 20px 52px; }
+  .copy h3 { font-size: clamp(1.65rem, 7vw, 2.2rem); max-width: none; }
+  .topic { font-size: 10px; margin-bottom: 8px; }
+  .description { font-size: 14px; margin-top: 12px; line-height: 1.4; }
+  .specs { margin-block: 14px; }
+  .specs div { display: grid; grid-template-columns: 82px 1fr; gap: 12px; padding-block: 7px; }
+  .specs dt { font-size: 10px; }
+  .specs dd { font-size: 11px; }
+  [data-showcase] .information {
+    top: calc(var(--cover-top) + var(--cover-height) + 16px); bottom: 22%;
+    left: 20px; right: 20px; align-items: flex-start;
+  }
+  [data-showcase] .cover { border-radius: 5px; }
+}
+@media (max-height: 740px) and (max-width: 899px) {
+  [data-showcase] .description { font-size: 13px; margin-top: 8px; }
+  [data-showcase] .specs { margin-block: 10px; }
+  [data-showcase] .specs div { padding-block: 5px; }
+  [data-showcase] .copy h3 { font-size: 1.65rem; }
+}

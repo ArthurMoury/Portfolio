@@ -79,9 +79,6 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setActiveSec
       });
       const transition=q('[data-section-transition]')[0];
       if(transition)gsap.fromTo(q('[data-transition-surface]'),{attr:{d:'M0 160Q720 -100 1440 160V200H0Z'}},{attr:{d:'M0 0Q720 0 1440 0V200H0Z'},ease:'none',scrollTrigger:{trigger:transition,start:'top bottom',end:'bottom 35%',scrub:.7}});
-      q('[data-project]').forEach(band => {
-        gsap.from(band.querySelector('h3'), { x: -30, duration: .85, ease: 'power3.out', clearProps: 'all', scrollTrigger: { trigger: band, start: 'top 90%', once: true } });
-      });
       gsap.fromTo(q('[data-project-heading-line]'),{x:i=>i?55:-55,opacity:.15},{x:0,opacity:1,stagger:.12,duration:1,ease:'power3.out',scrollTrigger:{trigger:q('#projects-title')[0],start:'top 90%',end:'top 45%',scrub:.6}});
       const careerTitle=q('#career-title')[0];
       gsap.fromTo(careerTitle.querySelectorAll('[data-reveal-word]'),{opacity:.12,filter:'blur(8px)',scale:1.12},{opacity:1,filter:'blur(0px)',scale:1,stagger:{each:.08,from:'center'},ease:'none',scrollTrigger:{trigger:careerTitle,start:'top 90%',end:'top 38%',scrub:.6}});

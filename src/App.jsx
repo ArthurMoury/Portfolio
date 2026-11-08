@@ -1,10 +1,8 @@
 import { localize, t } from './i18n';
 import { useEffect, useRef, useState } from 'react';
-import { flushSync } from 'react-dom';
 import gsap from 'gsap';
 import { ArrowUpRight, BriefcaseBusiness, GraduationCap, Check, X, Menu, Mail, Copy, MapPin, ScanLine, FileDown } from 'lucide-react';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { projects, chapters, profile } from './data/portfolio';
+import { chapters, profile } from './data/portfolio';
 import { usePageMotion, useReducedMotion } from './motion';
 import s from './App.module.css';
 import KineticHero from './KineticHero';
@@ -13,11 +11,11 @@ import PracticeLab from './PracticeLab';
 import FooterSignature from './FooterSignature';
 import SubjectSelect from './SubjectSelect';
 import TextReveal from './TextReveal';
-import ProjectNarrative from './ProjectNarrative';
+import ProjectGallery from './ProjectGallery';
+import Github from './GithubIcon';
 
 const external = { target: '_blank', rel: 'noreferrer noopener' };
 
-function Github({size=18}) { return localize(<svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg>); }
 function Linkedin({size=18}) { return localize(<svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><rect x="2" y="2" width="20" height="20" rx="2"/><path fill="var(--deepest)" d="M6 10h3v9H6zm1.5-5a1.6 1.6 0 1 0 0 3.2 1.6 1.6 0 0 0 0-3.2M11 10h3v1.3c.6-1 1.4-1.5 2.7-1.5 2.2 0 3.3 1.4 3.3 4V19h-3v-4.7c0-1.4-.5-2-1.5-2S14 13 14 14.3V19h-3z"/></svg>); }
 
 function LinkButton({ href, children, secondary = false, ...props }) {
@@ -64,15 +62,6 @@ function About() {
   </div></section>);
 }
 
-function ProjectImage({ project, onOpen }) {
-  return localize(<button className={s.projectImage}
-    onClick={() => onOpen({ image: project.image, title: project.name, caption: `${project.imageType}, ${project.summary}` })}
-    aria-label={`Ampliar imagem: ${project.name}`}>
-    <img src={project.image} alt={`${project.imageType}: ${project.name}`} loading="lazy" width="1280" height="720"/>
-    <span className={s.imageExpand}><ScanLine size={17}/><span>Ampliar</span></span>
-  </button>);
-}
-
 function Career({ onOpen, activeChapter, reduced }) {
   const stage=useRef(null), previous=useRef(activeChapter);
   useEffect(()=>{
@@ -93,120 +82,6 @@ function Career({ onOpen, activeChapter, reduced }) {
       <div className={s.chapterMobile} data-chapter-mobile data-image-fit={c.fit} style={{'--chapter-bg':c.background}}><button onClick={()=>onOpen({image:c.image,title:c.organization,caption:''})} aria-label={`Ampliar imagem de ${c.organization}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/>{c.brandImage&&<img className={s.chapterBrand} src={c.brandImage} alt="CESAR School" width="70" height="70"/>}<ScanLine size={20}/></button></div>
     </article>))}</div><aside ref={stage} className={s.careerStage} aria-label="Visuais da trajetória"><div className={s.chapterImages}>{chapters.map((c,i)=>localize(<button key={c.id} className={s.chapterVisual} data-image-fit={c.fit} style={{'--chapter-bg':c.background}} data-chapter-visual={i} data-active={activeChapter===i} onClick={()=>onOpen({image:c.image,title:c.organization,caption:''})} tabIndex={activeChapter===i?0:-1} aria-hidden={activeChapter!==i} aria-label={`Ampliar imagem: ${c.caption}`}><img src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/>{c.brandImage&&<img className={s.chapterBrand} src={c.brandImage} alt="CESAR School" width="70" height="70"/>}</button>))}</div></aside></div>
   </div></section>);
-}
-
-function ProjectGallery({ onOpen, reduced }) {
-  const initial=projects.findIndex(p=>window.location.hash===`#projeto-${p.id}`);
-  const [open,setOpen]=useState(initial<0?null:initial);
-  const current=useRef(initial<0?null:initial), section=useRef(null), changing=useRef(false), anchorLock=useRef(!!window.location.hash);
-  const transition=useRef(null);
-  const switchTo=(index,preserve=true,instant=false)=>{
-    if(index===current.current)return;
-    const panels=[...section.current.querySelectorAll('[data-project-panel]')];
-    const row=section.current.querySelector(`[data-project-trigger="${index??current.current}"]`);
-    const before=row?.getBoundingClientRect().top;
-    transition.current?.kill();
-    const heights=panels.map(panel=>panel.getBoundingClientRect().height);
-    const target=index??current.current;
-    const compensate=preserve&&row&&before>0&&before<innerHeight;
-    let centered=0;
-    const contentHeight=index===null?0:panels[index].firstElementChild.firstElementChild.getBoundingClientRect().height;
-    const bandHeight=(row?.offsetHeight||0)+contentHeight;
-    const navHeight=document.querySelector('header')?.offsetHeight||108;
-    const desiredTop=Math.max(navHeight+16,navHeight+(innerHeight-navHeight-bandHeight)/2);
-    const centerDistance=compensate&&index!==null?before-desiredTop:0;
-    let prefix=heights.slice(0,target).reduce((a,b)=>a+b,0);
-    current.current=index;changing.current=true;
-    flushSync(()=>setOpen(index));
-    if(reduced||instant){
-      gsap.set(panels,{clearProps:'height,gridTemplateRows,overflow'});
-      panels.forEach(p=>gsap.set(p.firstElementChild,{clearProps:'opacity,transform'}));
-      if(compensate)window.scrollBy({top:row.getBoundingClientRect().top-before+centerDistance,behavior:'instant'});
-      changing.current=false;ScrollTrigger.refresh(true);return;
-    }
-    // Align the opening band while compensating outgoing height. Wheel/touch deltas remain native.
-    gsap.set(panels,{height:i=>heights[i],gridTemplateRows:'1fr',overflow:'hidden'});
-    const timeline=gsap.timeline({onUpdate:()=>{
-      if(!compensate)return;
-      const next=panels.slice(0,target).reduce((sum,p)=>sum+p.getBoundingClientRect().height,0);
-      const centerNow=centerDistance*gsap.parseEase('power2.inOut')(timeline.progress());
-      const delta=next-prefix+centerNow-centered;prefix=next;centered=centerNow;
-      if(Math.abs(delta)>.01)window.scrollBy({top:delta,behavior:'instant'});
-    },onComplete:()=>{
-      gsap.set(panels,{clearProps:'height,gridTemplateRows,overflow'});
-      panels.forEach(p=>gsap.set(p.firstElementChild,{clearProps:'opacity,transform'}));
-      changing.current=false;ScrollTrigger.refresh(true);
-    }});
-    transition.current=timeline;
-
-    panels.forEach((panel,i)=>{
-      const content=panel.firstElementChild;
-      const height=i===index?content.firstElementChild.getBoundingClientRect().height:0;
-      if(!heights[i]&&!height)return;
-      timeline.to(panel,{height,duration:i===index?.56:.44,ease:'power2.inOut'},0);
-      if(i===index){
-        if(!heights[i])gsap.set(content,{opacity:0,y:12});
-        timeline.to(content,{opacity:1,y:0,duration:.4,ease:'power3.out'},.1);
-      }else timeline.to(content,{opacity:0,y:-8,duration:.28,ease:'power2.in'},0);
-    });
-  };
-  useEffect(()=>{
-    let frame=0,settle;
-    const update=()=>{
-      frame=0;
-      if(changing.current||anchorLock.current||document.querySelector('dialog[open]'))return;
-      const bounds=section.current.getBoundingClientRect();
-      if(bounds.top>innerHeight*.6||bounds.bottom<innerHeight*.3)return;
-      const rows=[...section.current.querySelectorAll('[data-project-trigger]')];
-      let index=null;
-      rows.forEach((row,i)=>{if(row.getBoundingClientRect().top<=innerHeight*.6)index=i;});
-      if(index!==null)switchTo(index);
-    };
-    const queue=()=>{
-      if(anchorLock.current){clearTimeout(settle);settle=setTimeout(()=>{anchorLock.current=false;},220);return;}
-      if(!frame)frame=requestAnimationFrame(update);
-    };
-    const anchor=e=>{
-      const link=e.target.closest('a[href^="#"]');
-      if(!link||e.button!==0||e.metaKey||e.ctrlKey||e.shiftKey||e.altKey)return;
-      anchorLock.current=true;
-      const target=projects.findIndex(p=>link.hash===`#projeto-${p.id}`);
-      if(target>=0)switchTo(target,false,true);
-      clearTimeout(settle);settle=setTimeout(()=>{anchorLock.current=false;},1400);
-    };
-    const hashChange=()=>{
-      anchorLock.current=true;
-      const target=projects.findIndex(p=>window.location.hash===`#projeto-${p.id}`);
-      if(target>=0)switchTo(target,false,true);
-      clearTimeout(settle);settle=setTimeout(()=>{anchorLock.current=false;},1400);
-    };
-    if(anchorLock.current)settle=setTimeout(()=>{anchorLock.current=false;},1400);
-    window.addEventListener('hashchange',hashChange);
-    document.addEventListener('click',anchor,true);
-    window.addEventListener('scroll',queue,{passive:true});
-    window.addEventListener('resize',queue);
-    return()=>{cancelAnimationFrame(frame);transition.current?.kill();changing.current=false;section.current?.querySelectorAll('[data-project-panel]').forEach(p=>{gsap.set(p,{clearProps:'height,gridTemplateRows,overflow'});gsap.set(p.firstElementChild,{clearProps:'opacity,transform'});});clearTimeout(settle);document.removeEventListener('click',anchor,true);window.removeEventListener('hashchange',hashChange);window.removeEventListener('scroll',queue);window.removeEventListener('resize',queue);};
-  },[reduced]);
-  return localize(<section id="projetos" ref={section} className={s.projects} aria-labelledby="projects-title">
-    <div className={s.projectsHeading} data-context="iniciativa"><div className={`${s.container} ${s.projectsIntro}`}><h2 id="projects-title"><span data-project-heading-line>Cada ideia,</span><span data-project-heading-line>um mundo para explorar.</span></h2></div></div>
-    {projects.map((p,i)=>localize(<article id={`projeto-${p.id}`} key={p.id} className={s.projectBand} data-project={p.id} data-context={p.context} data-expanded={open===i}>
-      <div className={s.container}>
-        <div className={s.projectBandTop} data-project-trigger={i}>
-          <div className={s.projectIdentity}><span className={s.projectTopic}>{p.topic}</span><h3>{p.name}</h3></div>
-          <div className={s.projectActions}>
-            {p.repo?<a href={`https://github.com/${p.repo}`} {...external} aria-label={`GitHub de ${p.name}${p.private?' (repositório privado)':''}`}><Github size={18}/><span>GitHub{p.private&&<small>privado</small>}</span></a>:<span className={s.unavailable}><Github size={18}/><span>Código não publicado</span></span>}
-            {p.id==='cortech'?null:p.live?<a href={p.live} {...external} aria-label={`Acessar ${p.name}`}>Acessar<ArrowUpRight size={19}/></a>:<span className={s.unavailable}>Acesso em atualização</span>}
-          </div>
-        </div>
-        <div id={`project-gallery-${p.id}`} data-project-panel className={`${s.projectGallery} ${open===i?s.projectGalleryOpen:''}`} inert={open!==i?true:undefined} aria-hidden={open!==i}>
-          <div className={s.galleryClip}><div className={s.projectContent}>
-            <figure className={s.galleryScreenshot}><ProjectImage project={p} onOpen={onOpen}/><figcaption>{p.imageType}</figcaption></figure>
-            <ProjectNarrative project={p} open={open===i} reduced={reduced}/>
-          </div></div>
-        </div>
-      </div>
-    </article>))}
-  </section>);
 }
 
 function Curriculum() {
