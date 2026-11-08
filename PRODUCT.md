@@ -79,3 +79,6 @@ Substituir o Site de reservas na galeria por Nexo AI, com o repositório públic
 
 ## Interação da galeria — 08/11/2026
 Ao selecionar uma capa, recolher o projeto anterior, girar a galeria pelo arco mais curto e apresentar o escolhido com dados técnicos em sequência. Arraste horizontal com inércia e alternativa por teclado; preservar rolagem vertical nativa no toque. Mostrar a stack disponível, sem inventar resultados. Retirar o controle de ampliar e as molduras pretas da galeria. Impedir arraste nativo de todas as imagens. A onda entre apresentação e projetos passa por um degradê até a mesma tonalidade da galeria, sem corte de cor. Movimento reduzido mantém as apresentações estáticas e legíveis.
+
+## Fluxo contínuo da galeria — 08/11/2026
+A trajetória orbital dá lugar a uma faixa infinita: as capas entram pela borda direita e saem pela esquerda. Reposicionar cada capa somente fora da área visível, mantendo espaçamento contínuo e o arraste manual. Separar o fluxo das miniaturas da apresentação em destaque para que o loop prossiga durante a leitura; o destaque entra pela direita e sai pela esquerda. Preservar as alternativas estáticas para movimento reduzido.

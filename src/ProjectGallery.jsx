@@ -26,19 +26,20 @@ export default function ProjectGallery({ reduced }) {
       const section = root.current, viewport = stage.current;
       const cards = [...section.querySelectorAll('[data-project]')];
       const covers = cards.map(card => card.querySelector('[data-cover]'));
+      const features = cards.map(card => card.querySelector('[data-project-feature]'));
       const details = cards.map(card => card.querySelector('[data-project-detail]'));
       const washes = cards.map(card => card.querySelector('[data-project-wash]'));
       const copyParts = details.map(detail => [...detail.querySelectorAll('[data-project-copy-part]')]);
       const playhead = { position: 0 };
-      let width, height, mobile, inset, distance, coverWidth, coverHeight, coverTop, coverLeft;
+      let width, height, mobile, inset, distance, coverWidth, coverHeight, coverTop, coverLeft, trackPitch = 1;
       let detailHeights = [];
-      let lastFocused = -2, orbit = 0, currentFocus = 0, lastDetailKey = '';
+      let lastFocused = -2, flow = 0, currentFocus = 0, lastDetailKey = '';
       let navigation = null, navigationTween, alignmentTween, pointer = null, angularVelocity = 0;
       const arrival = { progress: 0 };
       let entranceTween;
-      const ranks = new Array(cards.length).fill(-1);
       let visible = false, ticking = false, elapsed = 0;
       const setCovers = covers.map(cover => gsap.quickSetter(cover, 'css'));
+      const setFeatures = features.map(feature => gsap.quickSetter(feature, 'css'));
       const setDetails = details.map(detail => gsap.quickSetter(detail, 'css'));
       const setWashes = washes.map(wash => gsap.quickSetter(wash, 'opacity'));
       const setCopyParts = copyParts.map(parts => parts.map(part => gsap.quickSetter(part, 'css')));
@@ -77,6 +78,7 @@ export default function ProjectGallery({ reduced }) {
           travel,
           zooms: cards.map((_, i) => i === index ? focus : 0),
           reads: cards.map((_, i) => i === index ? read : 0),
+          shifts: cards.map((_, i) => i === index ? 1 - approach - retreat : 1),
         };
       }
 
@@ -84,16 +86,19 @@ export default function ProjectGallery({ reduced }) {
         if (!navigation) return scrollScene();
         const { from, index, progress, travel } = navigation;
         const exit = 1 - ease(progress / .43);
-        const enter = ease((progress - .32) / .68);
+        const enter = ease((progress - .28) / .54);
         return {
           travel: from.travel + (travel - from.travel) * ease((progress - .10) / .70),
           zooms: from.zooms.map((zoom, i) => zoom * exit + (i === index ? enter : 0)),
-          reads: from.reads.map((read, i) => read * (1 - ease(progress / .27)) + (i === index ? ease((progress - .58) / .42) : 0)),
+          reads: from.reads.map((read, i) => read * (1 - ease(progress / .27)) + (i === index ? ease((progress - .66) / .34) : 0)),
+          shifts: from.shifts.map((shift, i) => i === index
+            ? (from.zooms[i] > 0 ? shift : 1) * (1 - enter)
+            : shift - (shift + 1) * (1 - exit)),
         };
       }
 
       function render() {
-        const { zooms, reads, travel } = scene();
+        const { zooms, reads, shifts, travel } = scene();
         const focus = Math.max(...zooms);
         const focused = reads.findIndex(read => read > .65);
         currentFocus = focus;
@@ -110,42 +115,39 @@ export default function ProjectGallery({ reduced }) {
           lastFocused = focused;
         }
 
-        const radius = coverWidth / (2 * Math.sin(Math.PI / projects.length)) * 1.12;
-        const lens = coverWidth * 2.8;
+        // The wrap happens completely outside the viewport, so the same seven
+        // covers can keep entering from the right without visible resets or clones.
+        const scale = (mobile ? .86 : .82) * (1 - focus * .76);
+        const tileWidth = coverWidth * scale;
+        const gap = Math.max(mobile ? 22 : 36, tileWidth * .10);
+        const pitch = Math.max(tileWidth + gap, (width + tileWidth + gap * 2) / cards.length);
+        trackPitch = pitch;
+        const span = pitch * cards.length;
+        const wrap = gsap.utils.wrap(-tileWidth / 2 - gap, span - tileWidth / 2 - gap);
+        const arrivalX = (1 - ease(arrival.progress)) * (width + tileWidth + gap * 2);
         const textFloor = mobile ? coverTop + coverHeight + 16 + Math.max(...detailHeights.map((size, j) => size * zooms[j])) : 0;
-        const planes = cards.map((card, i) => {
+        cards.forEach((card, i) => {
           const zoom = zooms[i];
-          const angle = (i - travel) * Math.PI * 2 / projects.length + orbit;
-          const depth = (Math.cos(angle) + 1) / 2;
-          const worldZ = radius * (Math.cos(angle) - 1);
-          const projection = lens / (lens - worldZ);
-          const compression = 1 - focus * .76;
           const birth = ease(arrival.progress * 1.6 - i * .10);
-          const scale = projection * compression;
-          const centerX = width * .5 + Math.sin(angle) * radius * projection * (1 - focus * .48);
-          const restY = height * ((mobile ? .12 : .17) + depth * .23);
+          const centerX = wrap(width * .5 + (i - travel - flow) * pitch);
+          const restY = height * (mobile ? .31 : .37);
           const readingY = mobile
             ? Math.max(height * (height < 700 ? .89 : .84), textFloor + 18 + coverHeight * scale / 2)
             : height * .84;
           const centerY = restY + (readingY - restY) * focus;
-          const carouselX = centerX - coverWidth / 2;
-          const carouselY = centerY - coverHeight / 2;
           setCovers[i]({
-            x: carouselX + (coverLeft - carouselX) * zoom,
-            y: carouselY + (coverTop - carouselY) * zoom + (1 - birth) * 75,
-            scale: (scale + (1 - scale) * zoom) * (.84 + .16 * birth),
-            rotationY: -Math.sin(angle) * 36 * (1 - zoom),
-            rotationZ: -Math.sin(angle) * 5 * (1 - zoom),
-            opacity: birth * (1 - .34 * (1 - depth) * (1 - zoom)),
+            x: centerX - coverWidth / 2 + arrivalX,
+            y: centerY - coverHeight / 2,
+            scale: scale * (.84 + .16 * birth), opacity: birth,
           });
-          // Occlusion follows continuous camera depth, including the lift
-          // toward the reader. Only equal-depth crossings change the order.
-          return { index: i, z: worldZ + (radius * .55 - worldZ) * zoom };
-        });
-        planes.sort((a, b) => a.z - b.z).forEach((plane, rank) => {
-          if (ranks[plane.index] === rank) return;
-          ranks[plane.index] = rank;
-          covers[plane.index].style.zIndex = String(rank + 2);
+          // A separate presentation layer lets the track keep flowing while a
+          // selected project arrives from the right and leaves through the left.
+          setFeatures[i]({
+            x: coverLeft + shifts[i] * (width + coverWidth),
+            y: coverTop + (1 - zoom) * 12,
+            scale: .94 + .06 * zoom, opacity: zoom * birth,
+            visibility: zoom > 0 ? 'visible' : 'hidden',
+          });
         });
         // Keep the autoplay/drag loop light: only update copy when its reveal changes.
         const detailKey = reads.join(',') + '|' + zooms.join(',');
@@ -165,9 +167,9 @@ export default function ProjectGallery({ reduced }) {
       function tick(_time, delta) {
         const step = Math.min(delta, 64);
         if (!navigation && !pointer?.dragged) {
-          orbit += angularVelocity * step / 1000;
+          flow -= angularVelocity * step / 1000;
           angularVelocity *= Math.exp(-step / 350);
-          orbit -= step / 1000 * (Math.PI * 2 / 36) * (1 - currentFocus * .7);
+          flow = gsap.utils.wrap(0, cards.length, flow + step / 1000 / 4.8 * (1 - currentFocus * .45));
         }
         elapsed += step;
         if (elapsed < (mobile ? 32 : 16)) return;
@@ -210,8 +212,8 @@ export default function ProjectGallery({ reduced }) {
         alignmentTween?.kill();
         const trigger = tween.scrollTrigger;
         if (animated) {
-          // Move through the shortest arc; a click never flashes the intervening projects.
-          const arc = gsap.utils.wrap(-projects.length / 2, projects.length / 2, index - from.travel);
+          // Click selection follows the same right-to-left direction as autoplay.
+          const arc = gsap.utils.wrap(0, projects.length, index - from.travel);
           navigation = { from, index, travel: from.travel + arc, progress: 0 };
           section.dataset.switching = 'true';
           angularVelocity = 0;
@@ -294,10 +296,10 @@ export default function ProjectGallery({ reduced }) {
           viewport.dataset.dragging = 'true';
         }
         if (event.cancelable) event.preventDefault();
-        const delta = (event.clientX - pointer.lastX) / Math.max(width, 360) * Math.PI * 1.65;
+        const delta = (event.clientX - pointer.lastX) / trackPitch;
         const dt = Math.max(8, event.timeStamp - pointer.lastTime);
         angularVelocity = gsap.utils.clamp(-4, 4, angularVelocity * .35 + delta / dt * 1000 * .65);
-        orbit += delta;
+        flow -= delta;
         pointer.lastX = event.clientX;
         pointer.lastTime = event.timeStamp;
         render();
@@ -351,7 +353,7 @@ export default function ProjectGallery({ reduced }) {
         delete viewport.dataset.dragging;
         delete section.dataset.switching;
         delete section.dataset.showcase;
-        gsap.set([...covers, ...details, ...washes, ...copyParts.flat()], { clearProps: 'transform,opacity,zIndex' });
+        gsap.set([...covers, ...features, ...details, ...washes, ...copyParts.flat()], { clearProps: 'transform,opacity,zIndex,visibility' });
         cards.forEach((card, i) => {
           delete card.dataset.active;
           details[i].inert = false;
@@ -374,7 +376,7 @@ export default function ProjectGallery({ reduced }) {
     <div className={s.heading}>
       <h2 id="projects-title"><span data-project-heading-line>Minha bagagem</span><span data-project-heading-line>em projetos.</span></h2>
     </div>
-    <p id="gallery-help" className={s.visuallyHidden}>Arraste para os lados para girar os projetos. Use as setas do teclado para escolher.</p>
+    <p id="gallery-help" className={s.visuallyHidden}>Arraste para os lados para explorar os projetos. Use as setas do teclado para escolher.</p>
     <div className={s.stage} ref={stage} aria-describedby="gallery-help">
       {projects.map((project, index) => <article key={project.id} id={'projeto-' + project.id}
         data-project={project.id} className={s.project} style={{ '--project-tint': themes[index] }}
@@ -385,6 +387,9 @@ export default function ProjectGallery({ reduced }) {
           <img draggable={false} src={project.image} alt={project.imageType + ': ' + project.name}
             loading={index < 2 ? 'eager' : 'lazy'} width="1280" height="720" />
         </button>
+        <div className={s.feature} data-project-feature aria-hidden="true">
+          <img draggable={false} src={project.image} alt="" loading="lazy" width="1280" height="720" />
+        </div>
         <div className={s.information}>
           <div className={s.copy} data-project-detail>
             <p className={s.topic} data-project-copy-part>{project.topic}</p>
