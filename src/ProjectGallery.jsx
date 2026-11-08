@@ -1,7 +1,7 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowUpRight, ScanLine } from 'lucide-react';
+import { ArrowUpRight, ScanLine, Pause, Play } from 'lucide-react';
 import Github from './GithubIcon';
 import { projects } from './data/portfolio';
 import { localize, t } from './i18n';
@@ -19,6 +19,12 @@ const external = { target: '_blank', rel: 'noreferrer noopener' };
 
 export default function ProjectGallery({ reduced, onOpen }) {
   const root = useRef(null), stage = useRef(null), seek = useRef(null);
+  const pausedRef = useRef(false);
+  const [paused, setPaused] = useState(false);
+  function togglePlayback() {
+    pausedRef.current = !pausedRef.current;
+    setPaused(pausedRef.current);
+  }
 
   useLayoutEffect(() => {
     if (reduced) return;
@@ -31,7 +37,11 @@ export default function ProjectGallery({ reduced, onOpen }) {
       const washes = cards.map(card => card.querySelector('[data-project-wash]'));
       const playhead = { position: 0 };
       let width, height, mobile, inset, distance, coverWidth, coverHeight, coverTop, coverLeft;
-      let lastFocused = -2;
+      let lastFocused = -2, orbit = 0, currentFocus = 0;
+      let visible = false, ticking = false, elapsed = 0;
+      const setCovers = covers.map(cover => gsap.quickSetter(cover, 'css'));
+      const setDetails = details.map(detail => gsap.quickSetter(detail, 'css'));
+      const setWashes = washes.map(wash => gsap.quickSetter(wash, 'opacity'));
       section.dataset.showcase = 'true';
 
       function measure() {
@@ -63,6 +73,7 @@ export default function ProjectGallery({ reduced, onOpen }) {
         const read = ease((phase - .26) / .10) * (1 - ease((phase - .70) / .12));
         const travel = index + ease((phase - .92) / .08);
         const focused = read > .65 ? index : -1;
+        currentFocus = focus;
 
         if (focused !== lastFocused) {
           cards.forEach((card, i) => {
@@ -79,29 +90,57 @@ export default function ProjectGallery({ reduced, onOpen }) {
         }
 
         cards.forEach((card, i) => {
-          const offset = i - travel;
           const zoom = i === index ? focus : 0;
-          const thumbWidth = mobile ? 100 : Math.min(190, width * .145);
-          const scale = thumbWidth / coverWidth;
-          const spacing = mobile ? 118 : thumbWidth + 40;
-          // Covers return to their place in the same depth-ordered film strip.
-          const railX = width * .5 + offset * spacing - coverWidth / 2;
-          const railY = height * (mobile && height < 700 ? .89 : .84) - coverHeight / 2 - Math.min(3, Math.abs(offset)) * 10;
-          const x = railX + (coverLeft - railX) * zoom;
-          const y = railY + (coverTop - railY) * zoom;
-          gsap.set(covers[i], {
+          const angle = (i - travel) * Math.PI * 2 / projects.length + orbit;
+          const depth = (Math.cos(angle) + 1) / 2;
+          const compression = 1 - focus * .76;
+          const scale = (.52 + depth * .48) * compression;
+          const radiusX = width * (mobile ? .57 : .51) * (1 - focus * .48);
+          const centerX = width * .5 + Math.sin(angle) * radiusX;
+          const restY = height * ((mobile ? .12 : .17) + depth * .23);
+          const readingY = height * (mobile && height < 700 ? .89 : .84);
+          const centerY = restY + (readingY - restY) * focus;
+          // A closed ellipse brings every cover forward and carries it back
+          // behind the next one. The selected cover lifts out of that same path.
+          const carouselX = centerX - coverWidth / 2;
+          const carouselY = centerY - coverHeight / 2;
+          const x = carouselX + (coverLeft - carouselX) * zoom;
+          const y = carouselY + (coverTop - carouselY) * zoom;
+          setCovers[i]({
             x, y, scale: scale + (1 - scale) * zoom,
-            rotationY: -Math.sign(offset) * Math.min(36, Math.abs(offset) * 16) * (1 - zoom),
-            rotationZ: offset * -2 * (1 - zoom),
-            opacity: Math.abs(offset) > 3.5 ? 0 : 1,
-            zIndex: i === index ? 20 : 10 - Math.min(8, Math.round(Math.abs(offset))),
+            rotationY: -Math.sin(angle) * 36 * (1 - zoom),
+            rotationZ: -Math.sin(angle) * 5 * (1 - zoom),
+            opacity: 1 - .34 * (1 - depth) * (1 - zoom),
+            zIndex: zoom > .01 ? 30 : 2 + Math.round(depth * 20),
           });
           const visible = i === index ? read : 0;
-          gsap.set(details[i], { opacity: visible, y: (1 - visible) * 24 });
-          gsap.set(washes[i], { opacity: zoom * .16 });
+          setDetails[i]({ opacity: visible, y: (1 - visible) * 24 });
+          setWashes[i](zoom * .16);
         });
       }
+      function tick(_time, delta) {
+        if (pausedRef.current) return;
+        const step = Math.min(delta, 64);
+        orbit -= step / 1000 * (Math.PI * 2 / 36) * (1 - currentFocus * .7);
+        elapsed += step;
+        if (elapsed < (mobile ? 32 : 16)) return;
+        elapsed = 0;
+        render();
+      }
+      function syncPlayback() {
+        const shouldPlay = visible && !document.hidden;
+        if (shouldPlay === ticking) return;
+        ticking = shouldPlay;
+        if (ticking) gsap.ticker.add(tick);
+        else gsap.ticker.remove(tick);
+      }
+      const visibility = new IntersectionObserver(entries => {
+        visible = entries.at(-1).isIntersecting;
+        syncPlayback();
+      });
+      document.addEventListener('visibilitychange', syncPlayback);
       measure();
+      visibility.observe(viewport);
       const tween = gsap.to(playhead, {
         position: projects.length, ease: 'none', onUpdate: render,
         scrollTrigger: {
@@ -146,6 +185,9 @@ export default function ProjectGallery({ reduced, onOpen }) {
       });
       return () => {
         disposed = true;
+        visibility.disconnect();
+        gsap.ticker.remove(tick);
+        document.removeEventListener('visibilitychange', syncPlayback);
         cancelAnimationFrame(refresh);
         seek.current = null;
         document.removeEventListener('click', anchor);
@@ -177,6 +219,11 @@ export default function ProjectGallery({ reduced, onOpen }) {
       <h2 id="projects-title"><span data-project-heading-line>Minha bagagem</span><span data-project-heading-line>em projetos.</span></h2>
     </div>
     <div className={s.stage} ref={stage}>
+      <button type="button" className={s.playback} onClick={togglePlayback}
+        aria-label={paused ? 'Reproduzir carrossel' : 'Pausar carrossel'}>
+        {paused ? <Play size={15}/> : <Pause size={15}/>}
+        <span>{paused ? 'Reproduzir carrossel' : 'Pausar carrossel'}</span>
+      </button>
       {projects.map((project, index) => <article key={project.id} id={'projeto-' + project.id}
         data-project={project.id} className={s.project} style={{ '--project-tint': themes[index] }}
         aria-labelledby={'project-title-' + project.id}>
