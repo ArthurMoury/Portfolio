@@ -8,7 +8,7 @@ Apresentação pessoal, projetos, trajetória, certificados e aplicações reais
 
 - Tema escuro em todo o site, com entrada tridimensional. O retrato aparece na seção seguinte, junto de uma breve apresentação.
 - Informações pessoais e contato antes dos sete projetos: Cortech, FreeSB, Betterway, Nexo AI, Site Construtor de Hotéis, Sollie e Dozão.
-- Galeria em loop infinito da direita para a esquerda, com arraste horizontal e inércia, seleção por rolagem ou clique, transições entre projetos e apresentação técnica em sequência. Botões independentes para GitHub e deploy.
+- Galeria em loop infinito na diagonal descendente, com capas em perspectiva lateral, arraste e inércia, seleção por rolagem ou clique, transições entre projetos e apresentação técnica em sequência. Botões independentes para GitHub e deploy.
 - Trajetória em CESAR School, Gaita Hero, Echo, Boop, Roomi e projetos autorais, com imagens sincronizadas à rolagem e Google Sites dos projetos acadêmicos de 2025.
 - Dois carrosséis em sentidos opostos com os 29 documentos da pasta fornecida pelo titular: movimento contínuo mesmo sob hover, expansão por Motion e ampliação em diálogo.
 - Navegação por teclado, arraste, foco estável e movimento reduzido.

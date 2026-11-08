@@ -82,3 +82,6 @@ Ao selecionar uma capa, recolher o projeto anterior, girar a galeria pelo arco m
 
 ## Fluxo contínuo da galeria — 08/11/2026
 A trajetória orbital dá lugar a uma faixa infinita: as capas entram pela borda direita e saem pela esquerda. Reposicionar cada capa somente fora da área visível, mantendo espaçamento contínuo e o arraste manual. Separar o fluxo das miniaturas da apresentação em destaque para que o loop prossiga durante a leitura; o destaque entra pela direita e sai pela esquerda. Preservar as alternativas estáticas para movimento reduzido.
+
+## Perspectiva e diagonal da galeria — 08/11/2026
+O fluxo infinito passa a descer na diagonal, do alto à direita para baixo à esquerda. As capas são vistas de lado, com perspectiva em três eixos; a apresentação ampliada mantém inclinação mais discreta. Medir as faces projetadas a cada mudança de layout para calcular espaçamento e reciclar as capas fora da tela. Preservar arraste, teclado, rolagem nativa no toque e a alternativa estática de movimento reduzido.

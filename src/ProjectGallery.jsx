@@ -27,12 +27,15 @@ export default function ProjectGallery({ reduced }) {
       const cards = [...section.querySelectorAll('[data-project]')];
       const covers = cards.map(card => card.querySelector('[data-cover]'));
       const features = cards.map(card => card.querySelector('[data-project-feature]'));
+      const faces = covers.map(cover => cover.querySelector('[data-project-face]'));
+      const featureFaces = features.map(feature => feature.querySelector('[data-project-face]'));
       const details = cards.map(card => card.querySelector('[data-project-detail]'));
       const washes = cards.map(card => card.querySelector('[data-project-wash]'));
       const copyParts = details.map(detail => [...detail.querySelectorAll('[data-project-copy-part]')]);
       const playhead = { position: 0 };
       let width, height, mobile, inset, distance, coverWidth, coverHeight, coverTop, coverLeft, trackPitch = 1;
       let detailHeights = [];
+      let faceBounds, featureBounds;
       let lastFocused = -2, flow = 0, currentFocus = 0, lastDetailKey = '';
       let navigation = null, navigationTween, alignmentTween, pointer = null, angularVelocity = 0;
       const arrival = { progress: 0 };
@@ -64,6 +67,19 @@ export default function ProjectGallery({ reduced }) {
         section.style.setProperty('--cover-top', coverTop + 'px');
         section.style.setProperty('--cover-left', coverLeft + 'px');
         detailHeights = details.map(detail => detail.offsetHeight);
+        // Measure the projected faces once per layout refresh. Spacing and wrap
+        // then follow their real silhouettes, rather than the unrotated boxes.
+        gsap.set([...covers, ...features], { x: 0, y: 0, scale: 1 });
+        gsap.set(faces, { transformPerspective: mobile ? 1000 : 1700, rotationX: 12, rotationY: mobile ? -42 : -48, rotationZ: -11 });
+        gsap.set(featureFaces, { transformPerspective: mobile ? 1200 : 1900, rotationX: 7, rotationY: mobile ? -20 : -26, rotationZ: -5 });
+        const bounds = (shell, face) => {
+          const box = shell.getBoundingClientRect(), projected = face.getBoundingClientRect();
+          return { width: projected.width, height: projected.height,
+            dx: projected.x + projected.width / 2 - box.x - box.width / 2,
+            dy: projected.y + projected.height / 2 - box.y - box.height / 2 };
+        };
+        faceBounds = bounds(covers[0], faces[0]);
+        featureBounds = bounds(features[0], featureFaces[0]);
       }
 
       function scrollScene() {
@@ -115,10 +131,11 @@ export default function ProjectGallery({ reduced }) {
           lastFocused = focused;
         }
 
-        // The wrap happens completely outside the viewport, so the same seven
-        // covers can keep entering from the right without visible resets or clones.
+        // The diagonal descends from upper right to lower left. Recycling still
+        // happens beyond the side edges, with spacing based on the tilted faces.
         const scale = (mobile ? .86 : .82) * (1 - focus * .76);
-        const tileWidth = coverWidth * scale;
+        const tileWidth = faceBounds.width * scale;
+        const tileHeight = faceBounds.height * scale;
         const gap = Math.max(mobile ? 22 : 36, tileWidth * .10);
         const pitch = Math.max(tileWidth + gap, (width + tileWidth + gap * 2) / cards.length);
         trackPitch = pitch;
@@ -126,26 +143,31 @@ export default function ProjectGallery({ reduced }) {
         const wrap = gsap.utils.wrap(-tileWidth / 2 - gap, span - tileWidth / 2 - gap);
         const arrivalX = (1 - ease(arrival.progress)) * (width + tileWidth + gap * 2);
         const textFloor = mobile ? coverTop + coverHeight + 16 + Math.max(...detailHeights.map((size, j) => size * zooms[j])) : 0;
+        const slope = (mobile ? .62 : .34) * (1 - focus * .78);
+        const diagonalReach = (width + tileWidth) / 2 * slope;
+        const featureFit = Math.min(1, coverWidth / featureBounds.width, coverHeight / featureBounds.height);
         cards.forEach((card, i) => {
           const zoom = zooms[i];
           const birth = ease(arrival.progress * 1.6 - i * .10);
-          const centerX = wrap(width * .5 + (i - travel - flow) * pitch);
-          const restY = height * (mobile ? .31 : .37);
+          const centerX = wrap(width * .5 + (i - travel - flow) * pitch) + arrivalX;
+          const restY = height * (mobile ? .38 : .42);
           const readingY = mobile
-            ? Math.max(height * (height < 700 ? .89 : .84), textFloor + 18 + coverHeight * scale / 2)
-            : height * .84;
-          const centerY = restY + (readingY - restY) * focus;
+            ? Math.max(height * (height < 700 ? .89 : .84), textFloor + 18 + tileHeight / 2 + diagonalReach)
+            : height * .87;
+          const centerY = restY + (readingY - restY) * focus + (width / 2 - centerX) * slope;
+          const faceScale = scale * (.84 + .16 * birth);
           setCovers[i]({
-            x: centerX - coverWidth / 2 + arrivalX,
-            y: centerY - coverHeight / 2,
-            scale: scale * (.84 + .16 * birth), opacity: birth,
+            x: centerX - coverWidth / 2 - faceBounds.dx * faceScale,
+            y: centerY - coverHeight / 2 - faceBounds.dy * faceScale,
+            scale: faceScale, opacity: birth,
           });
-          // A separate presentation layer lets the track keep flowing while a
-          // selected project arrives from the right and leaves through the left.
+          const featureScale = featureFit * (.94 + .06 * zoom);
+          // The selected face keeps some perspective and follows the same
+          // diagonal during entry/exit, while its technical details stay level.
           setFeatures[i]({
-            x: coverLeft + shifts[i] * (width + coverWidth),
-            y: coverTop + (1 - zoom) * 12,
-            scale: .94 + .06 * zoom, opacity: zoom * birth,
+            x: coverLeft - featureBounds.dx * featureScale + shifts[i] * (width + coverWidth),
+            y: coverTop - featureBounds.dy * featureScale - shifts[i] * height * .30,
+            scale: featureScale, opacity: zoom * birth,
             visibility: zoom > 0 ? 'visible' : 'hidden',
           });
         });
@@ -353,7 +375,7 @@ export default function ProjectGallery({ reduced }) {
         delete viewport.dataset.dragging;
         delete section.dataset.switching;
         delete section.dataset.showcase;
-        gsap.set([...covers, ...features, ...details, ...washes, ...copyParts.flat()], { clearProps: 'transform,opacity,zIndex,visibility' });
+        gsap.set([...covers, ...features, ...faces, ...featureFaces, ...details, ...washes, ...copyParts.flat()], { clearProps: 'transform,opacity,zIndex,visibility' });
         cards.forEach((card, i) => {
           delete card.dataset.active;
           details[i].inert = false;
@@ -369,7 +391,7 @@ export default function ProjectGallery({ reduced }) {
   function show(index, event) {
     if (performance.now() < suppressClick.current) return;
     if (seek.current) seek.current(index);
-    else event.currentTarget.nextElementSibling.scrollIntoView({ block: 'center', behavior: reduced ? 'instant' : 'smooth' });
+    else event.currentTarget.closest('[data-project]').querySelector('[data-project-detail]').scrollIntoView({ block: 'center', behavior: reduced ? 'instant' : 'smooth' });
   }
 
   return localize(<section id="projetos" className={s.section} ref={root} aria-labelledby="projects-title">
@@ -384,11 +406,11 @@ export default function ProjectGallery({ reduced }) {
         <div className={s.wash} data-project-wash aria-hidden="true" />
         <button type="button" data-cover className={s.cover}
           aria-label={t('Ver projeto') + ': ' + t(project.name)} onClick={event => show(index, event)}>
-          <img draggable={false} src={project.image} alt={project.imageType + ': ' + project.name}
-            loading={index < 2 ? 'eager' : 'lazy'} width="1280" height="720" />
+          <span className={s.face} data-project-face><img draggable={false} src={project.image} alt={project.imageType + ': ' + project.name}
+            loading={index < 2 ? 'eager' : 'lazy'} width="1280" height="720" /></span>
         </button>
         <div className={s.feature} data-project-feature aria-hidden="true">
-          <img draggable={false} src={project.image} alt="" loading="lazy" width="1280" height="720" />
+          <span className={s.face} data-project-face><img draggable={false} src={project.image} alt="" loading="lazy" width="1280" height="720" /></span>
         </div>
         <div className={s.information}>
           <div className={s.copy} data-project-detail>
