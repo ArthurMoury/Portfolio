@@ -82,6 +82,7 @@ export default function Certificates({ reduced, onOpen, modalOpen }) {
     return()=>{observer.disconnect();clearInterval(timer);};
   },[reduced,modalOpen]);
   return localize(<LazyMotion features={domAnimation}><section ref={root} id="certificados" className={s.section} aria-labelledby="certificates-title" data-context="faculdade">
+    <div className={s.handoff} data-career-cert-handoff aria-hidden="true"><span data-career-cert-mist/><span data-career-cert-glow/></div>
     <div className={s.heading}><h2 id="certificates-title" aria-label="Aprendizado contínuo"><span key={phrase} className={s.rotatingTitle} aria-hidden="true">{phrases[phrase][0]}<br/><span>{phrases[phrase][1]}</span></span></h2><a className={s.driveLink} href="https://drive.google.com/drive/folders/1XRFKKlfDYoGV3jMZjAE0DvzvVM1JhHvk" target="_blank" rel="noreferrer noopener">Ver pasta no Drive</a></div>
     <CertificateRow items={experiences} label="IA, nuvem e experiências" reduced={reduced} onOpen={onOpen} modalOpen={modalOpen}/>
     <CertificateRow items={development} reverse label="Programação e dados" reduced={reduced} onOpen={onOpen} modalOpen={modalOpen}/>

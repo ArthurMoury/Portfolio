@@ -106,3 +106,6 @@ Manter o morph aprovado, removendo a superfície retangular durante a transforma
 
 ## Composição alternada da trajetória — 09/11/2026
 No desktop, reunir os capítulos em uma cena fixa controlada pela rolagem nativa. Alternar texto à esquerda/imagem à direita e imagem à esquerda/texto à direita. As imagens atravessam a cena em partículas e se transformam somente em imagens; os caracteres do conteúdo fazem a passagem independente entre os textos. Preservar HTML nítido nas pausas, clientes, tecnologias, links, ampliação e navegação por teclado. Movimento reversível, sem avanço por tempo. Mobile, movimento reduzido e ausência de WebGL conservam os capítulos legíveis em seu fluxo original.
+
+## Passagem da trajetória aos certificados — 09/11/2026
+Remover a borda superior dos certificados. Preservar a mesma base escura nas duas seções e unir a passagem com um campo de luz difuso, sem linha ou superfície recortada, que acompanha a rolagem nos dois sentidos. No desktop, a cena final da trajetória desaparece gradualmente durante a chegada dos certificados. Mobile mantém as imagens estáticas; movimento reduzido conserva somente o fundo contínuo e a iluminação estática.

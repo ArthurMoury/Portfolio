@@ -130,3 +130,6 @@ A etapa Prompts & LLMs mostra um prompt escrito, em lugar das três etiquetas il
 - Links dos Google Sites recebem cliques e foco. Setas avançam para o capítulo seguinte e transferem o foco à imagem; Enter abre a ampliação, Escape fecha. Controles invisíveis ficam fora da interação.
 - Mobile 390×844 conserva seis imagens estáticas por capítulo. Sem WebGL, com movimento reduzido e em desktop com pouca altura, o conteúdo continua no fluxo original e o módulo de partículas não é carregado.
 - Redimensionamento desktop/mobile/desktop, perda e restauração do contexto WebGL verificados, sem erros de JavaScript. Verificação por navegador e emulação de viewport; não representa medição em aparelhos físicos.
+
+## Transição para certificados — 09/11/2026
+Borda superior removida e continuidade visual inspecionada em 1440×900 e 390×844. O campo difuso atravessa a junção sem recorte horizontal e acompanha a rolagem; no desktop, a cena anterior desaparece gradualmente e retorna ao rolar para trás. Movimento reduzido mantém o fundo estático. Sem overflow horizontal ou erros de JavaScript; ampliação de certificados por teclado e Escape preservadas. Conteúdo e build aprovados.

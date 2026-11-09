@@ -82,6 +82,16 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setActiveSec
       q('#certificados h2').forEach(title => {
         gsap.from(title, { y: 38, clipPath: 'inset(0 0 18% 0)', duration: 1.1, ease: 'power4.out', clearProps: 'all', scrollTrigger: { trigger: title, start: 'top 92%', once: true } });
       });
+      const handoff=q('[data-career-cert-handoff]')[0];
+      const certificates=q('#certificados')[0];
+      const passage=gsap.timeline({scrollTrigger:{trigger:certificates,start:'top bottom',end:'top 15%',scrub:.5}});
+      passage.fromTo(handoff,{opacity:0},{opacity:1,duration:.4,ease:'sine.out'})
+        .to(handoff,{opacity:0,duration:.6,ease:'sine.in'})
+        .fromTo(handoff.querySelector('[data-career-cert-mist]'),{xPercent:-10,yPercent:12,scale:.94},{xPercent:10,yPercent:-12,scale:1.08,duration:1,ease:'sine.inOut'},0)
+        .fromTo(handoff.querySelector('[data-career-cert-glow]'),{xPercent:8,yPercent:6},{xPercent:-12,yPercent:-8,duration:1,ease:'sine.inOut'},0);
+      media.add('(min-width: 900px) and (min-height: 700px)',()=>{
+        gsap.to(q('[data-career-scene]')[0],{opacity:0,ease:'sine.inOut',scrollTrigger:{trigger:certificates,start:'top 92%',end:'top 32%',scrub:.35}});
+      });
       const transition=q('[data-section-transition]')[0];
       if(transition)gsap.fromTo(q('[data-transition-surface]'),{attr:{d:'M0 160Q720 -100 1440 160V200H0Z'}},{attr:{d:'M0 0Q720 0 1440 0V200H0Z'},ease:'none',scrollTrigger:{trigger:transition,start:'top bottom',end:'bottom 35%',scrub:.7}});
       gsap.fromTo(q('[data-project-heading-line]'),{x:i=>i?55:-55,opacity:.15},{x:0,opacity:1,stagger:.12,duration:1,ease:'power3.out',scrollTrigger:{trigger:q('#projects-title')[0],start:'top 90%',end:'top 45%',scrub:.6}});
