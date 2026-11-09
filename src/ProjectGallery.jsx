@@ -458,11 +458,11 @@ export default function ProjectGallery({ reduced }) {
         data-project={project.id} className={s.project} style={{ '--project-tint': themes[index] }}
         aria-labelledby={'project-title-' + project.id}>
         <div className={s.wash} data-project-wash aria-hidden="true" />
-        <button type="button" data-cover className={s.cover}
+        <div className={s.rail} data-project-rail><button type="button" data-cover className={s.cover}
           aria-label={t('Ver projeto') + ': ' + t(project.name)} onClick={event => show(index, event)}>
           <span className={s.face} data-project-face><img draggable={false} src={project.image} alt={project.imageType + ': ' + project.name}
             loading={index < 2 ? 'eager' : 'lazy'} width="1280" height="720" /></span>
-        </button>
+        </button></div>
         <div className={s.feature} data-project-feature aria-hidden="true">
           <span className={s.face} data-project-face><img draggable={false} src={project.image} alt="" loading="lazy" width="1280" height="720" /></span>
         </div>

@@ -88,3 +88,6 @@ O fluxo infinito passa a descer na diagonal, do alto à direita para baixo à es
 
 ## Seleção explícita na galeria — 08/11/2026
 A rolagem passa normalmente pela galeria e continua para a trajetória, sem pin ou sequência automática dos sete projetos. Preservar o loop diagonal e abrir a apresentação somente por clique/toque, Enter ou link direto. Setas e foco navegam entre capas sem abri-las. Incluir retorno à galeria e Escape. Hover com elevação, escala discreta e mudança de perspectiva em JavaScript; não abrir detalhes no hover.
+
+## Bordas orgânicas da galeria — 08/11/2026
+Remover o recorte rígido no topo e no fim do trilho diagonal. As capas avançam um pouco além da seção e desaparecem por uma máscara vertical suave, aplicada somente ao trilho. Manter contenção horizontal, detalhes e controles legíveis, navegação e rolagem livre.
