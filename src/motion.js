@@ -28,6 +28,7 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setActiveSec
       let activeSection='inicio';
       for(const section of sections)if(section.getBoundingClientRect().top<=180)activeSection=section.id;
       setActiveSection(activeSection);
+      if(stage.closest('[data-career-alternating=true]')){stage.style.removeProperty('translate');stageShift=0;return;}
       let chapterIndex=0;
       const stageBox=stage.getBoundingClientRect();
       const stageBottom=stageBox.bottom-stageShift;
@@ -86,7 +87,7 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setActiveSec
       gsap.fromTo(q('[data-project-heading-line]'),{x:i=>i?55:-55,opacity:.15},{x:0,opacity:1,stagger:.12,duration:1,ease:'power3.out',scrollTrigger:{trigger:q('#projects-title')[0],start:'top 90%',end:'top 45%',scrub:.6}});
       const careerTitle=q('#career-title')[0];
       gsap.fromTo(careerTitle.querySelectorAll('[data-reveal-word]'),{opacity:.12,filter:'blur(8px)',scale:1.12},{opacity:1,filter:'blur(0px)',scale:1,stagger:{each:.08,from:'center'},ease:'none',scrollTrigger:{trigger:careerTitle,start:'top 90%',end:'top 38%',scrub:.6}});
-      q('[data-chapter]').forEach(chapter=>{
+      media.add('(max-width: 899px), (max-height: 699px)', ()=>{q('[data-chapter]').forEach(chapter=>{
         const find=selector=>chapter.querySelector(selector);
         const enter=(trigger,start='top 90%')=>({trigger,start,toggleActions:'play none none reverse'});
         gsap.fromTo(find('[data-career-date]'),{opacity:0,x:18},{opacity:1,x:0,duration:.55,ease:'power3.out',scrollTrigger:enter(find('[data-career-date]'))});
@@ -103,7 +104,7 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setActiveSec
         if(stack)gsap.fromTo(stack.querySelectorAll('[data-reveal-word]'),{x:12,opacity:0},{x:0,opacity:1,duration:.45,stagger:.025,ease:'power3.out',scrollTrigger:enter(stack)});
         const link=find('[data-career-link]');
         if(link)gsap.fromTo(link,{y:8,opacity:0},{y:0,opacity:1,duration:.5,ease:'power3.out',scrollTrigger:enter(link)});
-      });
+      });});
     },root);
     const refresh=()=>{if(!disposed){ScrollTrigger.refresh();queue();}};
     document.fonts.ready.then(()=>{

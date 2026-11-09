@@ -123,3 +123,10 @@ Escopo: desktop, 1280 × 720, na Vercel. Esta seção substitui os testes antigo
 
 ## Prompt de exemplo — 02/11/2026
 A etapa Prompts & LLMs mostra um prompt escrito, em lugar das três etiquetas ilustrativas. Cenário fictício de pedidos de uma loja: contexto, objetivo, perguntas que mudam a recomendação, riscos, suposições, comparação e teste inicial. O mesmo conteúdo alimenta o painel, o diálogo e a ação de copiar. Linguagem direta, sem XML, variáveis ou atribuição do exemplo a um projeto real do titular. Conteúdo verificado e build aprovado.
+
+## Trajetória alternada em partículas — 09/11/2026
+- Seis capítulos verificados no Chrome em 900×700, 1024×768, 1280×720, 1440×900 e 1920×1080, incluindo texto em inglês no menor desktop. Textos e imagens alternam de lado, sem sobreposição nos momentos de leitura nem overflow horizontal.
+- Cinco transições e retorno pela rolagem: partículas de imagem e de texto têm trajetórias independentes. Ao parar a rolagem, a composição permanece na mesma fase. HTML legível e logos dos clientes preservados nas pausas.
+- Links dos Google Sites recebem cliques e foco. Setas avançam para o capítulo seguinte e transferem o foco à imagem; Enter abre a ampliação, Escape fecha. Controles invisíveis ficam fora da interação.
+- Mobile 390×844 conserva seis imagens estáticas por capítulo. Sem WebGL, com movimento reduzido e em desktop com pouca altura, o conteúdo continua no fluxo original e o módulo de partículas não é carregado.
+- Redimensionamento desktop/mobile/desktop, perda e restauração do contexto WebGL verificados, sem erros de JavaScript. Verificação por navegador e emulação de viewport; não representa medição em aparelhos físicos.

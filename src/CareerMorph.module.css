@@ -1,9 +1,10 @@
 .canvas {
   --morph-bleed: clamp(36px, 4vw, 64px);
-  position: absolute; inset: calc(-1 * var(--morph-bleed));
+  display:none; position: absolute; inset: calc(-1 * var(--morph-bleed));
   width: calc(100% + var(--morph-bleed) + var(--morph-bleed));
   height: calc(100% + var(--morph-bleed) + var(--morph-bleed));
   z-index: 2; pointer-events: none; opacity: 0;
 }
+[data-career-alternating=true] .canvas{display:block}
 [data-morph-ready=true] > .canvas { opacity: 1; }
 @media (max-width: 899px) { .canvas { display: none; } }

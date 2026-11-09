@@ -1,10 +1,20 @@
 import * as T from 'three';
+import { careerPlacement } from './careerFlow';
 
 const planeVertex = `
+uniform float uProgress;
+uniform vec2 uFromCenter;
+uniform vec2 uToCenter;
+uniform vec2 uRoute;
+uniform float uLift;
+uniform vec2 uSize;
 varying vec2 vUv;
 void main() {
   vUv = uv;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+  float route = smoothstep(uRoute.x, uRoute.y, uProgress);
+  vec2 center = mix(uFromCenter, uToCenter, route);
+  center.y += sin(route * 3.14159265) * uLift;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(position.xy * uSize + center, position.z, 1.0);
 }`;
 
 const planeFragment = `
@@ -29,6 +39,11 @@ uniform vec2 uSize;
 uniform float uCell;
 uniform float uRatio;
 uniform float uCamera;
+uniform vec2 uFromCenter;
+uniform vec2 uToCenter;
+uniform vec2 uRoute;
+uniform float uLift;
+uniform float uScatter;
 attribute vec2 aTarget;
 attribute vec2 aSeed;
 varying vec2 vFrom;
@@ -43,9 +58,13 @@ void main() {
   float arc = sin(phase * 3.14159265);
   vec2 xy = mix(position.xy, aTarget - 0.5, phase) * uSize;
   float angle = aSeed.x * 6.2831853 + phase * 2.4;
-  xy.x += arc * uSize.x * (sin(angle) * 0.035 + (0.5 - vFrom.y) * 0.04);
-  xy.y += arc * uSize.y * (cos(angle + aSeed.y) * 0.045 + (0.5 - vTo.x) * 0.06);
-  float z = arc * (aSeed.y - 0.5) * 140.0;
+  xy.x += arc * uSize.x * ((sin(angle) * 0.035 + (0.5 - vFrom.y) * 0.04) * uScatter);
+  xy.y += arc * uSize.y * ((cos(angle + aSeed.y) * 0.045 + (0.5 - vTo.x) * 0.06) * uScatter);
+  float route = smoothstep(uRoute.x, uRoute.y, uProgress);
+  vec2 center = mix(uFromCenter, uToCenter, route);
+  center.y += sin(route * 3.14159265) * uLift;
+  xy += center;
+  float z = arc * (aSeed.y - 0.5) * 140.0 * uScatter;
   vec4 cameraPoint = modelViewMatrix * vec4(xy, z, 1.0);
   gl_Position = projectionMatrix * cameraPoint;
   gl_PointSize = clamp(uCell * uRatio * (1.03 + arc * 0.16) * uCamera / -cameraPoint.z, 1.0, 10.0);
@@ -63,8 +82,8 @@ varying float vEdge;
 void main() {
   float circle = 1.0 - smoothstep(0.62, 1.0, length(gl_PointCoord - 0.5) * 2.0);
   float presence = smoothstep(0.0, 0.14, uProgress) * (1.0 - smoothstep(0.86, 1.0, uProgress));
-  vec3 color = mix(texture2D(uFrom, vFrom).rgb, texture2D(uTo, vTo).rgb, smoothstep(0.16, 0.84, uProgress));
-  gl_FragColor = vec4(color, circle * presence * vEdge);
+  vec4 ink = mix(texture2D(uFrom, vFrom), texture2D(uTo, vTo), smoothstep(0.16, 0.84, uProgress));
+  gl_FragColor = vec4(ink.rgb, circle * presence * vEdge * ink.a);
 }`;
 
 function compose(chapter, image, brand) {
@@ -88,14 +107,19 @@ function compose(chapter, image, brand) {
   return texture;
 }
 
-export function createCareerParticles(canvas, chapters, images, brands) {
+export function createCareerParticles(canvas, chapters, images, brands, textFrames) {
   const renderer = new T.WebGLRenderer({ canvas, alpha: true, antialias: false, powerPreference: 'low-power' });
-  const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
+  const ratio = Math.min(window.devicePixelRatio || 1, 1.25);
   renderer.setPixelRatio(ratio);
   renderer.toneMapping = T.NoToneMapping;
   renderer.setClearColor(0, 0);
   renderer.debug.onShaderError = () => { throw new Error('Image morph shader unavailable'); };
   const textures = chapters.map((chapter, i) => compose(chapter, images[i], brands[i]));
+  const textTextures = textFrames.map(frame => {
+    const texture = new T.CanvasTexture(frame.canvas);
+    texture.colorSpace = T.NoColorSpace; texture.generateMipmaps = false; texture.minFilter = T.LinearFilter;
+    return texture;
+  });
   const scene = new T.Scene();
   const camera = new T.PerspectiveCamera(45, 1, 1, 2400);
   camera.position.z = 1000;
@@ -121,42 +145,71 @@ export function createCareerParticles(canvas, chapters, images, brands) {
   geometry.setAttribute('position', new T.BufferAttribute(positions, 3));
   geometry.setAttribute('aTarget', new T.BufferAttribute(targets, 2));
   geometry.setAttribute('aSeed', new T.BufferAttribute(seeds, 2));
-  const uniforms = {
+  const makeUniforms = (size, route, scatter) => ({
     uFrom: { value: textures[0] }, uTo: { value: textures[1] }, uProgress: { value: 0 },
-    uSize: { value: new T.Vector2(1, 1) }, uCell: { value: 1 }, uRatio: { value: ratio }, uCamera: { value: 1000 },
-  };
-  const settings = { uniforms, transparent: true, depthWrite: false, depthTest: false, toneMapped: false };
-  const particlesMaterial = new T.ShaderMaterial({ ...settings, vertexShader: particleVertex, fragmentShader: particleFragment });
-  const planeMaterial = new T.ShaderMaterial({ ...settings, vertexShader: planeVertex, fragmentShader: planeFragment });
+    uSize: { value: new T.Vector2(1, 1) }, uCell: { value: size }, uRatio: { value: ratio }, uCamera: { value: 1000 },
+    uFromCenter: { value: new T.Vector2() }, uToCenter: { value: new T.Vector2() },
+    uRoute: { value: new T.Vector2(...route) }, uLift: { value: 0 }, uScatter: { value: scatter },
+  });
+  const imageUniforms = makeUniforms(1, [.08, .92], 1), textUniforms = makeUniforms(1.75, [.02, .82], .55);
+  const material = (uniforms, vertexShader, fragmentShader) => new T.ShaderMaterial({
+    uniforms, vertexShader, fragmentShader, transparent: true, depthWrite: false, depthTest: false, toneMapped: false,
+  });
+  const particlesMaterial = material(imageUniforms, particleVertex, particleFragment);
+  const textMaterial = material(textUniforms, particleVertex, particleFragment);
+  const planeMaterial = material(imageUniforms, planeVertex, planeFragment);
   const planeGeometry = new T.PlaneGeometry(1, 1);
   const plane = new T.Mesh(planeGeometry, planeMaterial), points = new T.Points(geometry, particlesMaterial);
-  points.frustumCulled = false;
-  plane.renderOrder = 0; points.renderOrder = 1;
-  scene.add(plane, points);
-  let width = 0, height = 0, surfaceWidth = 0, surfaceHeight = 0;
+  const textCount = compact ? 8000 : 12000;
+  const textGeometries = textFrames.slice(0, -1).map((frame, index) => {
+    const a = frame.points, b = textFrames[index + 1].points;
+    if (!a.length || !b.length) throw new Error('Empty text image');
+    const pos = new Float32Array(textCount * 3), target = new Float32Array(textCount * 2), seed = new Float32Array(textCount * 2);
+    for (let j = 0; j < textCount; j++) {
+      const from = a[Math.floor(j / textCount * a.length)], to = b[Math.floor(j / textCount * b.length)];
+      pos[j * 3] = from[0] - .5; pos[j * 3 + 1] = from[1] - .5;
+      target[j * 2] = to[0]; target[j * 2 + 1] = to[1];
+      seed[j * 2] = random(j + 57); seed[j * 2 + 1] = random(j + 143);
+    }
+    const g = new T.BufferGeometry();
+    g.setAttribute('position', new T.BufferAttribute(pos, 3));
+    g.setAttribute('aTarget', new T.BufferAttribute(target, 2));
+    g.setAttribute('aSeed', new T.BufferAttribute(seed, 2));
+    return g;
+  });
+  const textPoints = new T.Points(textGeometries[0], textMaterial);
+  points.frustumCulled = false; textPoints.frustumCulled = false;
+  plane.renderOrder = 0; points.renderOrder = 1; textPoints.renderOrder = 2;
+  scene.add(plane, points, textPoints);
+  let surfaceWidth = 0, surfaceHeight = 0;
   return {
-    count,
-    draw(position, nextWidth, nextHeight, nextSurfaceWidth = nextWidth, nextSurfaceHeight = nextHeight) {
-      if (width !== nextWidth || height !== nextHeight || surfaceWidth !== nextSurfaceWidth || surfaceHeight !== nextSurfaceHeight) {
-        width = nextWidth; height = nextHeight;
-        surfaceWidth = nextSurfaceWidth; surfaceHeight = nextSurfaceHeight;
+    count, textCount,
+    draw(frame, layout) {
+      const { width, height, imageWidth, imageHeight, textWidth } = layout;
+      if (surfaceWidth !== layout.surfaceWidth || surfaceHeight !== layout.surfaceHeight) {
+        surfaceWidth = layout.surfaceWidth; surfaceHeight = layout.surfaceHeight;
         renderer.setSize(surfaceWidth, surfaceHeight, false);
         camera.aspect = surfaceWidth / surfaceHeight;
         camera.fov = T.MathUtils.radToDeg(2 * Math.atan(surfaceHeight / 2000));
         camera.updateProjectionMatrix();
-        uniforms.uSize.value.set(width, height);
-        uniforms.uCell.value = width / columns;
-        plane.scale.set(width, height, 1);
       }
-      const index = Math.min(chapters.length - 2, Math.max(0, Math.floor(position)));
-      const progress = Math.max(0, Math.min(1, position - index));
-      uniforms.uFrom.value = textures[index]; uniforms.uTo.value = textures[index + 1];
-      uniforms.uProgress.value = progress;
+      const { index, phase } = frame, placement = careerPlacement(index, phase, layout);
+      const configure = (u, from, to, textureA, textureB, w, h, lift) => {
+        u.uFrom.value = textureA; u.uTo.value = textureB; u.uProgress.value = phase;
+        u.uSize.value.set(w, h); u.uLift.value = lift;
+        u.uFromCenter.value.set(from.x - width / 2, height / 2 - from.y);
+        u.uToCenter.value.set(to.x - width / 2, height / 2 - to.y);
+      };
+      configure(imageUniforms, placement.imageFrom, placement.imageTo, textures[index], textures[index + 1], imageWidth, imageHeight, -height * .10);
+      configure(textUniforms, placement.textFrom, placement.textTo, textTextures[index], textTextures[index + 1], textWidth, height, height * .10);
+      imageUniforms.uCell.value = imageWidth / columns;
+      textPoints.geometry = textGeometries[index];
       renderer.render(scene, camera);
     },
     dispose() {
-      geometry.dispose(); planeGeometry.dispose(); particlesMaterial.dispose(); planeMaterial.dispose();
-      textures.forEach(texture => texture.dispose()); renderer.dispose();
+      geometry.dispose(); planeGeometry.dispose(); textGeometries.forEach(g => g.dispose());
+      particlesMaterial.dispose(); textMaterial.dispose(); planeMaterial.dispose();
+      [...textures, ...textTextures].forEach(texture => texture.dispose()); renderer.dispose();
     },
   };
 }

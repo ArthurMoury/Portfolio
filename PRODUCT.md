@@ -103,3 +103,6 @@ Substituir a troca por recorte/rotação das imagens por um morph contínuo de p
 
 ## Partículas sem fundo fixo — 09/11/2026
 Manter o morph aprovado, removendo a superfície retangular durante a transformação. Canvas WebGL transparente e uma margem de desenho permitem às partículas sair dos limites da foto. O fundo e os cantos arredondados pertencem somente às imagens completas; a fase intermediária revela o fundo da página entre as partículas.
+
+## Composição alternada da trajetória — 09/11/2026
+No desktop, reunir os capítulos em uma cena fixa controlada pela rolagem nativa. Alternar texto à esquerda/imagem à direita e imagem à esquerda/texto à direita. As imagens atravessam a cena em partículas e se transformam somente em imagens; os caracteres do conteúdo fazem a passagem independente entre os textos. Preservar HTML nítido nas pausas, clientes, tecnologias, links, ampliação e navegação por teclado. Movimento reversível, sem avanço por tempo. Mobile, movimento reduzido e ausência de WebGL conservam os capítulos legíveis em seu fluxo original.
