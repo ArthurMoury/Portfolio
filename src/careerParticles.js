@@ -26,6 +26,7 @@ uniform float uProgress;
 uniform vec2 uSize;
 uniform vec2 uPointer;
 uniform float uHover;
+uniform float uReveal;
 varying vec2 vUv;
 varying vec2 vWorld;
 void main() {
@@ -35,8 +36,7 @@ void main() {
   vec2 corner = abs(vUv - 0.5) * uSize - (uSize * 0.5 - 8.0);
   float distance = length(max(corner, 0.0)) + min(max(corner.x, corner.y), 0.0) - 8.0;
   float rounded = 1.0 - smoothstep(-0.65, 0.65, distance);
-  float touch = (1.0 - smoothstep(0.0, 140.0, length(vWorld - uPointer))) * uHover;
-  gl_FragColor = vec4(color, min(1.0, before + after) * rounded * (1.0 - touch));
+  gl_FragColor = vec4(color, min(1.0, before + after) * rounded * (1.0 - smoothstep(0.0, 0.2, uReveal)));
 }`;
 
 const particleVertex = `
@@ -53,6 +53,7 @@ uniform float uScatter;
 uniform vec2 uPointer;
 uniform float uHover;
 uniform float uTime;
+uniform float uReveal;
 attribute vec2 aTarget;
 attribute vec2 aSeed;
 varying vec2 vFrom;
@@ -74,6 +75,7 @@ void main() {
   vec2 center = mix(uFromCenter, uToCenter, route);
   center.y += sin(route * 3.14159265) * uLift;
   xy += center;
+  xy += vec2(sin(uTime * 1.3 + aSeed.x * 6.283), cos(uTime * 1.1 + aSeed.y * 6.283)) * 10.0 * uReveal;
   vec2 delta = xy - uPointer;
   vTouch = (1.0 - smoothstep(0.0, 140.0, length(delta))) * uHover;
   vec2 direction = normalize(delta + vec2(0.01));
@@ -91,6 +93,7 @@ const particleFragment = `
 uniform sampler2D uFrom;
 uniform sampler2D uTo;
 uniform float uProgress;
+uniform float uReveal;
 varying vec2 vFrom;
 varying vec2 vTo;
 varying float vEdge;
@@ -99,7 +102,7 @@ void main() {
   float circle = 1.0 - smoothstep(0.62, 1.0, length(gl_PointCoord - 0.5) * 2.0);
   float presence = smoothstep(0.0, 0.14, uProgress) * (1.0 - smoothstep(0.86, 1.0, uProgress));
   vec4 ink = mix(texture2D(uFrom, vFrom), texture2D(uTo, vTo), smoothstep(0.16, 0.84, uProgress));
-  gl_FragColor = vec4(ink.rgb, circle * max(presence, vTouch) * vEdge * ink.a);
+  gl_FragColor = vec4(ink.rgb, circle * max(presence, smoothstep(0.2, 1.0, uReveal)) * vEdge * ink.a);
 }`;
 
 function compose(chapter, image, brand) {
@@ -167,6 +170,7 @@ export function createCareerParticles(canvas, chapters, images, brands, textFram
     uFromCenter: { value: new T.Vector2() }, uToCenter: { value: new T.Vector2() },
     uRoute: { value: new T.Vector2(...route) }, uLift: { value: 0 }, uScatter: { value: scatter },
     uPointer: { value: new T.Vector2(-10000, -10000) }, uHover: { value: 0 }, uTime: { value: 0 },
+    uReveal: { value: 0 },
   });
   const imageUniforms = makeUniforms(1, [.08, .92], 1), textUniforms = makeUniforms(1.75, [.02, .82], .55);
   const material = (uniforms, vertexShader, fragmentShader) => new T.ShaderMaterial({
@@ -201,7 +205,7 @@ export function createCareerParticles(canvas, chapters, images, brands, textFram
   let surfaceWidth = 0, surfaceHeight = 0;
   return {
     count, textCount,
-    draw(frame, layout, interaction = { x: -10000, y: -10000, strength: 0, time: 0 }) {
+    draw(frame, layout, interaction = { x: -10000, y: -10000, strength: 0, image: 0, text: 0, time: 0 }) {
       const { width, height, imageWidth, imageHeight, textWidth } = layout;
       if (surfaceWidth !== layout.surfaceWidth || surfaceHeight !== layout.surfaceHeight) {
         surfaceWidth = layout.surfaceWidth; surfaceHeight = layout.surfaceHeight;
@@ -221,6 +225,8 @@ export function createCareerParticles(canvas, chapters, images, brands, textFram
       };
       configure(imageUniforms, placement.imageFrom, placement.imageTo, textures[index], textures[index + 1], imageWidth, imageHeight, -height * .10);
       configure(textUniforms, placement.textFrom, placement.textTo, textTextures[index], textTextures[index + 1], textWidth, height, height * .10);
+      imageUniforms.uReveal.value = interaction.image;
+      textUniforms.uReveal.value = interaction.text;
       imageUniforms.uCell.value = imageWidth / columns;
       textPoints.geometry = textGeometries[index];
       renderer.render(scene, camera);

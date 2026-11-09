@@ -25,8 +25,8 @@ export default function CareerMorph({ reduced, onChapterChange }) {
       const setCards = cards.map(card => gsap.quickSetter(card, 'css'));
       const setButtons = buttons.map(button => gsap.quickSetter(button, 'css'));
       const clock = { scroll: 0 };
-      const pointer = { x: -10000, y: -10000, strength: 0, time: 0 };
-      let hover = false, pointerX = -10000, pointerY = -10000, lastDraw = 0;
+      const pointer = { x: -10000, y: -10000, strength: 0, image: 0, text: 0, time: 0 };
+      let hover = false, hoverImage = false, hoverText = false, pointerX = -10000, pointerY = -10000, lastDraw = 0;
       let layout, heights = [], travel = 1, sticky = 92, current = -1, pendingFocus = -1;
       let engine = null, createEngine, images, brands, ready = false, healthy = true, disposed = false, visible = false, pending = 0;
       story.dataset.careerAlternating = 'true';
@@ -54,7 +54,8 @@ export default function CareerMorph({ reduced, onChapterChange }) {
           const alpha = particles ? index === frame.index ? placement.before : index === frame.index + 1 ? placement.after : 0 : index === nearest ? 1 : 0;
           const text = particles && alpha > 0 ? placement.text : endpoint.text;
           const image = particles ? placement.image : endpoint.image;
-          setCards[index]({ x: text.x - layout.textWidth / 2, y: text.y - heights[index] / 2, opacity: alpha });
+          // Retire the reading layer before its particles appear, avoiding a ghost copy.
+          setCards[index]({ x: text.x - layout.textWidth / 2, y: text.y - heights[index] / 2, opacity: alpha * (particles ? 1 - Math.min(1, pointer.text / .2) : 1) });
           setButtons[index]({ x: image.x - layout.imageWidth / 2, y: image.y - layout.imageHeight / 2 });
           const active = index === nearest;
           card.inert = !active; card.setAttribute('aria-hidden', String(!active));
@@ -80,6 +81,10 @@ export default function CareerMorph({ reduced, onChapterChange }) {
         const ease = 1 - Math.exp(-delta / 100);
         pointer.x += (pointerX - pointer.x) * ease; pointer.y += (pointerY - pointer.y) * ease;
         pointer.strength += ((hover ? 1 : 0) - pointer.strength) * ease;
+        for (const [key, active] of [['image', hoverImage], ['text', hoverText]]) {
+          pointer[key] += ((active ? 1 : 0) - pointer[key]) * ease;
+          if (Math.abs(pointer[key] - (active ? 1 : 0)) < .002) pointer[key] = active ? 1 : 0;
+        }
         if (!hover && pointer.strength < .002) pointer.strength = 0;
         pointer.time = now / 1000;
         if (engine && healthy && visible && !document.hidden) {
@@ -90,29 +95,26 @@ export default function CareerMorph({ reduced, onChapterChange }) {
           } catch { healthy = false; delete scene.dataset.morphReady; engine.dispose(); engine = null; }
         }
         html(frame, !!engine && healthy);
-        cards.forEach(card => {
-          if (pointer.strength > 0 && engine && healthy) {
-            const r = card.getBoundingClientRect(), box = scene.getBoundingClientRect();
-            card.style.maskImage = `radial-gradient(circle 140px at ${pointer.x + box.left - r.left}px ${pointer.y + box.top - r.top}px, rgb(0 0 0 / ${1 - pointer.strength}), black)`;
-          } else card.style.removeProperty('mask-image');
-        });
         canvas.dataset.hoverStrength = pointer.strength.toFixed(3);
-        if (engine && healthy && visible && !document.hidden && (hover || pointer.strength > 0)) invalidate();
+        canvas.dataset.imageParticles = pointer.image.toFixed(3); canvas.dataset.textReveal = pointer.text.toFixed(3);
+        if (engine && healthy && visible && !document.hidden && (hover || pointer.strength > 0 || pointer.image > 0 || pointer.text > 0)) invalidate();
       }
       function move(event) {
         if (event.pointerType !== 'mouse') return;
         const box = scene.getBoundingClientRect();
         pointerX = event.clientX - box.left; pointerY = event.clientY - box.top;
         const phase = state().phase;
-        hover = phase > .1 && phase < .9 || [...cards, ...buttons].some(el => {
+        const hits = elements => elements.some(el => {
           if (el.inert) return false;
           const r = el.getBoundingClientRect();
           return event.clientX >= r.left && event.clientX <= r.right && event.clientY >= r.top && event.clientY <= r.bottom;
         });
+        hoverImage = hits(buttons); hoverText = hits(cards);
+        hover = phase > .1 && phase < .9 || hoverImage || hoverText;
         if (pointer.strength === 0) { pointer.x = pointerX; pointer.y = pointerY; }
         invalidate();
       }
-      function leave() { hover = false; invalidate(); }
+      function leave() { hover = false; hoverImage = false; hoverText = false; invalidate(); }
       async function prepare() {
         if (ready || disposed) return;
         ready = true;
@@ -132,7 +134,7 @@ export default function CareerMorph({ reduced, onChapterChange }) {
       }
       const visibility = new IntersectionObserver(entries => {
         visible = entries.at(-1).isIntersecting;
-        if (!visible) { hover = false; pointer.strength = 0; }
+        if (!visible) { hover = false; hoverImage = false; hoverText = false; pointer.strength = 0; pointer.image = 0; pointer.text = 0; }
         if (visible) { prepare(); invalidate(); }
       }, { rootMargin: '320px 0px' });
       measure(); html(state(), false);
@@ -167,7 +169,7 @@ export default function CareerMorph({ reduced, onChapterChange }) {
       }
       const lost = () => { healthy = false; delete scene.dataset.morphReady; invalidate(); };
       const restored = () => { healthy = true; invalidate(); };
-      const pageVisibility = () => { hover = false; if (!document.hidden && visible) invalidate(); };
+      const pageVisibility = () => { hover = false; hoverImage = false; hoverText = false; if (!document.hidden && visible) invalidate(); };
       function resize() {
         if (disposed) return;
         const oldWidth = layout.width, oldHeight = layout.height;
@@ -197,7 +199,7 @@ export default function CareerMorph({ reduced, onChapterChange }) {
         delete story.dataset.careerAlternating; delete scene.dataset.morphReady; delete scene.dataset.careerPosition; delete scene.dataset.imageSide;
         delete canvas.dataset.morphPosition; delete canvas.dataset.particles; delete canvas.dataset.textParticles;
         delete canvas.dataset.hoverStrength;
-        cards.forEach(card => card.style.removeProperty('mask-image'));
+        delete canvas.dataset.imageParticles; delete canvas.dataset.textReveal;
         gsap.set([...cards, ...buttons], { clearProps: 'transform,opacity,pointerEvents' });
         cards.forEach(card => { card.inert = false; card.removeAttribute('aria-hidden'); delete card.dataset.careerReadable; });
         buttons.forEach((button, i) => { button.inert = false; button.tabIndex = i === current ? 0 : -1; });
