@@ -193,3 +193,9 @@
   .chapter { min-height: auto; scroll-margin-top: 16px; }
   .chapterMobile { display: block; position: static; perspective: none; }
 }
+
+/* The canvas owns image-to-image motion; HTML images remain an immediate fallback. */
+.chapterVisual{transition:none;background:var(--chapter-bg,var(--deep))}
+.chapterImages{perspective:none}
+.chapterImages[data-morph-ready=true] .chapterVisual{background:transparent;border-color:transparent}
+.chapterImages[data-morph-ready=true] .chapterVisual>img{opacity:0;will-change:auto}

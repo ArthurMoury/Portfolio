@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { careerPosition } from './careerFlow';
 gsap.registerPlugin(ScrollTrigger);
 
 export function useReducedMotion() {
@@ -39,7 +40,10 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setActiveSec
       stageShift=Math.min(0,stop-stageBottom);
       stage.style.translate='0 '+stageShift+'px';
       const chapterLine=innerWidth<900?Math.min(innerHeight-50,stageBottom+(innerHeight-stageBottom)*.3):innerHeight*.55;
-      chapterElements.forEach((chapter,i)=>{if(chapter.getBoundingClientRect().top<=chapterLine)chapterIndex=i;});
+      if(innerWidth>=900 && !reduced) {
+        const centers=chapterElements.map(chapter=>{const rect=chapter.getBoundingClientRect();return rect.top+rect.height/2;});
+        chapterIndex=Math.round(careerPosition(centers,chapterLine));
+      } else chapterElements.forEach((chapter,i)=>{if(chapter.getBoundingClientRect().top<=chapterLine)chapterIndex=i;});
       setChapter(chapterIndex);
     };
     const queue=()=>{if(!frame)frame=requestAnimationFrame(update);};

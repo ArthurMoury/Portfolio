@@ -97,3 +97,6 @@ Substituir o Site Construtor de Hotéis na galeria pelo Tyde, repositório priva
 
 ## Fundo contínuo ao abrir projetos — 09/11/2026
 A iluminação da identidade de cada projeto deve desaparecer antes do topo e do fim da área de apresentação. Usar uma elipse com limites explícitos para evitar uma faixa horizontal de cor ao abrir ou trocar projetos, mantendo a base contínua da galeria.
+
+## Morph de imagens da trajetória — 09/11/2026
+Substituir a troca por recorte/rotação das imagens por um morph contínuo de partículas no painel fixo do desktop. GSAP liga cada transição à rolagem entre os centros dos capítulos, com retorno reversível e pausas nas imagens completas. Usar os pixels reais das seis imagens, respeitando enquadramento e cores; preservar ampliação, textos, clientes e links. Renderização WebGL carregada sob demanda, suspensa fora da área visível e alternativa HTML em falha ou movimento reduzido. No mobile, preservar a preferência anterior por imagens estáticas em cada capítulo.

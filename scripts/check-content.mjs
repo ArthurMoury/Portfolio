@@ -24,7 +24,7 @@ assert.equal((surface.match(/src="\/images\/arthur-profile.webp"/g)||[]).length,
 for(const removed of ['amfgs@cesar.school','recife.webp','badge','barcode','Vários caminhos','O acervo completo','Projetos selecionados','Seis projetos, de perto.','Formação & experiência','Aprendizados que se conectam','Sobre mim'])assert(!surface.includes(removed),`Conteúdo antigo presente: ${removed}`);
 assert(app.indexOf('<About/>')<app.indexOf('<ProjectGallery'),'Sobre mim deve vir antes dos projetos.');
 assert(!app.includes('Rua Luiz'),'Não publicar endereço residencial preciso.');
-assert(app.indexOf('<ProjectGallery')<app.indexOf('<Career'),'Projetos devem vir logo depois das informações.');
+assert(app.indexOf('<ProjectGallery')<app.indexOf('<Career '),'Projetos devem vir logo depois das informações.');
 assert.equal(certificates.length,29,'Exibir todos os 29 arquivos da pasta.');
 assert.equal(new Set(certificates.map(c=>c.id)).size,29,'Certificados distintos.');
 for(const certificate of certificates){

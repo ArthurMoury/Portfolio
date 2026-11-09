@@ -1,6 +1,5 @@
 import { localize, t } from './i18n';
 import { useEffect, useRef, useState } from 'react';
-import gsap from 'gsap';
 import { ArrowUpRight, BriefcaseBusiness, GraduationCap, Check, X, Menu, Mail, Copy, MapPin, ScanLine, FileDown } from 'lucide-react';
 import { chapters, profile } from './data/portfolio';
 import { usePageMotion, useReducedMotion } from './motion';
@@ -13,6 +12,7 @@ import SubjectSelect from './SubjectSelect';
 import TextReveal from './TextReveal';
 import ProjectGallery from './ProjectGallery';
 import Github from './GithubIcon';
+import CareerMorph from './CareerMorph';
 
 const external = { target: '_blank', rel: 'noreferrer noopener' };
 
@@ -63,24 +63,13 @@ function About() {
 }
 
 function Career({ onOpen, activeChapter, reduced }) {
-  const stage=useRef(null), previous=useRef(activeChapter);
-  useEffect(()=>{
-    if(reduced || !stage.current.offsetHeight){previous.current=activeChapter;return;}
-    const images=[...stage.current.querySelectorAll('[data-chapter-visual]')];
-    const old=previous.current, direction=activeChapter>=old?1:-1;
-    previous.current=activeChapter;
-    const ctx=gsap.context(()=>{
-      if(old!==activeChapter)gsap.to(images[old],{y:-direction*24,scale:.94,rotateY:-direction*5,duration:.65,ease:'power3.out',overwrite:true});
-      gsap.fromTo(images[activeChapter],{y:direction*32,scale:1.045,rotateY:direction*7,clipPath:direction>0?'inset(0 0 100% 0)':'inset(100% 0 0 0)'},{y:0,scale:1,rotateY:0,clipPath:'inset(0 0 0% 0)',duration:.95,ease:'power3.inOut',overwrite:true});
-    },stage);
-    return()=>ctx.revert();
-  },[activeChapter,reduced]);
+  const stage=useRef(null);
   return localize(<section id="trajetoria" data-career-story className={s.career} aria-labelledby="career-title"><div className={s.container}>
     <div className={s.careerIntro}><h2 id="career-title"><TextReveal text="O que me trouxe"/><TextReveal text="até aqui."/></h2></div>
     <div className={s.careerGrid}><div className={s.chapterList}>{chapters.map((c,i)=>localize(<article id={`capitulo-${c.id}`} key={c.id} className={`${s.chapter} ${i===activeChapter?s.chapterActive:''}`} data-chapter={i} data-context={c.context}>
       <span className={s.chapterMarker} data-career-date>{c.marker}</span><p className={s.organization} data-career-org><TextReveal text={c.organization}/></p><h3 data-career-title><TextReveal text={c.title}/></h3><p className={s.chapterRole} data-career-role>{c.role}</p><p className={s.chapterText} data-career-copy><TextReveal text={`${c.text} ${c.proof}`}/></p>{c.client&&<div className={s.chapterClient} data-career-client><span>Cliente</span><img draggable={false} src={c.clientLogo} alt={`Logo de ${c.client}`} width="100" height="50" loading="lazy"/></div>}{c.stack&&<p className={s.chapterStack} data-career-stack><span>Tecnologias</span><TextReveal text={c.stack}/></p>}{c.site&&<a className={s.textLink} data-career-link href={c.site} {...external}>Documentação no Google Sites<ArrowUpRight size={16}/></a>}
       <div className={s.chapterMobile} data-chapter-mobile data-image-fit={c.fit} style={{'--chapter-bg':c.background}}><button onClick={()=>onOpen({image:c.image,title:c.organization,caption:''})} aria-label={`Ampliar imagem de ${c.organization}`}><img draggable={false} src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/>{c.brandImage&&<img draggable={false} className={s.chapterBrand} src={c.brandImage} alt="CESAR School" width="70" height="70"/>}<ScanLine size={20}/></button></div>
-    </article>))}</div><aside ref={stage} className={s.careerStage} aria-label="Visuais da trajetória"><div className={s.chapterImages}>{chapters.map((c,i)=>localize(<button key={c.id} className={s.chapterVisual} data-image-fit={c.fit} style={{'--chapter-bg':c.background}} data-chapter-visual={i} data-active={activeChapter===i} onClick={()=>onOpen({image:c.image,title:c.organization,caption:''})} tabIndex={activeChapter===i?0:-1} aria-hidden={activeChapter!==i} aria-label={`Ampliar imagem: ${c.caption}`}><img draggable={false} src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/>{c.brandImage&&<img draggable={false} className={s.chapterBrand} src={c.brandImage} alt="CESAR School" width="70" height="70"/>}</button>))}</div></aside></div>
+    </article>))}</div><aside ref={stage} className={s.careerStage} aria-label="Visuais da trajetória"><div className={s.chapterImages}>{chapters.map((c,i)=>localize(<button key={c.id} className={s.chapterVisual} data-image-fit={c.fit} style={{'--chapter-bg':c.background}} data-chapter-visual={i} data-active={activeChapter===i} onClick={()=>onOpen({image:c.image,title:c.organization,caption:''})} tabIndex={activeChapter===i?0:-1} aria-hidden={activeChapter!==i} aria-label={`Ampliar imagem: ${c.caption}`}><img draggable={false} src={c.image} alt={c.caption} width="1260" height="710" loading="lazy"/>{c.brandImage&&<img draggable={false} className={s.chapterBrand} src={c.brandImage} alt="CESAR School" width="70" height="70"/>}</button>))}<CareerMorph reduced={reduced}/></div></aside></div>
   </div></section>);
 }
 
