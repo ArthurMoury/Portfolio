@@ -1,13 +1,10 @@
 import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, X } from 'lucide-react';
 import Github from './GithubIcon';
 import { projects } from './data/portfolio';
 import { localize, t } from './i18n';
 import s from './ProjectGallery.module.css';
-
-gsap.registerPlugin(ScrollTrigger);
 
 const themes = ['#93ad88', '#b69ddf', '#92b990', '#deaa91', '#de9a86', '#91bf9d', '#94b9bd'];
 const clamp = gsap.utils.clamp(0, 1);
@@ -32,12 +29,15 @@ export default function ProjectGallery({ reduced }) {
       const details = cards.map(card => card.querySelector('[data-project-detail]'));
       const washes = cards.map(card => card.querySelector('[data-project-wash]'));
       const copyParts = details.map(detail => [...detail.querySelectorAll('[data-project-copy-part]')]);
-      const playhead = { position: 0 };
-      let width, height, mobile, inset, distance, coverWidth, coverHeight, coverTop, coverLeft, trackPitch = 1;
+      let selected = -1;
+      let view = idleScene();
+      let width, height, mobile, inset, coverWidth, coverHeight, coverTop, coverLeft, trackPitch = 1;
       let detailHeights = [];
       let faceBounds, featureBounds;
       let lastFocused = -2, flow = 0, currentFocus = 0, lastDetailKey = '';
-      let navigation = null, navigationTween, alignmentTween, pointer = null, angularVelocity = 0;
+      let navigation = null, navigationTween, alignmentTween, focusTween, pointer = null, angularVelocity = 0;
+      let keyboardFocus = -1;
+      const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
       const arrival = { progress: 0 };
       let entranceTween;
       let visible = false, ticking = false, elapsed = 0;
@@ -51,15 +51,14 @@ export default function ProjectGallery({ reduced }) {
       function measure() {
         inset = document.querySelector('header')?.offsetHeight || 72;
         section.style.setProperty('--gallery-inset', inset + 'px');
+        section.style.removeProperty('--gallery-content-height');
         width = viewport.clientWidth;
         height = viewport.clientHeight;
         mobile = width < 900;
         coverWidth = mobile ? width - 40 : Math.min(width * .57, 920);
         coverHeight = mobile ? Math.min(coverWidth * .625, height * (height < 700 ? .24 : .30)) : Math.min(coverWidth * .625, height * .66);
-        coverTop = mobile ? 20 : Math.max(24, (height * .84 - coverHeight) / 2);
+        coverTop = mobile ? 64 : Math.max(24, (height * .84 - coverHeight) / 2);
         coverLeft = mobile ? 20 : width * .045;
-        distance = projects.length * height * (mobile ? 1.05 : .95);
-        section.style.setProperty('--gallery-travel', distance + 'px');
         section.style.setProperty('--gallery-heading', section.querySelector('h2').parentElement.offsetHeight + 'px');
         section.style.setProperty('--gallery-height', height + 'px');
         section.style.setProperty('--cover-width', coverWidth + 'px');
@@ -67,10 +66,18 @@ export default function ProjectGallery({ reduced }) {
         section.style.setProperty('--cover-top', coverTop + 'px');
         section.style.setProperty('--cover-left', coverLeft + 'px');
         detailHeights = details.map(detail => detail.offsetHeight);
+        const contentHeight = mobile
+          ? coverTop + coverHeight + 16 + Math.max(...detailHeights) + 110
+          : Math.max(...detailHeights) / .75 + 32;
+        section.style.setProperty('--gallery-content-height', contentHeight + 'px');
+        height = viewport.clientHeight;
+        section.style.setProperty('--gallery-height', height + 'px');
         // Measure the projected faces once per layout refresh. Spacing and wrap
         // then follow their real silhouettes, rather than the unrotated boxes.
         gsap.set([...covers, ...features], { x: 0, y: 0, scale: 1 });
-        gsap.set(faces, { transformPerspective: mobile ? 1000 : 1700, rotationX: 12, rotationY: mobile ? -42 : -48, rotationZ: -11 });
+        faces.forEach(face => gsap.killTweensOf(face));
+        covers.forEach(cover => delete cover.dataset.hovered);
+        gsap.set(faces, { scale: 1, y: 0, transformPerspective: mobile ? 1000 : 1700, rotationX: 12, rotationY: mobile ? -42 : -48, rotationZ: -11 });
         gsap.set(featureFaces, { transformPerspective: mobile ? 1200 : 1900, rotationX: 7, rotationY: mobile ? -20 : -26, rotationZ: -5 });
         const bounds = (shell, face) => {
           const box = shell.getBoundingClientRect(), projected = face.getBoundingClientRect();
@@ -82,24 +89,17 @@ export default function ProjectGallery({ reduced }) {
         featureBounds = bounds(features[0], featureFaces[0]);
       }
 
-      function scrollScene() {
-        const position = Math.min(projects.length - .00001, playhead.position);
-        const index = Math.floor(position), phase = position - index;
-        const approach = ease((phase - .07) / .23);
-        const retreat = ease((phase - .73) / .22);
-        const focus = approach * (1 - retreat);
-        const read = ease((phase - .26) / .10) * (1 - ease((phase - .70) / .12));
-        const travel = index + ease((phase - .92) / .08);
+      function idleScene(travel = 0, index = -1) {
         return {
           travel,
-          zooms: cards.map((_, i) => i === index ? focus : 0),
-          reads: cards.map((_, i) => i === index ? read : 0),
-          shifts: cards.map((_, i) => i === index ? 1 - approach - retreat : 1),
+          zooms: cards.map((_, i) => i === index ? 1 : 0),
+          reads: cards.map((_, i) => i === index ? 1 : 0),
+          shifts: cards.map((_, i) => i === index ? 0 : 1),
         };
       }
 
       function scene() {
-        if (!navigation) return scrollScene();
+        if (!navigation) return view;
         const { from, index, progress, travel } = navigation;
         const exit = 1 - ease(progress / .43);
         const enter = ease((progress - .28) / .54);
@@ -188,7 +188,7 @@ export default function ProjectGallery({ reduced }) {
       }
       function tick(_time, delta) {
         const step = Math.min(delta, 64);
-        if (!navigation && !pointer?.dragged) {
+        if (!navigation && !pointer?.dragged && keyboardFocus < 0) {
           flow -= angularVelocity * step / 1000;
           angularVelocity *= Math.exp(-step / 350);
           flow = gsap.utils.wrap(0, cards.length, flow + step / 1000 / 4.8 * (1 - currentFocus * .45));
@@ -220,50 +220,41 @@ export default function ProjectGallery({ reduced }) {
       document.addEventListener('visibilitychange', syncPlayback);
       measure();
       visibility.observe(viewport);
-      const tween = gsap.to(playhead, {
-        position: projects.length, ease: 'none', onUpdate: render,
-        scrollTrigger: {
-          trigger: section, start: () => 'top ' + (inset - section.querySelector('h2').parentElement.offsetHeight) + 'px', end: () => '+=' + distance,
-          scrub: .12, refreshPriority: -1, onRefreshInit: measure, onRefresh: render,
-        },
-      });
-      function goTo(index, animated = true) {
-        if (animated && (navigation?.index === index || (!navigation && lastFocused === index))) return;
-        const from = scene();
-        navigationTween?.kill();
+      function alignStage(animated) {
+        const top = window.scrollY + viewport.getBoundingClientRect().top - inset;
         alignmentTween?.kill();
-        const trigger = tween.scrollTrigger;
-        if (animated) {
-          // Click selection follows the same right-to-left direction as autoplay.
-          const arc = gsap.utils.wrap(0, projects.length, index - from.travel);
-          navigation = { from, index, travel: from.travel + arc, progress: 0 };
-          section.dataset.switching = 'true';
-          angularVelocity = 0;
-        } else {
-          navigation = null;
-          delete section.dataset.switching;
-        }
-        const destination = trigger.start + (index + .49) / projects.length * (trigger.end - trigger.start);
-        const settleScroll = () => {
-          window.scrollTo({ top: destination, behavior: 'instant' });
-          trigger.update();
-          tween.progress((index + .49) / projects.length);
-        };
-        if (animated && viewport.getBoundingClientRect().top > inset + 2) {
-          const scroll = { y: window.scrollY };
-          // Bring an arriving gallery into view gently before changing its hidden scroll position.
-          alignmentTween = gsap.to(scroll, {
-            y: trigger.start, duration: .28, ease: 'power2.out',
-            onUpdate: () => window.scrollTo({ top: scroll.y, behavior: 'instant' }), onComplete: settleScroll,
-          });
-        } else settleScroll();
-        if (!animated) { render(); return; }
+        if (!animated) { window.scrollTo({ top, behavior: 'instant' }); return; }
+        const scroll = { y: window.scrollY };
+        alignmentTween = gsap.to(scroll, {
+          y: top, duration: .35, ease: 'power2.out',
+          onUpdate: () => window.scrollTo({ top: scroll.y, behavior: 'instant' }),
+        });
+      }
+      function goTo(index, animated = true) {
+        if (selected === index) { if (index >= 0) alignStage(animated); return; }
+        const from = scene(), previous = selected;
+        const restoreFocus = index < 0 && section.contains(document.activeElement);
+        selected = index;
+        navigationTween?.kill();
+        if (index >= 0) section.dataset.projectOpen = 'true';
+        else delete section.dataset.projectOpen;
+        // Only an explicit selection opens a presentation; scrolling owns no gallery state.
+        const travel = index < 0 ? from.travel
+          : from.travel + gsap.utils.wrap(0, projects.length, index - from.travel);
+        const target = idleScene(travel, index);
+        if (index >= 0) alignStage(animated);
+        if (!animated) { view = target; navigation = null; delete section.dataset.switching; render(); return; }
+        navigation = { from, index, travel, progress: 0 };
+        section.dataset.switching = 'true';
+        angularVelocity = 0;
         navigationTween = gsap.to(navigation, {
           progress: 1, duration: .86, ease: 'none', onUpdate: render,
           onComplete: () => {
+            view = target;
             navigation = null;
             delete section.dataset.switching;
             render();
+            if (restoreFocus && previous >= 0 && visible) covers[previous].focus({ preventScroll: true });
           },
         });
       }
@@ -283,26 +274,64 @@ export default function ProjectGallery({ reduced }) {
         history.pushState(null, '', link.hash);
         fromHash();
       }
+      function highlight(index, active) {
+        if (index < 0) return;
+        gsap.killTweensOf(faces[index]);
+        covers[index].dataset.hovered = String(active);
+        gsap.to(faces[index], {
+          scale: active ? 1.035 : 1, y: active ? -14 : 0,
+          rotationX: active ? 8 : 12,
+          rotationY: (mobile ? -42 : -48) + (active ? 5 : 0),
+          rotationZ: active ? -7 : -11,
+          duration: active ? .32 : .45, delay: active ? 0 : .06,
+          ease: 'power3.out', overwrite: true,
+        });
+      }
+      const hoverEnter = covers.map((cover, index) => event => {
+        if (canHover && event.pointerType === 'mouse' && !pointer?.dragged) highlight(index, true);
+      });
+      const hoverLeave = covers.map((cover, index) => () => {
+        if (keyboardFocus !== index) highlight(index, false);
+      });
       function focus(event) {
         const index = covers.indexOf(event.target);
-        if (!pointer && index >= 0 && event.target.matches(':focus-visible')) goTo(index);
+        if (index < 0 || !event.target.matches(':focus-visible')) return;
+        keyboardFocus = index;
+        angularVelocity = 0;
+        highlight(index, true);
+        focusTween?.kill();
+        const position = { flow };
+        // Bring keyboard focus into view, without opening the project.
+        focusTween = gsap.to(position, {
+          flow: flow + gsap.utils.wrap(-cards.length / 2, cards.length / 2, index - scene().travel - flow),
+          duration: .35, ease: 'power2.out', onUpdate: () => { flow = position.flow; render(); },
+        });
+      }
+      function blur(event) {
+        const index = covers.indexOf(event.target);
+        if (index < 0) return;
+        keyboardFocus = -1;
+        highlight(index, false);
       }
       function keyboard(event) {
+        if (event.key === 'Escape' && selected >= 0) { event.preventDefault(); goTo(-1); return; }
         const index = covers.indexOf(event.target);
         if (index < 0 || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
         event.preventDefault();
         const next = event.key === 'Home' ? 0 : event.key === 'End' ? cards.length - 1
           : gsap.utils.wrap(0, cards.length, index + (event.key === 'ArrowRight' ? 1 : -1));
         covers[next].focus({ preventScroll: true });
-        goTo(next);
       }
       function finishSwitch() {
-        alignmentTween?.progress(1);
+        alignmentTween?.kill();
         navigationTween?.progress(1);
       }
+      function cancelAlignment() { alignmentTween?.kill(); }
       function pointerDown(event) {
-        if (!event.isPrimary || event.button !== 0 || event.target.closest('a, [data-project-detail]')) return;
+        if (!event.isPrimary || event.button !== 0 || event.target.closest('a, [data-project-detail], [data-gallery-close]')) return;
         finishSwitch();
+        focusTween?.kill();
+        keyboardFocus = -1;
         pointer = { id: event.pointerId, x: event.clientX, y: event.clientY, lastX: event.clientX, lastTime: event.timeStamp, dragged: false };
         angularVelocity = 0;
       }
@@ -316,6 +345,7 @@ export default function ProjectGallery({ reduced }) {
           pointer.dragged = true;
           viewport.setPointerCapture(event.pointerId);
           viewport.dataset.dragging = 'true';
+          covers.forEach((_, index) => highlight(index, false));
         }
         if (event.cancelable) event.preventDefault();
         const delta = (event.clientX - pointer.lastX) / trackPitch;
@@ -336,28 +366,43 @@ export default function ProjectGallery({ reduced }) {
       document.addEventListener('click', anchor);
       window.addEventListener('hashchange', fromHash);
       section.addEventListener('focusin', focus);
+      section.addEventListener('focusout', blur);
+      covers.forEach((cover, index) => {
+        cover.addEventListener('pointerenter', hoverEnter[index]);
+        cover.addEventListener('pointerleave', hoverLeave[index]);
+      });
       section.addEventListener('keydown', keyboard);
       viewport.addEventListener('pointerdown', pointerDown);
       viewport.addEventListener('pointermove', pointerMove, { passive: false });
       viewport.addEventListener('pointerup', pointerUp);
       viewport.addEventListener('pointercancel', pointerUp);
       window.addEventListener('pointerup', pointerUp);
-      viewport.addEventListener('wheel', finishSwitch, { passive: true });
+      window.addEventListener('wheel', cancelAlignment, { passive: true });
+      window.addEventListener('touchstart', cancelAlignment, { passive: true });
       render();
       let disposed = false, refresh = 0;
       document.fonts.ready.then(() => {
         if (disposed) return;
         refresh = requestAnimationFrame(() => {
-          ScrollTrigger.refresh();
+          measure();
+          render();
           fromHash();
         });
       });
+      const resize = () => {
+        cancelAnimationFrame(refresh);
+        refresh = requestAnimationFrame(() => { measure(); render(); });
+      };
+      window.addEventListener('resize', resize);
       return () => {
         disposed = true;
         visibility.disconnect();
         entranceTween?.kill();
         navigationTween?.kill();
         alignmentTween?.kill();
+        focusTween?.kill();
+        window.removeEventListener('resize', resize);
+        faces.forEach(face => gsap.killTweensOf(face));
         gsap.ticker.remove(tick);
         document.removeEventListener('visibilitychange', syncPlayback);
         cancelAnimationFrame(refresh);
@@ -365,22 +410,30 @@ export default function ProjectGallery({ reduced }) {
         document.removeEventListener('click', anchor);
         window.removeEventListener('hashchange', fromHash);
         section.removeEventListener('focusin', focus);
+        section.removeEventListener('focusout', blur);
+        covers.forEach((cover, index) => {
+          cover.removeEventListener('pointerenter', hoverEnter[index]);
+          cover.removeEventListener('pointerleave', hoverLeave[index]);
+        });
         section.removeEventListener('keydown', keyboard);
         viewport.removeEventListener('pointerdown', pointerDown);
         viewport.removeEventListener('pointermove', pointerMove);
         viewport.removeEventListener('pointerup', pointerUp);
         viewport.removeEventListener('pointercancel', pointerUp);
         window.removeEventListener('pointerup', pointerUp);
-        viewport.removeEventListener('wheel', finishSwitch);
+        window.removeEventListener('wheel', cancelAlignment);
+        window.removeEventListener('touchstart', cancelAlignment);
         delete viewport.dataset.dragging;
         delete section.dataset.switching;
         delete section.dataset.showcase;
+        delete section.dataset.projectOpen;
         gsap.set([...covers, ...features, ...faces, ...featureFaces, ...details, ...washes, ...copyParts.flat()], { clearProps: 'transform,opacity,zIndex,visibility' });
         cards.forEach((card, i) => {
           delete card.dataset.active;
           details[i].inert = false;
           details[i].removeAttribute('aria-hidden');
           delete covers[i].dataset.featured;
+          delete covers[i].dataset.hovered;
           covers[i].removeAttribute('aria-pressed');
         });
       };
@@ -398,8 +451,9 @@ export default function ProjectGallery({ reduced }) {
     <div className={s.heading}>
       <h2 id="projects-title"><span data-project-heading-line>Minha bagagem</span><span data-project-heading-line>em projetos.</span></h2>
     </div>
-    <p id="gallery-help" className={s.visuallyHidden}>Arraste para os lados para explorar os projetos. Use as setas do teclado para escolher.</p>
+    <p id="gallery-help" className={s.visuallyHidden}>Arraste para os lados para explorar os projetos. Use as setas para navegar e Enter para abrir um projeto.</p>
     <div className={s.stage} ref={stage} aria-describedby="gallery-help">
+      <button type="button" className={s.close} data-gallery-close onClick={() => seek.current?.(-1)} aria-label="Fechar projeto"><X size={16}/><span>Voltar à galeria</span></button>
       {projects.map((project, index) => <article key={project.id} id={'projeto-' + project.id}
         data-project={project.id} className={s.project} style={{ '--project-tint': themes[index] }}
         aria-labelledby={'project-title-' + project.id}>

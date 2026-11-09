@@ -85,3 +85,6 @@ A trajetória orbital dá lugar a uma faixa infinita: as capas entram pela borda
 
 ## Perspectiva e diagonal da galeria — 08/11/2026
 O fluxo infinito passa a descer na diagonal, do alto à direita para baixo à esquerda. As capas são vistas de lado, com perspectiva em três eixos; a apresentação ampliada mantém inclinação mais discreta. Medir as faces projetadas a cada mudança de layout para calcular espaçamento e reciclar as capas fora da tela. Preservar arraste, teclado, rolagem nativa no toque e a alternativa estática de movimento reduzido.
+
+## Seleção explícita na galeria — 08/11/2026
+A rolagem passa normalmente pela galeria e continua para a trajetória, sem pin ou sequência automática dos sete projetos. Preservar o loop diagonal e abrir a apresentação somente por clique/toque, Enter ou link direto. Setas e foco navegam entre capas sem abri-las. Incluir retorno à galeria e Escape. Hover com elevação, escala discreta e mudança de perspectiva em JavaScript; não abrir detalhes no hover.

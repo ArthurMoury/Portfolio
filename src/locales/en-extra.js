@@ -8,6 +8,8 @@ export const extraMessages = {
   'Minha bagagem': 'My experience',
   'em projetos.': 'through projects.',
   'Ver projeto': 'View project',
-  'Arraste para os lados para explorar os projetos. Use as setas do teclado para escolher.': 'Drag sideways to explore the projects. Use the arrow keys to choose one.',
+  'Arraste para os lados para explorar os projetos. Use as setas para navegar e Enter para abrir um projeto.': 'Drag sideways to explore the projects. Use the arrow keys to navigate and Enter to open a project.',
+  'Fechar projeto': 'Close project',
+  'Voltar à galeria': 'Back to gallery',
   'Captura da landing page': 'Landing page screenshot',
 };
