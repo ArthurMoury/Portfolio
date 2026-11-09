@@ -48,7 +48,7 @@
   -webkit-mask-image: linear-gradient(to bottom, transparent, #000 var(--rail-bleed), #000 calc(100% - var(--rail-bleed)), transparent);
   mask-image: linear-gradient(to bottom, transparent, #000 var(--rail-bleed), #000 calc(100% - var(--rail-bleed)), transparent);
 }
-[data-showcase] .wash { display: block; position: absolute; inset: 0; background: radial-gradient(ellipse at 38% 36%, var(--project-tint), transparent 75%); opacity: 0; }
+[data-showcase] .wash { display: block; position: absolute; inset: 0; background: radial-gradient(ellipse 78% 46% at 38% 50%, var(--project-tint), transparent 100%); opacity: 0; }
 [data-showcase] .cover {
   position: absolute; top: var(--rail-bleed); left: 0; width: var(--cover-width); height: var(--cover-height);
   aspect-ratio: auto; transform-origin: center; pointer-events: none; overflow: visible; border-radius: 0;

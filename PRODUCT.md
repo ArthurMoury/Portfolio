@@ -94,3 +94,6 @@ Remover o recorte rígido no topo e no fim do trilho diagonal. As capas avançam
 
 ## Tyde na galeria — 09/11/2026
 Substituir o Site Construtor de Hotéis na galeria pelo Tyde, repositório privado Gustavotorrescastro/tyde, acessível pela conta Amfgs. Identificar a participação de Arthur como colaboração. Usar captura real do deploy público tyde-coral.vercel.app e descrever a stack confirmada: Next.js, React, TypeScript, MapLibre GL, GeoJSON e scripts de dados em Node.js/Python. Traduzir a apresentação para inglês e preservar a trajetória profissional existente.
+
+## Fundo contínuo ao abrir projetos — 09/11/2026
+A iluminação da identidade de cada projeto deve desaparecer antes do topo e do fim da área de apresentação. Usar uma elipse com limites explícitos para evitar uma faixa horizontal de cor ao abrir ou trocar projetos, mantendo a base contínua da galeria.
