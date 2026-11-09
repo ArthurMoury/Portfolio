@@ -91,3 +91,6 @@ A rolagem passa normalmente pela galeria e continua para a trajetória, sem pin 
 
 ## Bordas orgânicas da galeria — 08/11/2026
 Remover o recorte rígido no topo e no fim do trilho diagonal. As capas avançam um pouco além da seção e desaparecem por uma máscara vertical suave, aplicada somente ao trilho. Manter contenção horizontal, detalhes e controles legíveis, navegação e rolagem livre.
+
+## Tyde na galeria — 09/11/2026
+Substituir o Site Construtor de Hotéis na galeria pelo Tyde, repositório privado Gustavotorrescastro/tyde, acessível pela conta Amfgs. Identificar a participação de Arthur como colaboração. Usar captura real do deploy público tyde-coral.vercel.app e descrever a stack confirmada: Next.js, React, TypeScript, MapLibre GL, GeoJSON e scripts de dados em Node.js/Python. Traduzir a apresentação para inglês e preservar a trajetória profissional existente.

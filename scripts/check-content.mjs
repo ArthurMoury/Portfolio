@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { projects, chapters, profile } from '../src/data/portfolio.js';
 import assert from 'node:assert/strict';
 import { certificates } from '../src/data/certificates.js';
-const expected=['cortech','freesb','betterway','nexo-ai','roomi-builder','sollie','dozao'];
+const expected=['cortech','freesb','betterway','nexo-ai','tyde','sollie','dozao'];
 assert.deepEqual(projects.map(p=>p.id),expected,'A seleção deve ser exatamente a lista pedida pelo usuário.');
 assert.equal(new Set(projects.filter(p=>p.repo).map(p=>p.repo)).size,6,'Seis repositórios identificados; Dozão ainda sem repositório publicado.');
 assert.equal(new Set(projects.filter(p=>p.live).map(p=>p.live)).size,7,'Cada projeto deve ter seu próprio deploy.');

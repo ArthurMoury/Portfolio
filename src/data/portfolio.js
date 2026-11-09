@@ -162,34 +162,35 @@ export const projects = [
     ]
   },
   {
-    "id": "roomi-builder",
-    "name": "Site Construtor de Hotéis",
-    "repo": "ArthurMoury/roomi-builder",
-    "private": false,
-    "live": "https://roomi-builder.vercel.app/",
-    "topic": "Simulação e visualização 3D",
-    "context": "trabalho",
-    "summary": "Um resort toma forma a partir de decisões.",
-    "detail": "Simulador que transforma escolhas de destino, categoria e escala em um hotel 3D. A visualização acompanha um relatório de investimento e operação com estimativas em faixas.",
+    "id": "tyde",
+    "name": "Tyde",
+    "repo": "Gustavotorrescastro/tyde",
+    "private": true,
+    "live": "https://tyde-coral.vercel.app/",
+    "topic": "Inteligência territorial",
+    "context": "colaboracao",
+    "summary": "Um mapa para conectar dados e território.",
+    "detail": "Atuo como colaborador no Tyde, um painel de inteligência territorial do Recife. Mapas e indicadores de saneamento, chuva, maré e histórico epidemiológico conectam os oito Distritos Sanitários e os 94 bairros da cidade.",
     "tech": [
+      "Next.js",
       "React",
-      "Three.js",
-      "GSAP"
+      "TypeScript",
+      "MapLibre GL"
     ],
-    "image": "/projects/roomi-builder-cover.webp",
+    "image": "/projects/tyde.webp",
     "imageType": "Captura da aplicação",
     "implementation": [
       {
         "label": "Aplicação",
-        "text": "React, TypeScript, Vite e Zustand."
+        "text": "Next.js, React e TypeScript."
       },
       {
-        "label": "Visualização",
-        "text": "Three.js com React Three Fiber."
+        "label": "Mapas",
+        "text": "MapLibre GL e GeoJSON para as camadas de distritos e bairros."
       },
       {
-        "label": "Movimento",
-        "text": "Anime.js, Motion e GSAP com ScrollTrigger."
+        "label": "Dados e validação",
+        "text": "Scripts em Node.js e Python para dados públicos; testes unitários e de navegador com Playwright."
       }
     ]
   },

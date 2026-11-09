@@ -6,7 +6,7 @@ import { projects } from './data/portfolio';
 import { localize, t } from './i18n';
 import s from './ProjectGallery.module.css';
 
-const themes = ['#93ad88', '#b69ddf', '#92b990', '#deaa91', '#de9a86', '#91bf9d', '#94b9bd'];
+const themes = ['#93ad88', '#b69ddf', '#92b990', '#deaa91', '#8cb8e8', '#91bf9d', '#94b9bd'];
 const clamp = gsap.utils.clamp(0, 1);
 const ease = value => {
   const x = clamp(value);

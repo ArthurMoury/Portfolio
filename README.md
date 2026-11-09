@@ -7,7 +7,7 @@ Apresentação pessoal, projetos, trajetória, certificados e aplicações reais
 ## Experiência
 
 - Tema escuro em todo o site, com entrada tridimensional. O retrato aparece na seção seguinte, junto de uma breve apresentação.
-- Informações pessoais e contato antes dos sete projetos: Cortech, FreeSB, Betterway, Nexo AI, Site Construtor de Hotéis, Sollie e Dozão.
+- Informações pessoais e contato antes dos sete projetos: Cortech, FreeSB, Betterway, Nexo AI, Tyde, Sollie e Dozão.
 - Galeria em loop infinito na diagonal descendente, com capas em perspectiva lateral, arraste e inércia, seleção por clique, toque ou Enter, transições entre projetos e apresentação técnica em sequência. Rolagem livre até a seção seguinte; hover eleva e inclina a capa sem abrir o projeto. Botões independentes para GitHub e deploy.
 - Trajetória em CESAR School, Gaita Hero, Echo, Boop, Roomi e projetos autorais, com imagens sincronizadas à rolagem e Google Sites dos projetos acadêmicos de 2025.
 - Dois carrosséis em sentidos opostos com os 29 documentos da pasta fornecida pelo titular: movimento contínuo mesmo sob hover, expansão por Motion e ampliação em diálogo.
@@ -30,7 +30,7 @@ A publicação na Vercel usa `vercel.json`, com saída estática em `dist/`. A c
 
 Os dados estão em `src/data/portfolio.js` e `src/data/certificates.js`. As imagens são locais, com miniaturas menores no carrossel e versões maiores no diálogo. Dois documentos continham CPF; ele foi omitido nas cópias do portfólio. Os originais no Drive foram preservados. O registro do Santander é identificado como seleção para o programa, sem alegar conclusão.
 
-Cortech, FreeSB e Sollie têm repositórios privados, identificados nos botões. Permissões não foram alteradas. Seis projetos têm links próprios de acesso; Cortech exibe somente o botão de código.
+Cortech, FreeSB, Tyde e Sollie têm repositórios privados, identificados nos botões. Permissões não foram alteradas. Tyde é um projeto de Gustavotorrescastro no qual Arthur participa como colaborador. Seis projetos têm links próprios de acesso; Cortech exibe somente o botão de código.
 
 Formação e experiência vêm do currículo do titular. Sem idade ou endereço residencial na página. Foto profissional fornecida pelo titular, com enquadramento vertical em CSS e avatar na navegação. O PDF original do currículo é mantido sem edição.
 
