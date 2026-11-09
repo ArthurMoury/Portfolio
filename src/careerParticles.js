@@ -11,12 +11,16 @@ const planeFragment = `
 uniform sampler2D uFrom;
 uniform sampler2D uTo;
 uniform float uProgress;
+uniform vec2 uSize;
 varying vec2 vUv;
 void main() {
   float before = 1.0 - smoothstep(0.03, 0.25, uProgress);
   float after = smoothstep(0.76, 0.98, uProgress);
   vec3 color = (texture2D(uFrom, vUv).rgb * before + texture2D(uTo, vUv).rgb * after) / max(before + after, 0.001);
-  gl_FragColor = vec4(color, min(1.0, before + after));
+  vec2 corner = abs(vUv - 0.5) * uSize - (uSize * 0.5 - 8.0);
+  float distance = length(max(corner, 0.0)) + min(max(corner.x, corner.y), 0.0) - 8.0;
+  float rounded = 1.0 - smoothstep(-0.65, 0.65, distance);
+  gl_FragColor = vec4(color, min(1.0, before + after) * rounded);
 }`;
 
 const particleVertex = `
@@ -85,13 +89,13 @@ function compose(chapter, image, brand) {
 }
 
 export function createCareerParticles(canvas, chapters, images, brands) {
-  const renderer = new T.WebGLRenderer({ canvas, alpha: false, antialias: false, powerPreference: 'low-power' });
+  const renderer = new T.WebGLRenderer({ canvas, alpha: true, antialias: false, powerPreference: 'low-power' });
   const ratio = Math.min(window.devicePixelRatio || 1, 1.5);
   renderer.setPixelRatio(ratio);
   renderer.toneMapping = T.NoToneMapping;
+  renderer.setClearColor(0, 0);
   renderer.debug.onShaderError = () => { throw new Error('Image morph shader unavailable'); };
   const textures = chapters.map((chapter, i) => compose(chapter, images[i], brands[i]));
-  const backgrounds = chapters.map(chapter => new T.Color(chapter.background || '#17191b'));
   const scene = new T.Scene();
   const camera = new T.PerspectiveCamera(45, 1, 1, 2400);
   camera.position.z = 1000;
@@ -129,16 +133,16 @@ export function createCareerParticles(canvas, chapters, images, brands) {
   points.frustumCulled = false;
   plane.renderOrder = 0; points.renderOrder = 1;
   scene.add(plane, points);
-  let width = 0, height = 0;
-  const clear = new T.Color();
+  let width = 0, height = 0, surfaceWidth = 0, surfaceHeight = 0;
   return {
     count,
-    draw(position, nextWidth, nextHeight) {
-      if (width !== nextWidth || height !== nextHeight) {
+    draw(position, nextWidth, nextHeight, nextSurfaceWidth = nextWidth, nextSurfaceHeight = nextHeight) {
+      if (width !== nextWidth || height !== nextHeight || surfaceWidth !== nextSurfaceWidth || surfaceHeight !== nextSurfaceHeight) {
         width = nextWidth; height = nextHeight;
-        renderer.setSize(width, height, false);
-        camera.aspect = width / height;
-        camera.fov = T.MathUtils.radToDeg(2 * Math.atan(height / 2000));
+        surfaceWidth = nextSurfaceWidth; surfaceHeight = nextSurfaceHeight;
+        renderer.setSize(surfaceWidth, surfaceHeight, false);
+        camera.aspect = surfaceWidth / surfaceHeight;
+        camera.fov = T.MathUtils.radToDeg(2 * Math.atan(surfaceHeight / 2000));
         camera.updateProjectionMatrix();
         uniforms.uSize.value.set(width, height);
         uniforms.uCell.value = width / columns;
@@ -148,8 +152,6 @@ export function createCareerParticles(canvas, chapters, images, brands) {
       const progress = Math.max(0, Math.min(1, position - index));
       uniforms.uFrom.value = textures[index]; uniforms.uTo.value = textures[index + 1];
       uniforms.uProgress.value = progress;
-      clear.copy(backgrounds[index]).lerp(backgrounds[index + 1], progress);
-      renderer.setClearColor(clear, 1);
       renderer.render(scene, camera);
     },
     dispose() {

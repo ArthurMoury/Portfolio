@@ -100,3 +100,6 @@ A iluminação da identidade de cada projeto deve desaparecer antes do topo e do
 
 ## Morph de imagens da trajetória — 09/11/2026
 Substituir a troca por recorte/rotação das imagens por um morph contínuo de partículas no painel fixo do desktop. GSAP liga cada transição à rolagem entre os centros dos capítulos, com retorno reversível e pausas nas imagens completas. Usar os pixels reais das seis imagens, respeitando enquadramento e cores; preservar ampliação, textos, clientes e links. Renderização WebGL carregada sob demanda, suspensa fora da área visível e alternativa HTML em falha ou movimento reduzido. No mobile, preservar a preferência anterior por imagens estáticas em cada capítulo.
+
+## Partículas sem fundo fixo — 09/11/2026
+Manter o morph aprovado, removendo a superfície retangular durante a transformação. Canvas WebGL transparente e uma margem de desenho permitem às partículas sair dos limites da foto. O fundo e os cantos arredondados pertencem somente às imagens completas; a fase intermediária revela o fundo da página entre as partículas.

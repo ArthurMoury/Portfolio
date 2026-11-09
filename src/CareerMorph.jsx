@@ -24,12 +24,13 @@ export default function CareerMorph({ reduced }) {
       const canvas = ref.current, host = canvas.parentElement;
       const story = host.closest('[data-career-story]');
       const elements = [...story.querySelectorAll('[data-chapter]')];
-      let centers = [], width = 0, height = 0, visible = false, disposed = false;
+      let centers = [], width = 0, height = 0, surfaceWidth = 0, surfaceHeight = 0, visible = false, disposed = false;
       let engine = null, loading = false, healthy = true, frame = 0;
       const clock = { scroll: 0 };
       function measure() {
         centers = elements.map(el => { const rect = el.getBoundingClientRect(); return window.scrollY + rect.top + rect.height / 2; });
         width = host.clientWidth; height = host.clientHeight;
+        surfaceWidth = canvas.clientWidth; surfaceHeight = canvas.clientHeight;
       }
       function invalidate() {
         if (!frame && visible && healthy && !disposed && !document.hidden) frame = requestAnimationFrame(draw);
@@ -40,7 +41,7 @@ export default function CareerMorph({ reduced }) {
         const focus = centers[0] + (centers.at(-1) - centers[0]) * clock.scroll;
         const position = careerPosition(centers, focus);
         try {
-          engine.draw(position, width, height);
+          engine.draw(position, width, height, surfaceWidth, surfaceHeight);
           host.dataset.morphReady = 'true';
           canvas.dataset.morphPosition = position.toFixed(4);
         } catch {
@@ -59,7 +60,7 @@ export default function CareerMorph({ reduced }) {
             Promise.all(chapters.map(chapter => loadImage(chapter.brandImage))),
           ]);
           if (disposed) return;
-          if (!canvas.getContext('webgl2', { alpha: false, antialias: false, powerPreference: 'low-power' })) return;
+          if (!canvas.getContext('webgl2', { alpha: true, antialias: false, powerPreference: 'low-power' })) return;
           engine = createCareerParticles(canvas, chapters, images, brands);
           canvas.dataset.particles = String(engine.count);
           invalidate();
