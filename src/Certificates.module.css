@@ -25,19 +25,20 @@
 
 /* Match the rail's exact surface at the seam, with a long dark fade above it. */
 .section {
+  padding-top:clamp(64px,6vw,96px);
   background: linear-gradient(to bottom, var(--deepest) 0%,
     var(--deepest) calc(100% - clamp(200px, 30vh, 360px)), #0c0c0d 100%);
 }
 
 /* A soft field spans both sections; no surface, stroke or clipped edge at the join. */
 .handoff{
-  --handoff-height:clamp(320px,56vh,600px);
+  --handoff-height:clamp(360px,66vh,700px);
   position:absolute;inset:calc(var(--handoff-height) * -.5) 0 auto;
   height:var(--handoff-height);overflow:clip;pointer-events:none;z-index:0;
   mask-image:linear-gradient(transparent,black 30%,black 65%,transparent);
 }
 .handoff>span{position:absolute;inset:-12% -20%;transform-origin:center;opacity:.8}
-.handoff>span:first-child{background:radial-gradient(ellipse 62% 38% at 42% 50%,oklch(.6 .008 250/.10),oklch(.38 .006 250/.035) 50%,transparent 100%)}
+.handoff>span:first-child{background:radial-gradient(ellipse 80% 64% at 42% 50%,oklch(.6 .008 250/.14),oklch(.38 .006 250/.045) 50%,transparent 100%)}
 .handoff>span:last-child{background:radial-gradient(ellipse 45% 45% at 68% 48%,oklch(.55 .006 250/.065),transparent 100%)}
 .heading{position:relative;z-index:1}
-@media(max-width:899px){.handoff{--handoff-height:320px}.handoff>span{inset:-5% -15%}}
+@media(max-width:899px){.section{padding-top:56px}.handoff{--handoff-height:360px}.handoff>span{inset:-5% -15%}}

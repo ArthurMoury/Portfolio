@@ -109,3 +109,6 @@ No desktop, reunir os capítulos em uma cena fixa controlada pela rolagem nativa
 
 ## Passagem da trajetória aos certificados — 09/11/2026
 Remover a borda superior dos certificados. Preservar a mesma base escura nas duas seções e unir a passagem com um campo de luz difuso, sem linha ou superfície recortada, que acompanha a rolagem nos dois sentidos. No desktop, a cena final da trajetória desaparece gradualmente durante a chegada dos certificados. Mobile mantém as imagens estáticas; movimento reduzido conserva somente o fundo contínuo e a iluminação estática.
+
+## Interação das partículas em repouso — 09/11/2026
+No desktop, o cursor desloca e ondula localmente os pixels e caracteres da trajetória, inclusive nas imagens completas e com a rolagem parada. Ao sair, o conteúdo se recompõe e a renderização contínua cessa. A interação não altera o capítulo nem a posição da rolagem. Preservar toque, movimento reduzido e leitura fora da região do cursor. Passagem para certificados com menos espaço vazio, iluminação mais ampla e revelação do título sincronizada à rolagem.

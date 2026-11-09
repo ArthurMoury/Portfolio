@@ -25,6 +25,8 @@ export default function CareerMorph({ reduced, onChapterChange }) {
       const setCards = cards.map(card => gsap.quickSetter(card, 'css'));
       const setButtons = buttons.map(button => gsap.quickSetter(button, 'css'));
       const clock = { scroll: 0 };
+      const pointer = { x: -10000, y: -10000, strength: 0, time: 0 };
+      let hover = false, pointerX = -10000, pointerY = -10000, lastDraw = 0;
       let layout, heights = [], travel = 1, sticky = 92, current = -1, pendingFocus = -1;
       let engine = null, createEngine, images, brands, ready = false, healthy = true, disposed = false, visible = false, pending = 0;
       story.dataset.careerAlternating = 'true';
@@ -70,19 +72,47 @@ export default function CareerMorph({ reduced, onChapterChange }) {
       function invalidate() {
         if (!pending && !disposed && !document.hidden) pending = requestAnimationFrame(draw);
       }
-      function draw() {
+      function draw(now) {
         pending = 0;
         if (disposed || !layout) return;
         const frame = state();
+        const delta = Math.min(50, now - (lastDraw || now - 16)); lastDraw = now;
+        const ease = 1 - Math.exp(-delta / 100);
+        pointer.x += (pointerX - pointer.x) * ease; pointer.y += (pointerY - pointer.y) * ease;
+        pointer.strength += ((hover ? 1 : 0) - pointer.strength) * ease;
+        if (!hover && pointer.strength < .002) pointer.strength = 0;
+        pointer.time = now / 1000;
         if (engine && healthy && visible && !document.hidden) {
           try {
-            engine.draw(frame, layout);
+            engine.draw(frame, layout, pointer);
             scene.dataset.morphReady = 'true';
             canvas.dataset.morphPosition = frame.position.toFixed(4);
           } catch { healthy = false; delete scene.dataset.morphReady; engine.dispose(); engine = null; }
         }
         html(frame, !!engine && healthy);
+        cards.forEach(card => {
+          if (pointer.strength > 0 && engine && healthy) {
+            const r = card.getBoundingClientRect(), box = scene.getBoundingClientRect();
+            card.style.maskImage = `radial-gradient(circle 140px at ${pointer.x + box.left - r.left}px ${pointer.y + box.top - r.top}px, rgb(0 0 0 / ${1 - pointer.strength}), black)`;
+          } else card.style.removeProperty('mask-image');
+        });
+        canvas.dataset.hoverStrength = pointer.strength.toFixed(3);
+        if (engine && healthy && visible && !document.hidden && (hover || pointer.strength > 0)) invalidate();
       }
+      function move(event) {
+        if (event.pointerType !== 'mouse') return;
+        const box = scene.getBoundingClientRect();
+        pointerX = event.clientX - box.left; pointerY = event.clientY - box.top;
+        const phase = state().phase;
+        hover = phase > .1 && phase < .9 || [...cards, ...buttons].some(el => {
+          if (el.inert) return false;
+          const r = el.getBoundingClientRect();
+          return event.clientX >= r.left && event.clientX <= r.right && event.clientY >= r.top && event.clientY <= r.bottom;
+        });
+        if (pointer.strength === 0) { pointer.x = pointerX; pointer.y = pointerY; }
+        invalidate();
+      }
+      function leave() { hover = false; invalidate(); }
       async function prepare() {
         if (ready || disposed) return;
         ready = true;
@@ -102,6 +132,7 @@ export default function CareerMorph({ reduced, onChapterChange }) {
       }
       const visibility = new IntersectionObserver(entries => {
         visible = entries.at(-1).isIntersecting;
+        if (!visible) { hover = false; pointer.strength = 0; }
         if (visible) { prepare(); invalidate(); }
       }, { rootMargin: '320px 0px' });
       measure(); html(state(), false);
@@ -136,7 +167,7 @@ export default function CareerMorph({ reduced, onChapterChange }) {
       }
       const lost = () => { healthy = false; delete scene.dataset.morphReady; invalidate(); };
       const restored = () => { healthy = true; invalidate(); };
-      const pageVisibility = () => { if (!document.hidden && visible) invalidate(); };
+      const pageVisibility = () => { hover = false; if (!document.hidden && visible) invalidate(); };
       function resize() {
         if (disposed) return;
         const oldWidth = layout.width, oldHeight = layout.height;
@@ -153,6 +184,8 @@ export default function CareerMorph({ reduced, onChapterChange }) {
       document.addEventListener('visibilitychange', pageVisibility); document.addEventListener('click', anchor);
       window.addEventListener('resize', resize); window.addEventListener('hashchange', fromHash);
       story.addEventListener('keydown', keyboard); story.addEventListener('focusin', focus);
+      scene.addEventListener('pointermove', move); scene.addEventListener('pointerleave', leave);
+      window.addEventListener('scroll', leave, { passive: true });
       visibility.observe(story);
       return () => {
         disposed = true; cancelAnimationFrame(pending); visibility.disconnect(); tween.scrollTrigger?.kill(); tween.kill(); engine?.dispose();
@@ -160,8 +193,11 @@ export default function CareerMorph({ reduced, onChapterChange }) {
         document.removeEventListener('visibilitychange', pageVisibility); document.removeEventListener('click', anchor);
         window.removeEventListener('resize', resize); window.removeEventListener('hashchange', fromHash);
         story.removeEventListener('keydown', keyboard); story.removeEventListener('focusin', focus);
+        scene.removeEventListener('pointermove', move); scene.removeEventListener('pointerleave', leave); window.removeEventListener('scroll', leave);
         delete story.dataset.careerAlternating; delete scene.dataset.morphReady; delete scene.dataset.careerPosition; delete scene.dataset.imageSide;
         delete canvas.dataset.morphPosition; delete canvas.dataset.particles; delete canvas.dataset.textParticles;
+        delete canvas.dataset.hoverStrength;
+        cards.forEach(card => card.style.removeProperty('mask-image'));
         gsap.set([...cards, ...buttons], { clearProps: 'transform,opacity,pointerEvents' });
         cards.forEach(card => { card.inert = false; card.removeAttribute('aria-hidden'); delete card.dataset.careerReadable; });
         buttons.forEach((button, i) => { button.inert = false; button.tabIndex = i === current ? 0 : -1; });

@@ -133,3 +133,5 @@ A etapa Prompts & LLMs mostra um prompt escrito, em lugar das três etiquetas il
 
 ## Transição para certificados — 09/11/2026
 Borda superior removida e continuidade visual inspecionada em 1440×900 e 390×844. O campo difuso atravessa a junção sem recorte horizontal e acompanha a rolagem; no desktop, a cena anterior desaparece gradualmente e retorna ao rolar para trás. Movimento reduzido mantém o fundo estático. Sem overflow horizontal ou erros de JavaScript; ampliação de certificados por teclado e Escape preservadas. Conteúdo e build aprovados.
+
+Hover de partículas: imagens completas de dois capítulos e fase intermediária verificados com rolagem fixa. Capturas sucessivas diferem mesmo com o cursor parado; capítulo e scroll permanecem iguais. Saída do cursor retorna intensidade a zero e remove a máscara do texto. Transição refinada revalidada em desktop, mobile e movimento reduzido, incluindo diálogo dos certificados. Sem erros de JavaScript; conteúdo e build aprovados.

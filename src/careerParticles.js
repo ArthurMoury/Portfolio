@@ -9,11 +9,13 @@ uniform vec2 uRoute;
 uniform float uLift;
 uniform vec2 uSize;
 varying vec2 vUv;
+varying vec2 vWorld;
 void main() {
   vUv = uv;
   float route = smoothstep(uRoute.x, uRoute.y, uProgress);
   vec2 center = mix(uFromCenter, uToCenter, route);
   center.y += sin(route * 3.14159265) * uLift;
+  vWorld = position.xy * uSize + center;
   gl_Position = projectionMatrix * modelViewMatrix * vec4(position.xy * uSize + center, position.z, 1.0);
 }`;
 
@@ -22,7 +24,10 @@ uniform sampler2D uFrom;
 uniform sampler2D uTo;
 uniform float uProgress;
 uniform vec2 uSize;
+uniform vec2 uPointer;
+uniform float uHover;
 varying vec2 vUv;
+varying vec2 vWorld;
 void main() {
   float before = 1.0 - smoothstep(0.03, 0.25, uProgress);
   float after = smoothstep(0.76, 0.98, uProgress);
@@ -30,7 +35,8 @@ void main() {
   vec2 corner = abs(vUv - 0.5) * uSize - (uSize * 0.5 - 8.0);
   float distance = length(max(corner, 0.0)) + min(max(corner.x, corner.y), 0.0) - 8.0;
   float rounded = 1.0 - smoothstep(-0.65, 0.65, distance);
-  gl_FragColor = vec4(color, min(1.0, before + after) * rounded);
+  float touch = (1.0 - smoothstep(0.0, 140.0, length(vWorld - uPointer))) * uHover;
+  gl_FragColor = vec4(color, min(1.0, before + after) * rounded * (1.0 - touch));
 }`;
 
 const particleVertex = `
@@ -44,11 +50,15 @@ uniform vec2 uToCenter;
 uniform vec2 uRoute;
 uniform float uLift;
 uniform float uScatter;
+uniform vec2 uPointer;
+uniform float uHover;
+uniform float uTime;
 attribute vec2 aTarget;
 attribute vec2 aSeed;
 varying vec2 vFrom;
 varying vec2 vTo;
 varying float vEdge;
+varying float vTouch;
 void main() {
   vFrom = position.xy + 0.5;
   vTo = aTarget;
@@ -64,6 +74,11 @@ void main() {
   vec2 center = mix(uFromCenter, uToCenter, route);
   center.y += sin(route * 3.14159265) * uLift;
   xy += center;
+  vec2 delta = xy - uPointer;
+  vTouch = (1.0 - smoothstep(0.0, 140.0, length(delta))) * uHover;
+  vec2 direction = normalize(delta + vec2(0.01));
+  xy += (direction * (22.0 + sin(uTime * 2.5 + aSeed.x * 6.283) * 8.0)
+    + vec2(-direction.y, direction.x) * sin(uTime * 1.8 + aSeed.y * 6.283) * 15.0) * vTouch;
   float z = arc * (aSeed.y - 0.5) * 140.0 * uScatter;
   vec4 cameraPoint = modelViewMatrix * vec4(xy, z, 1.0);
   gl_Position = projectionMatrix * cameraPoint;
@@ -79,11 +94,12 @@ uniform float uProgress;
 varying vec2 vFrom;
 varying vec2 vTo;
 varying float vEdge;
+varying float vTouch;
 void main() {
   float circle = 1.0 - smoothstep(0.62, 1.0, length(gl_PointCoord - 0.5) * 2.0);
   float presence = smoothstep(0.0, 0.14, uProgress) * (1.0 - smoothstep(0.86, 1.0, uProgress));
   vec4 ink = mix(texture2D(uFrom, vFrom), texture2D(uTo, vTo), smoothstep(0.16, 0.84, uProgress));
-  gl_FragColor = vec4(ink.rgb, circle * presence * vEdge * ink.a);
+  gl_FragColor = vec4(ink.rgb, circle * max(presence, vTouch) * vEdge * ink.a);
 }`;
 
 function compose(chapter, image, brand) {
@@ -150,6 +166,7 @@ export function createCareerParticles(canvas, chapters, images, brands, textFram
     uSize: { value: new T.Vector2(1, 1) }, uCell: { value: size }, uRatio: { value: ratio }, uCamera: { value: 1000 },
     uFromCenter: { value: new T.Vector2() }, uToCenter: { value: new T.Vector2() },
     uRoute: { value: new T.Vector2(...route) }, uLift: { value: 0 }, uScatter: { value: scatter },
+    uPointer: { value: new T.Vector2(-10000, -10000) }, uHover: { value: 0 }, uTime: { value: 0 },
   });
   const imageUniforms = makeUniforms(1, [.08, .92], 1), textUniforms = makeUniforms(1.75, [.02, .82], .55);
   const material = (uniforms, vertexShader, fragmentShader) => new T.ShaderMaterial({
@@ -184,7 +201,7 @@ export function createCareerParticles(canvas, chapters, images, brands, textFram
   let surfaceWidth = 0, surfaceHeight = 0;
   return {
     count, textCount,
-    draw(frame, layout) {
+    draw(frame, layout, interaction = { x: -10000, y: -10000, strength: 0, time: 0 }) {
       const { width, height, imageWidth, imageHeight, textWidth } = layout;
       if (surfaceWidth !== layout.surfaceWidth || surfaceHeight !== layout.surfaceHeight) {
         surfaceWidth = layout.surfaceWidth; surfaceHeight = layout.surfaceHeight;
@@ -197,6 +214,8 @@ export function createCareerParticles(canvas, chapters, images, brands, textFram
       const configure = (u, from, to, textureA, textureB, w, h, lift) => {
         u.uFrom.value = textureA; u.uTo.value = textureB; u.uProgress.value = phase;
         u.uSize.value.set(w, h); u.uLift.value = lift;
+        u.uPointer.value.set(interaction.x - width / 2, height / 2 - interaction.y);
+        u.uHover.value = interaction.strength; u.uTime.value = interaction.time;
         u.uFromCenter.value.set(from.x - width / 2, height / 2 - from.y);
         u.uToCenter.value.set(to.x - width / 2, height / 2 - to.y);
       };

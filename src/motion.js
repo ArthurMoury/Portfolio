@@ -80,14 +80,14 @@ export function usePageMotion(root,reduced,setNavigation,setChapter,setActiveSec
         scrollTrigger: { trigger: formIntro, start: 'top 94%', once: true },
       });
       q('#certificados h2').forEach(title => {
-        gsap.from(title, { y: 38, clipPath: 'inset(0 0 18% 0)', duration: 1.1, ease: 'power4.out', clearProps: 'all', scrollTrigger: { trigger: title, start: 'top 92%', once: true } });
+        gsap.fromTo(title, { y: 54, opacity: .18, clipPath: 'inset(12% 0 0 0)' }, { y: 0, opacity: 1, clipPath: 'inset(0% 0 0 0)', ease: 'sine.out', scrollTrigger: { trigger: title, start: 'top 98%', end: 'top 60%', scrub: .4 } });
       });
       const handoff=q('[data-career-cert-handoff]')[0];
       const certificates=q('#certificados')[0];
       const passage=gsap.timeline({scrollTrigger:{trigger:certificates,start:'top bottom',end:'top 15%',scrub:.5}});
       passage.fromTo(handoff,{opacity:0},{opacity:1,duration:.4,ease:'sine.out'})
         .to(handoff,{opacity:0,duration:.6,ease:'sine.in'})
-        .fromTo(handoff.querySelector('[data-career-cert-mist]'),{xPercent:-10,yPercent:12,scale:.94},{xPercent:10,yPercent:-12,scale:1.08,duration:1,ease:'sine.inOut'},0)
+        .fromTo(handoff.querySelector('[data-career-cert-mist]'),{xPercent:-10,yPercent:18,rotation:-5,scale:.94},{xPercent:10,yPercent:-18,rotation:5,scale:1.12,duration:1,ease:'sine.inOut'},0)
         .fromTo(handoff.querySelector('[data-career-cert-glow]'),{xPercent:8,yPercent:6},{xPercent:-12,yPercent:-8,duration:1,ease:'sine.inOut'},0);
       media.add('(min-width: 900px) and (min-height: 700px)',()=>{
         gsap.to(q('[data-career-scene]')[0],{opacity:0,ease:'sine.inOut',scrollTrigger:{trigger:certificates,start:'top 92%',end:'top 32%',scrub:.35}});
