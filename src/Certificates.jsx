@@ -1,6 +1,6 @@
 import { localize } from './i18n';
 import { useEffect, useRef, useState } from 'react';
-import { LazyMotion, domAnimation, m, useAnimationFrame, useMotionValue } from 'motion/react';
+import { LazyMotion, domAnimation, m, useAnimationFrame, useMotionValue, useScroll, useTransform } from 'motion/react';
 import { ScanLine } from 'lucide-react';
 import { certificates } from './data/certificates';
 import s from './Certificates.module.css';
@@ -11,6 +11,8 @@ function CertificateRow({ items, reverse=false, label, reduced, onOpen, modalOpe
   const length = useRef(0), visible = useRef(false), activeTab = useRef(!document.hidden);
   const drag = useRef(null), dragged = useRef(false);
   const x = useMotionValue(0);
+  const { scrollYProgress } = useScroll({ target: root, offset: ['start end', 'end start'] });
+  const depth = useTransform(scrollYProgress, [0, 1], [reverse ? -40 : -20, reverse ? 60 : 30]);
   const [focused, setFocused] = useState(false);
   const wrap = value => length.current ? -(((-value % length.current) + length.current) % length.current) : value;
   useEffect(() => {
@@ -23,7 +25,7 @@ function CertificateRow({ items, reverse=false, label, reduced, onOpen, modalOpe
     return () => { observer.disconnect(); resize.disconnect(); document.removeEventListener('visibilitychange', visibility); };
   }, [reduced, x]);
   useAnimationFrame((_, delta) => {
-    if (!reduced && visible.current && activeTab.current && !focused && !modalOpen && !drag.current) x.set(wrap(x.get() - Math.min(delta, 48) * (reverse ? -.03 : .033)));
+    if (!reduced && visible.current && activeTab.current && !focused && !modalOpen && !drag.current && root.current?.dataset.morphActive !== 'true' && root.current?.style.getPropertyValue('--morph-ink') !== '0') x.set(wrap(x.get() - Math.min(delta, 48) * (reverse ? -.03 : .033)));
   });
   const focus = (event, index) => {
     if (!event.target.matches(':focus-visible')) return;
@@ -54,15 +56,15 @@ function CertificateRow({ items, reverse=false, label, reduced, onOpen, modalOpe
     <span className={s.caption}><strong>{certificate.title}</strong><span>{certificate.issuer}</span></span>
   </m.button>);
   return localize(<div ref={root} data-certificate-row className={s.row}>
-    <div ref={viewport} className={`${s.viewport} ${reduced ? s.static : ''}`} aria-roledescription="carrossel" aria-label={`Certificados: ${label}`} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={endDrag} onPointerCancel={endDrag} onPointerLeave={endDrag}
+    <m.div ref={viewport} style={reduced ? undefined : { y: depth }} data-certificate-depth className={`${s.viewport} ${reduced ? s.static : ''}`} aria-roledescription="carrossel" aria-label={`Certificados: ${label}`} onPointerDown={pointerDown} onPointerMove={pointerMove} onPointerUp={endDrag} onPointerCancel={endDrag} onPointerLeave={endDrag}
       onClickCapture={e => { if (dragged.current) { e.preventDefault(); e.stopPropagation(); dragged.current = false; } }}
       onBlur={e => { if (!e.currentTarget.contains(e.relatedTarget)) setFocused(false); }}>
       <m.div className={s.track} style={reduced ? undefined : { x }} data-certificate-track>
         <div ref={group} className={s.group}>{items.map((certificate, index) => card(certificate, index))}</div>
         {!reduced && <div className={s.group} aria-hidden="true">{items.map((certificate, index) => card(certificate, index, true))}</div>}
       </m.div>
-    </div>
-    {reverse && !reduced && <CertificateMorph/>}
+    </m.div>
+    {reverse && !reduced && <CertificateMorph host={root}/>}
   </div>);
 }
 

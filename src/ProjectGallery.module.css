@@ -33,7 +33,7 @@
 
 .close { display: none; }
 [data-showcase] .stage {
-  --rail-bleed: clamp(48px, 6vw, 88px);
+  --rail-bleed: clamp(70px, 10vw, 150px);
   position: relative; height: max(580px, calc(100svh - var(--gallery-inset)));
   min-height: var(--gallery-content-height, 0px);
   overflow-x: clip; overflow-y: visible; isolation: isolate;
@@ -62,6 +62,8 @@
 }
 .feature img { width: 100%; height: 100%; object-fit: cover; }
 .cover img { transition: filter .3s; }
+.planeMeta{position:absolute;inset:auto 16px 14px;display:flex;justify-content:space-between;gap:20px;color:#fff;font-size:14px;text-shadow:0 2px 8px #000;opacity:0;transform:translateY(8px);transition:opacity .25s,transform .3s;pointer-events:none}
+[data-hovered=true] .planeMeta,.cover:focus-visible .planeMeta{opacity:1;transform:none}
 [data-hovered=true] img { filter: brightness(1.06); }
 [data-showcase] .close {
   display: inline-flex; position: absolute; top: 8px; right: max(20px, 5%); z-index: 4;

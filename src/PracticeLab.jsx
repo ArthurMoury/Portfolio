@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
+import { motion as Motion, useScroll, useTransform } from 'motion/react';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { useLanguage } from './i18n';
 import { studies } from './studies';
@@ -30,6 +31,10 @@ export default function PracticeLab({ reduced }) {
   const language = useLanguage();
   const intro = introduction[language];
   const root = useRef(null), viewport = useRef(null), track = useRef(null);
+  const { scrollYProgress: entry } = useScroll({ target: root, offset: ['start end', 'start start'] });
+  const backgroundY = useTransform(entry, [0, 1], [-180, 100]);
+  const foregroundY = useTransform(entry, [0, 1], [-80, 0]);
+  const atmosphere = useTransform(entry, [0, .45, 1], [0, .85, 0]);
   const motion = useRef({ axis: null, slide: 0, invalidate: null });
   useStudyInstruments(viewport, motion, reduced);
 
@@ -105,13 +110,14 @@ export default function PracticeLab({ reduced }) {
 
   return <section id="processo" className={s.section} ref={root} data-context="estudos" aria-labelledby="studies-title">
     <div className={s.viewport} ref={viewport}>
+      {!reduced && <div className={s.entryBackground} aria-hidden="true"><Motion.div className={s.entryAtmosphere} data-learning-parallax style={{ y: backgroundY, opacity: atmosphere }}/></div>}
       <KineticGlyphs motion={motion} reduced={reduced} />
       <div className={s.track} ref={track}>
         <div className={s.panel} data-study="signature">
           <div className={s.composition}>
-            <div className={s.copy}>
+            <Motion.div className={s.copy} data-learning-foreground style={reduced ? undefined : { y: foregroundY }}>
               <StudyTitle as="h2" id="studies-title" lines={intro} />
-            </div>
+            </Motion.div>
             <div className={s.instrument} data-instrument="signature" aria-hidden="true">
             </div>
           </div>

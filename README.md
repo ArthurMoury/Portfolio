@@ -8,9 +8,10 @@ Apresentação pessoal, projetos, trajetória, certificados e aplicações reais
 
 - Tema escuro em todo o site, com entrada tridimensional. O retrato aparece na seção seguinte, junto de uma breve apresentação.
 - Informações pessoais e contato antes dos sete projetos: Cortech, FreeSB, Betterway, Nexo AI, Tyde, Sollie e Dozão.
-- Galeria em loop infinito na diagonal descendente, com capas em perspectiva lateral, arraste e inércia, seleção por clique, toque ou Enter, transições entre projetos e apresentação técnica em sequência. Rolagem livre até a seção seguinte; hover eleva e inclina a capa sem abrir o projeto. Botões independentes para GitHub e deploy.
+- Galeria em loop infinito na diagonal descendente, com planos 3D que ondulam conforme a velocidade da rolagem ou do arraste. Molas Motion suavizam a velocidade e a volta ao repouso. Hover eleva a capa e revela seu nome por caracteres; clique, toque ou Enter abrem os detalhes, com a coleção em faixa abaixo. Rolagem vertical livre, GitHub e deploy independentes.
 - Trajetória em CESAR School, Gaita Hero, Echo, Boop, Roomi e projetos autorais. No desktop, imagens e textos alternam entre esquerda e direita por morph de partículas ligado à rolagem. As letras do próprio conteúdo se transformam no texto seguinte, enquanto as imagens percorrem outro arco. Google Sites dos projetos acadêmicos preservados; o mobile mantém imagens estáticas por capítulo.
 - Dois carrosséis em sentidos opostos com os 29 documentos da pasta fornecida pelo titular: movimento contínuo mesmo sob hover, expansão por Motion e ampliação em diálogo.
+- Na passagem para Automação de processos, os certificados se desfazem diretamente nas letras do título. Trilhos, atmosfera e texto têm velocidades de parallax distintas. O canvas transparente atravessa as duas seções em uma camada independente, respeitando o cabeçalho e os diálogos.
 - Navegação por teclado, arraste, foco estável e movimento reduzido.
 - Currículo e contato em mourygodoy@gmail.com.
 

@@ -20,8 +20,9 @@
 @media(hover:none){.expand{opacity:1}.card:active{filter:brightness(1.12)}}
 .row { position: relative; }
 .row .viewport { opacity: var(--morph-ink, 1); }
+.row[data-morph-active=true] .viewport { pointer-events:none; }
 .row:has(:focus-visible) .viewport { opacity: 1; }
-.morph { position: absolute; z-index: 2; inset: 0 0 auto; width: 100%; height: calc(100% + 100vh + 80px); pointer-events: none; }
+.morph { position: fixed; z-index: 12; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 
 /* Match the rail's exact surface at the seam, with a long dark fade above it. */
 .section {

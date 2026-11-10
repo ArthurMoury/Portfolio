@@ -1,5 +1,6 @@
 import { useLayoutEffect, useRef } from 'react';
 import gsap from 'gsap';
+import { useMotionValue, useScroll, useSpring, useTransform, useVelocity } from 'motion/react';
 import { ArrowUpRight, X } from 'lucide-react';
 import Github from './GithubIcon';
 import { projects } from './data/portfolio';
@@ -16,6 +17,12 @@ const external = { target: '_blank', rel: 'noreferrer noopener' };
 
 export default function ProjectGallery({ reduced }) {
   const root = useRef(null), stage = useRef(null), seek = useRef(null), suppressClick = useRef(0);
+  const { scrollY } = useScroll();
+  const smoothedScroll = useSpring(scrollY, { stiffness: 190, damping: 34, mass: .4 });
+  const scrollSpeed = useVelocity(smoothedScroll);
+  const dragSpeed = useMotionValue(0);
+  const speed = useTransform(() => gsap.utils.clamp(-1, 1, (scrollSpeed.get() + dragSpeed.get()) / 2400));
+  const wave = useSpring(speed, { stiffness: 130, damping: 22, mass: .5 });
   useLayoutEffect(() => {
     if (reduced) return;
     const media = gsap.matchMedia();
@@ -26,6 +33,8 @@ export default function ProjectGallery({ reduced }) {
       const features = cards.map(card => card.querySelector('[data-project-feature]'));
       const faces = covers.map(cover => cover.querySelector('[data-project-face]'));
       const featureFaces = features.map(feature => feature.querySelector('[data-project-face]'));
+      const labels = covers.map(cover => cover.querySelector('[data-plane-label]'));
+      const labelTweens = [];
       const details = cards.map(card => card.querySelector('[data-project-detail]'));
       const washes = cards.map(card => card.querySelector('[data-project-wash]'));
       const copyParts = details.map(detail => [...detail.querySelectorAll('[data-project-copy-part]')]);
@@ -40,7 +49,7 @@ export default function ProjectGallery({ reduced }) {
       const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
       const arrival = { progress: 0 };
       let entranceTween;
-      let visible = false, ticking = false, elapsed = 0;
+      let visible = false, ticking = false, elapsed = 0, _waveTime = 0;
       const setCovers = covers.map(cover => gsap.quickSetter(cover, 'css'));
       const setFeatures = features.map(feature => gsap.quickSetter(feature, 'css'));
       const setDetails = details.map(detail => gsap.quickSetter(detail, 'css'));
@@ -154,12 +163,15 @@ export default function ProjectGallery({ reduced }) {
           const readingY = mobile
             ? Math.max(height * (height < 700 ? .89 : .84), textFloor + 18 + tileHeight / 2 + diagonalReach)
             : height * .87;
-          const centerY = restY + (readingY - restY) * focus + (width / 2 - centerX) * slope;
+          const ripple = Math.sin(centerX / width * Math.PI * 1.6 - _waveTime * .9) * wave.get() * (1 - focus * .85);
+          const centerY = restY + (readingY - restY) * focus + (width / 2 - centerX) * slope + ripple * Math.min(mobile ? 42 : 115, height * .14);
           const faceScale = scale * (.84 + .16 * birth);
           setCovers[i]({
             x: centerX - coverWidth / 2 - faceBounds.dx * faceScale,
             y: centerY - coverHeight / 2 - faceBounds.dy * faceScale,
-            scale: faceScale, opacity: birth,
+            scale: faceScale, opacity: birth, z: ripple * (mobile ? 35 : 100),
+            rotationX: ripple * 8, rotationY: ripple * -10, rotationZ: ripple * 3,
+            transformPerspective: 1600,
           });
           const featureScale = featureFit * (.94 + .06 * zoom);
           // The selected face keeps some perspective and follows the same
@@ -187,11 +199,13 @@ export default function ProjectGallery({ reduced }) {
         }
       }
       function tick(_time, delta) {
+        _waveTime = _time;
+        section.dataset.wave = wave.get().toFixed(4);
         const step = Math.min(delta, 64);
         if (!navigation && !pointer?.dragged && keyboardFocus < 0) {
           flow -= angularVelocity * step / 1000;
           angularVelocity *= Math.exp(-step / 350);
-          flow = gsap.utils.wrap(0, cards.length, flow + step / 1000 / 4.8 * (1 - currentFocus * .45));
+          flow = gsap.utils.wrap(0, cards.length, flow + step / 1000 * (1 / 4.8 + wave.get() * .45) * (1 - currentFocus * .45));
         }
         elapsed += step;
         if (elapsed < (mobile ? 32 : 16)) return;
@@ -278,6 +292,14 @@ export default function ProjectGallery({ reduced }) {
         if (index < 0) return;
         gsap.killTweensOf(faces[index]);
         covers[index].dataset.hovered = String(active);
+        labelTweens[index]?.kill();
+        const text = t(projects[index].name);
+        if (active) {
+          const reveal = { value: 0 }, alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+          labelTweens[index] = gsap.to(reveal, { value: 1, duration: .42, ease: 'none', onUpdate: () => {
+            labels[index].textContent = [...text].map((char, j) => char === ' ' || j < reveal.value * text.length ? char : alphabet[(j * 13 + Math.floor(reveal.value * 24)) % alphabet.length]).join('');
+          }, onComplete: () => { labels[index].textContent = text; } });
+        } else labels[index].textContent = text;
         gsap.to(faces[index], {
           scale: active ? 1.035 : 1, y: active ? -14 : 0,
           rotationX: active ? 8 : 12,
@@ -351,6 +373,7 @@ export default function ProjectGallery({ reduced }) {
         const delta = (event.clientX - pointer.lastX) / trackPitch;
         const dt = Math.max(8, event.timeStamp - pointer.lastTime);
         angularVelocity = gsap.utils.clamp(-4, 4, angularVelocity * .35 + delta / dt * 1000 * .65);
+        dragSpeed.set((event.clientX - pointer.lastX) / dt * 1000);
         flow -= delta;
         pointer.lastX = event.clientX;
         pointer.lastTime = event.timeStamp;
@@ -360,6 +383,7 @@ export default function ProjectGallery({ reduced }) {
         if (!pointer || event.pointerId !== pointer.id) return;
         if (pointer.dragged) suppressClick.current = performance.now() + 400;
         pointer = null;
+        dragSpeed.set(0);
         delete viewport.dataset.dragging;
         if (viewport.hasPointerCapture(event.pointerId)) viewport.releasePointerCapture(event.pointerId);
       }
@@ -403,6 +427,7 @@ export default function ProjectGallery({ reduced }) {
         focusTween?.kill();
         window.removeEventListener('resize', resize);
         faces.forEach(face => gsap.killTweensOf(face));
+        labelTweens.forEach(tween => tween?.kill()); dragSpeed.set(0);
         gsap.ticker.remove(tick);
         document.removeEventListener('visibilitychange', syncPlayback);
         cancelAnimationFrame(refresh);
@@ -427,6 +452,7 @@ export default function ProjectGallery({ reduced }) {
         delete section.dataset.switching;
         delete section.dataset.showcase;
         delete section.dataset.projectOpen;
+        delete section.dataset.wave;
         gsap.set([...covers, ...features, ...faces, ...featureFaces, ...details, ...washes, ...copyParts.flat()], { clearProps: 'transform,opacity,zIndex,visibility' });
         cards.forEach((card, i) => {
           delete card.dataset.active;
@@ -439,7 +465,7 @@ export default function ProjectGallery({ reduced }) {
       };
     }, root);
     return () => media.revert();
-  }, [reduced]);
+  }, [reduced, dragSpeed, wave]);
 
   function show(index, event) {
     if (performance.now() < suppressClick.current) return;
@@ -461,7 +487,7 @@ export default function ProjectGallery({ reduced }) {
         <div className={s.rail} data-project-rail><button type="button" data-cover className={s.cover}
           aria-label={t('Ver projeto') + ': ' + t(project.name)} onClick={event => show(index, event)}>
           <span className={s.face} data-project-face><img draggable={false} src={project.image} alt={project.imageType + ': ' + project.name}
-            loading={index < 2 ? 'eager' : 'lazy'} width="1280" height="720" /></span>
+            loading={index < 2 ? 'eager' : 'lazy'} width="1280" height="720" /><span className={s.planeMeta} aria-hidden="true"><span>{String(index + 1).padStart(2, '0')}</span><span data-plane-label>{project.name}</span></span></span>
         </button></div>
         <div className={s.feature} data-project-feature aria-hidden="true">
           <span className={s.face} data-project-face><img draggable={false} src={project.image} alt="" loading="lazy" width="1280" height="720" /></span>

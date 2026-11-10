@@ -100,6 +100,9 @@
   [data-horizontal] .title { font-size: min(10vw, calc(var(--view-height) * .105)); }
 }
 .word { display: inline-block; transform-origin: center; }
+.entryBackground{position:absolute;inset:0;pointer-events:none;overflow:clip;mask-image:linear-gradient(transparent,black 30%,black 65%,transparent)}
+.entryAtmosphere{position:absolute;inset:-32vh 0 auto;height:110vh;background:radial-gradient(ellipse 85% 50% at 35% 50%,#696d7928,transparent 90%),radial-gradient(ellipse 65% 40% at 85% 65%,#858b9916,transparent 90%)}
+[data-horizontal] .panel:first-child .copy{top:52%}
 
 /* Keep both instruments in the pinned viewport as the chapters move past. */
 .glyphField { position: absolute; inset: 0; pointer-events: none; }
