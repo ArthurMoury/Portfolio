@@ -15,6 +15,8 @@ Apresentação pessoal, projetos, trajetória, certificados e aplicações reais
 - Navegação por teclado, arraste, foco estável e movimento reduzido.
 - Currículo e contato em mourygodoy@gmail.com.
 
+No mobile, a visita começa pela escolha de português ou inglês. Depois da seleção, a abertura inicia e o seletor desaparece; o menu permite escolher novamente. A preferência da visita é preservada. A galeria usa arraste nativo com encaixe e perspectiva leve; os detalhes abrem em uma tela própria com navegação entre os sete projetos e rolagem independente. Após os certificados, os quatro temas se apresentam em uma cena vertical com títulos em sequência e a mesma fita 3D. O material prateado mobile é gerado em código, dispensando a captura do ambiente de iluminação do desktop.
+
 ## Executar e validar
 
 ```bash

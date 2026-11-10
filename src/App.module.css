@@ -221,3 +221,4 @@
 [data-career-alternating=true] .careerScene[data-morph-ready=true] .chapterVisual{background:transparent;border-color:transparent}
 [data-career-alternating=true] .careerScene[data-morph-ready=true] .chapterVisual>img{opacity:0;will-change:auto}
 @media(min-width:900px) and (max-width:1100px){[data-career-alternating=true] .careerScene{--career-text-ratio:.46;--career-image-ratio:.44}}
+.mobileLanguageMenu{display:none}@media(max-width:899px){.mobileLanguageMenu{display:block;text-align:left;background:none;color:var(--muted-light);min-height:48px;font-size:14px;padding:12px 0;margin-top:8px}}

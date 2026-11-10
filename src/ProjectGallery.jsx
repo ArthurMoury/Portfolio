@@ -1,4 +1,5 @@
-import { useLayoutEffect, useRef } from 'react';
+import { useLayoutEffect, useRef, useSyncExternalStore } from 'react';
+import MobileProjectGallery from './MobileProjectGallery';
 import gsap from 'gsap';
 import { useMotionValue, useScroll, useSpring, useTransform, useVelocity } from 'motion/react';
 import { ArrowUpRight, X } from 'lucide-react';
@@ -15,7 +16,10 @@ const ease = value => {
 };
 const external = { target: '_blank', rel: 'noreferrer noopener' };
 
-export default function ProjectGallery({ reduced }) {
+const mobileGallery=window.matchMedia('(max-width: 899px)');
+const watchMobile=callback=>{mobileGallery.addEventListener('change',callback);return()=>mobileGallery.removeEventListener('change',callback);};
+export default function ProjectGallery(props){const mobile=useSyncExternalStore(watchMobile,()=>mobileGallery.matches,()=>false);return mobile?<MobileProjectGallery {...props}/>:<DesktopProjectGallery {...props}/>;}
+function DesktopProjectGallery({ reduced }) {
   const root = useRef(null), stage = useRef(null), seek = useRef(null), suppressClick = useRef(0);
   const { scrollY } = useScroll();
   const smoothedScroll = useSpring(scrollY, { stiffness: 190, damping: 34, mass: .4 });

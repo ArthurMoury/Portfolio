@@ -7,6 +7,7 @@ export function useStudyInstruments(viewport, motion, reduced) {
     const view = viewport.current;
     const blueprint = document.createElement('canvas');
     const surface = document.createElement('canvas');
+    surface.hidden=true;
     for (const canvas of [blueprint, surface]) canvas.setAttribute('aria-hidden', 'true');
     const flat = blueprintRenderer(blueprint);
     view.appendChild(blueprint);
@@ -23,6 +24,9 @@ export function useStudyInstruments(viewport, motion, reduced) {
         if (disposed) return;
         gl = createStudyRenderer(surface);
         view.appendChild(surface);
+        const warm=ribbonFrame(view.clientWidth,Math.min(view.clientHeight,innerHeight),.002,false);
+        warm.vertical=motion.current.axis==='vertical';
+        gl.paint(warm);
         invalidate();
       }).catch(invalidate);
     }
@@ -63,7 +67,7 @@ export function useStudyInstruments(viewport, motion, reduced) {
     surface.addEventListener('webglcontextrestored', contextRestored);
     motion.current.invalidate = invalidate;
 
-    const observer = new IntersectionObserver(invalidate, { rootMargin: '240px' });
+    const observer = new IntersectionObserver(entries=>{if(entries.some(entry=>entry.isIntersecting))loadRenderer();invalidate();}, { rootMargin: '600px' });
     observer.observe(view);
     const resize = new ResizeObserver(invalidate);
     resize.observe(view);

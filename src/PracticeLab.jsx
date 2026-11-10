@@ -45,10 +45,12 @@ export default function PracticeLab({ reduced }) {
       const vertical = context.conditions.mobile;
       const section = root.current;
       const panels = [...track.current.children];
-      const readingInterval = .12;
+      const readingInterval = vertical ? .16 : .12;
       const playhead = { time: -readingInterval };
       const duration = panels.length - 1;
       const setTrack = gsap.quickSetter(track.current, vertical ? 'y' : 'x', 'px');
+      const setPanels = panels.map(panel=>gsap.quickSetter(panel,'css'));
+      const smooth=value=>{const x=gsap.utils.clamp(0,1,value);return x*x*(3-2*x);};
       const reveals = panels.map((panel, index) => {
         if (index === 0) return null; // The certificate particles reveal this heading.
         const words = panel.querySelectorAll('[data-study-word]');
@@ -68,17 +70,24 @@ export default function PracticeLab({ reduced }) {
         section.style.setProperty('--nav-inset', inset + 'px');
         height = Math.max(1, vertical ? viewport.current.clientHeight : window.innerHeight - inset);
         width = section.clientWidth;
-        distance = (duration + readingInterval) * (vertical ? height : Math.min(width * 1.22, height * 0.96));
+        distance = (duration + readingInterval) * (vertical ? height * .76 : Math.min(width * 1.22, height * 0.96));
         section.style.setProperty('--view-height', height + 'px');
         section.style.setProperty('--travel-height', distance + 'px');
       }
       function render() {
         const slide = Math.max(0, playhead.time);
-        const entrance = Math.min(1, slide / .30);
+        const entrance = Math.min(1, slide / (vertical ? .18 : .30));
         section.style.setProperty('--shape-entrance', entrance * entrance * (3 - 2 * entrance));
-        setTrack(-(vertical ? height : width) * slide);
+        if(vertical){
+          setTrack(0);
+          setPanels.forEach((set,index)=>{
+            const offset=slide-index;
+            const opacity=offset>=0?1-smooth((offset-.12)/.34):smooth((.48+offset)/.34);
+            set({opacity,y:gsap.utils.clamp(-70,100,-offset*height*.16)});
+          });
+        }else setTrack(-width * slide);
         for (let index = 1; index < reveals.length; index++) {
-          reveals[index].progress(gsap.utils.clamp(0, 1, (slide - index + .68) / .58));
+          reveals[index].progress(gsap.utils.clamp(0, 1, (slide - index + (vertical ? .48 : .68)) / (vertical ? .34 : .58)));
         }
         motion.current.slide = slide;
         motion.current.invalidate?.();
@@ -102,6 +111,7 @@ export default function PracticeLab({ reduced }) {
         section.style.removeProperty('--shape-entrance');
         motion.current.axis = null;
         setTrack(0);
+        gsap.set(panels,{clearProps:'opacity,transform'});
         motion.current.invalidate?.();
       };
     }, root);

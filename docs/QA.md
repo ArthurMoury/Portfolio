@@ -146,3 +146,11 @@ Correção do hover: substituir o elemento completo, eliminando a antiga máscar
 - Sem overflow horizontal ou erros de JavaScript nos tamanhos verificados. Conteúdo e build aprovados. Verificações em navegador/emulação, sem medição em dispositivos físicos.
 
 Referências públicas: [Motion Parallax](https://motion.dev/examples/react-parallax), [Scroll velocity: 3D planes](https://motion.dev/examples/react-scroll-velocity-linked-offset), [useScroll](https://motion.dev/docs/react-use-scroll), [useVelocity](https://motion.dev/docs/react-use-velocity). A galeria usa implementação própria e APIs públicas, sem incorporar código do componente Motion+.
+
+## Revisão mobile — 10/11/2026
+- Chrome com viewports 320×667, 390×844, 430×932, 768×1024 e 844×390. Português, inglês e movimento reduzido; sem overflow horizontal da página. Quatro títulos da cena vertical cabem na área útil, com texto separado da composição 3D.
+- Entrada de idioma verificada: app só monta após escolher; seletor deixa de aparecer no mobile, preferência permanece ao recarregar na mesma sessão e links diretos continuam funcionando. Reabertura pelo menu e troca para inglês aprovadas, sem bloqueio residual do body.
+- Sete projetos disponíveis na galeria nativa. Imagens encaixam ao arrastar; toque abre detalhes. Diálogo com área de leitura própria, controles fixos, troca de projeto, GitHub/deploy, fechamento e restauração de foco/rolagem. Imagens mantêm draggable=false.
+- Emulação de toque pelo Chrome: arraste horizontal altera o trilho sem abrir detalhes; gesto vertical continua a rolagem da página. Morph dos certificados entrega o título normalmente. Regressão desktop aprovada para galeria, detalhes e seletor PT/EN.
+- Renderer mobile com 72 segmentos e matcap gerado em canvas, sem captura PMREM, pixel ratio limitado a 1 e preparação antes da cena entrar. A versão desktop conserva seu material e iluminação. Capturas revisadas; conteúdo e build aprovados.
+- Limite da validação: emulação de viewport/toque no Chrome, sem aparelhos físicos. A tentativa de WebKit neste Mac falhou na criação da página por incompatibilidade entre o navegador de testes macOS 14 e o protocolo Playwright (Unknown setting: PushAPIEnabled), antes de carregar o site; Safari não foi considerado validado.

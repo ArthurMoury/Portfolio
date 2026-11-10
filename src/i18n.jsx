@@ -44,13 +44,13 @@ function updateDocument(){
  document.querySelector('meta[property="og:title"]')?.setAttribute('content',document.title);
 }
 updateDocument();
-export function setLanguage(next){
+export function setLanguage(next,{restart=true}={}){
  if(next!== 'pt'&&next!=='en'||next===language)return;
  language=next;
  try{localStorage.setItem('portfolio-language',next);}catch{}
- const url=new URL(location.href);url.searchParams.set('lang',next);url.hash='';history.replaceState(null,'',url);
+ const url=new URL(location.href);url.searchParams.set('lang',next);if(restart)url.hash='';history.replaceState(null,'',url);
  updateDocument();listeners.forEach(fn=>fn());
- requestAnimationFrame(()=>requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:'instant'});document.getElementById(`language-${next}`)?.focus({preventScroll:true});}));
+ if(restart)requestAnimationFrame(()=>requestAnimationFrame(()=>{window.scrollTo({top:0,behavior:'instant'});document.getElementById(`language-${next}`)?.focus({preventScroll:true});}));
 }
 export function useLanguage(){return useSyncExternalStore(callback=>{listeners.add(callback);return()=>listeners.delete(callback);},()=>language,()=> 'pt');}
 export function t(value){
